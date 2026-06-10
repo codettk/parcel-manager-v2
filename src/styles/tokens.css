@@ -1,0 +1,25 @@
+/* 디자인 토큰 — 명세서 §4.2 (v1 appStyles.js에서 추출한 실사용 값)
+ * 팔레트 기본 6색은 DB(color_labels) 소관 — 토큰 아님
+ */
+@theme {
+  /* 브랜드/시맨틱 */
+  --color-primary: #2f7d4f; /* 저장·선택 강조 (v1 초록) */
+  --color-danger: #c8392e; /* 삭제·해체·복원 경고 */
+  --color-ink: #1a1814; /* 본문 텍스트 */
+  --color-ink-muted: #5c5851;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafaf7; /* 목록 줄무늬 */
+  --color-border: #d4d0c5;
+  --color-parcel-border: #c9c4b6; /* 미지정 필지 테두리 */
+  --color-select: rgb(47 125 79 / 0.25); /* 멀티선택 오버레이 */
+  --color-group-hint: rgb(59 130 246 / 0.6); /* 그룹 힌트 점선 */
+
+  /* 폰트 */
+  --font-sans: 'Pretendard', 'Pretendard Variable', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace; /* 숫자(면적·지번) 표기 */
+
+  /* 라운드: 8/12/16/full */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}

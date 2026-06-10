@@ -1,0 +1,19 @@
+services:
+  web:
+    build: { context: .., dockerfile: docker/Dockerfile.dev }
+    command: pnpm dev --host
+    ports: ['5173:5173']
+    volumes: ['..:/app', '/app/node_modules']
+    environment:
+      - VITE_API_BASE=http://localhost:3000
+
+  api:
+    build: { context: .., dockerfile: docker/Dockerfile.dev }
+    command: pnpm dev:api
+    ports: ['3000:3000']
+    volumes: ['..:/app', '/app/node_modules']
+    environment:
+      # Supabase CLI 스택은 호스트에서 `supabase start`로 별도 기동 (명세서 §3.2)
+      # 기본값은 Supabase CLI의 공개 로컬 개발 키 (프로덕션 자격증명 아님)
+      - SUPABASE_URL=http://host.docker.internal:54321
+      - SUPABASE_ANON_KEY=${SUPABASE_LOCAL_ANON_KEY:-sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH}
