@@ -2,6 +2,7 @@
 // 본 렌더 엔진(8-pass, 제스처, 라벨)은 M-2~M-4에서 features/map/engine/으로 구현한다.
 import { useEffect, useRef, useState } from 'react'
 import { makeProjector, polyArea, type Bbox, type Point } from '../../utils/geo'
+import { CANVAS_COLORS } from './engine/colors'
 
 interface RawParcel {
   id: string
@@ -75,8 +76,8 @@ export function MapCanvas() {
       if (!ctx) return
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, r.width, r.height)
-      ctx.fillStyle = '#ffffff'
-      ctx.strokeStyle = '#c9c4b6' // --color-parcel-border
+      ctx.fillStyle = CANVAS_COLORS.surface
+      ctx.strokeStyle = CANVAS_COLORS.parcelBorder
       ctx.lineWidth = 0.5
 
       for (const p of data.parcels) {
