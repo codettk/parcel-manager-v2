@@ -3,15 +3,1785 @@
   "children": [
     {
       "type": "frame",
-      "id": "bi8Au",
+      "id": "FZJl8",
       "x": 0,
       "y": 0,
-      "name": "Frame",
-      "clip": true,
-      "width": 800,
-      "height": 600,
-      "fill": "#FFFFFF",
-      "layout": "none"
+      "name": "Button",
+      "reusable": true,
+      "fill": "$color-primary",
+      "cornerRadius": "$radius-md",
+      "gap": 6,
+      "padding": [
+        12,
+        16
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "nrKfB",
+          "name": "Label",
+          "fill": "$color-surface",
+          "content": "저장",
+          "fontFamily": "$font-sans",
+          "fontSize": 15,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ZmUgI",
+      "x": 200,
+      "y": 0,
+      "name": "IconButton",
+      "reusable": true,
+      "width": 44,
+      "height": 44,
+      "cornerRadius": "$radius-sm",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "d9kW3w",
+          "name": "Icon",
+          "width": 20,
+          "height": 20,
+          "icon": "settings",
+          "library": "lucide",
+          "fill": "$color-ink-muted"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "QQkWV",
+      "x": 300,
+      "y": 0,
+      "name": "Chip",
+      "reusable": true,
+      "fill": "$color-surface",
+      "cornerRadius": 999,
+      "stroke": "$color-border",
+      "strokeWidth": 1,
+      "gap": 6,
+      "padding": [
+        8,
+        14
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "isdQF",
+          "x": 0,
+          "y": 0,
+          "name": "Dot",
+          "enabled": false,
+          "fill": "$color-primary",
+          "width": 10,
+          "height": 10
+        },
+        {
+          "type": "text",
+          "id": "V0smxP",
+          "name": "Label",
+          "fill": "$color-ink",
+          "content": "전",
+          "fontFamily": "$font-sans",
+          "fontSize": 13,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cunWf",
+      "x": 450,
+      "y": 0,
+      "name": "Badge",
+      "reusable": true,
+      "fill": "$color-surface-alt",
+      "cornerRadius": 999,
+      "stroke": "$color-border",
+      "strokeWidth": 1,
+      "padding": [
+        3,
+        10
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "j2whKR",
+          "name": "Label",
+          "fill": "$color-ink-muted",
+          "content": "3필지",
+          "fontFamily": "$font-sans",
+          "fontSize": 12,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "rectangle",
+      "cornerRadius": 6,
+      "id": "OOjNn",
+      "x": 600,
+      "y": 0,
+      "name": "ColorSwatch",
+      "reusable": true,
+      "fill": "#6CA945",
+      "width": 36,
+      "height": 24,
+      "stroke": "#5A8F39",
+      "strokeWidth": 1.5
+    },
+    {
+      "type": "frame",
+      "id": "c5zDc",
+      "x": 700,
+      "y": 0,
+      "name": "Input",
+      "reusable": true,
+      "width": 220,
+      "fill": "$color-surface",
+      "cornerRadius": "$radius-md",
+      "stroke": "$color-border",
+      "strokeWidth": 1,
+      "padding": [
+        11,
+        12
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "vhrPL",
+          "name": "Value",
+          "fill": "$color-ink-muted",
+          "content": "필지 이름",
+          "fontFamily": "$font-sans",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "xje8J",
+      "x": 0,
+      "y": 120,
+      "name": "ListRow",
+      "reusable": true,
+      "width": 360,
+      "fill": "$color-surface",
+      "gap": 12,
+      "padding": [
+        10,
+        12
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "rectangle",
+          "cornerRadius": 5,
+          "id": "CNVtK",
+          "name": "Leading",
+          "fill": "#6CA945",
+          "width": 28,
+          "height": 20,
+          "stroke": "#5A8F39",
+          "strokeWidth": 1
+        },
+        {
+          "type": "frame",
+          "id": "GYdDw",
+          "name": "Body",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 2,
+          "children": [
+            {
+              "type": "text",
+              "id": "CWDx9",
+              "name": "Title",
+              "fill": "$color-ink",
+              "content": "산 123",
+              "fontFamily": "$font-sans",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "UZQtn",
+              "name": "Subtitle",
+              "fill": "$color-ink-muted",
+              "content": "450 ㎡",
+              "fontFamily": "$font-mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "e5695",
+          "name": "Trailing",
+          "width": 16,
+          "height": 16,
+          "icon": "x",
+          "library": "lucide",
+          "fill": "$color-ink-muted"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ZeggO",
+      "x": 450,
+      "y": 120,
+      "name": "DrawerItem",
+      "reusable": true,
+      "width": 240,
+      "cornerRadius": "$radius-sm",
+      "gap": 12,
+      "padding": [
+        10,
+        12
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "y99ClA",
+          "name": "Icon",
+          "width": 18,
+          "height": 18,
+          "icon": "map-pin",
+          "library": "lucide",
+          "fill": "$color-ink"
+        },
+        {
+          "type": "text",
+          "id": "XQNF9",
+          "name": "Label",
+          "fill": "$color-ink",
+          "content": "지도",
+          "fontFamily": "$font-sans",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "RxNSO",
+      "x": 750,
+      "y": 120,
+      "name": "Tab",
+      "reusable": true,
+      "fill": "$color-surface",
+      "cornerRadius": [
+        8,
+        8,
+        0,
+        0
+      ],
+      "stroke": "$color-border",
+      "strokeWidth": {
+        "top": 1,
+        "right": 1,
+        "left": 1
+      },
+      "gap": 6,
+      "padding": [
+        8,
+        12
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "G1dEAq",
+          "name": "Label",
+          "fill": "$color-ink",
+          "content": "기본 작업공간",
+          "fontFamily": "$font-sans",
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "icon",
+          "id": "psHqy",
+          "name": "Close",
+          "width": 13,
+          "height": 13,
+          "icon": "x",
+          "library": "lucide",
+          "fill": "$color-ink-muted"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "E5eEG8",
+      "x": 0,
+      "y": 220,
+      "name": "Segment",
+      "reusable": true,
+      "cornerRadius": 9,
+      "padding": [
+        6,
+        14
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "b0AEFG",
+          "name": "Label",
+          "fill": "$color-ink-muted",
+          "content": "㎡",
+          "fontFamily": "$font-sans",
+          "fontSize": 13,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Yhgco",
+      "x": 0,
+      "y": 331,
+      "name": "UI Components Sheet",
+      "fill": "$color-surface",
+      "cornerRadius": "$radius-lg",
+      "stroke": "$color-border",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "gap": 28,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "qEwxr",
+          "name": "Sheet Title",
+          "fill": "$color-ink",
+          "content": "보구곶리 v2 — UI 공통 컴포넌트",
+          "fontFamily": "$font-sans",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "TjZ0b",
+          "name": "Section: Button — primary / danger / secondary / ghost / disabled / sm",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "VejRN",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Button — primary / danger / secondary / ghost / disabled / sm",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "s6B2ss",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "tc7iI",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Btn Primary"
+                },
+                {
+                  "id": "tvbVV",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Btn Danger",
+                  "fill": "$color-danger",
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "그룹 해체"
+                    }
+                  }
+                },
+                {
+                  "id": "ZgaDA",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Btn Secondary",
+                  "fill": "$color-surface",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "취소",
+                      "fill": "$color-ink"
+                    }
+                  }
+                },
+                {
+                  "id": "Na1WM",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Btn Ghost",
+                  "fill": "#00000000",
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "닫기",
+                      "fill": "$color-ink-muted"
+                    }
+                  }
+                },
+                {
+                  "id": "DEBnH",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Btn Disabled",
+                  "opacity": 0.4
+                },
+                {
+                  "id": "R3zBI9",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Btn Small",
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "작게",
+                      "fontSize": 13
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "A6L5m",
+          "name": "Section: IconButton — ghost / solid / sm",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "cYqjD",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "IconButton — ghost / solid / sm",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "yfmtn",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "a1M4nq",
+                  "type": "ref",
+                  "ref": "ZmUgI",
+                  "name": "IconBtn Ghost"
+                },
+                {
+                  "id": "jZDDr",
+                  "type": "ref",
+                  "ref": "ZmUgI",
+                  "name": "IconBtn Solid",
+                  "fill": "$color-primary",
+                  "descendants": {
+                    "d9kW3w": {
+                      "fill": "$color-surface",
+                      "icon": "layers"
+                    }
+                  }
+                },
+                {
+                  "id": "j0B2nV",
+                  "type": "ref",
+                  "ref": "ZmUgI",
+                  "name": "IconBtn Small",
+                  "width": 32,
+                  "height": 32,
+                  "descendants": {
+                    "d9kW3w": {
+                      "icon": "x",
+                      "width": 16,
+                      "height": 16
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jB795",
+          "name": "Section: Chip — 기본 / selected / colorHex",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "cgfBk",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Chip — 기본 / selected / colorHex",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "g1KRCk",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "y9WGz9",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "Chip Default"
+                },
+                {
+                  "id": "RgNC3",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "Chip Selected",
+                  "fill": "$color-primary",
+                  "stroke": "$color-primary",
+                  "descendants": {
+                    "V0smxP": {
+                      "content": "답",
+                      "fill": "$color-surface"
+                    }
+                  }
+                },
+                {
+                  "id": "McB4J",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "Chip Eco",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#6CA945"
+                    },
+                    "V0smxP": {
+                      "content": "친환경"
+                    }
+                  }
+                },
+                {
+                  "id": "Qk6Tr",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "Chip Sun",
+                  "fill": "$color-primary",
+                  "stroke": "$color-primary",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#E5A300"
+                    },
+                    "V0smxP": {
+                      "content": "관행",
+                      "fill": "$color-surface"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vPUfe",
+          "name": "Section: SegmentedControl — 면적 단위 / 표시 방식",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "sTGmr",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "SegmentedControl — 면적 단위 / 표시 방식",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "d5EqA",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DcxPQ",
+                  "name": "Units Control",
+                  "fill": "$color-surface-alt",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "gap": 2,
+                  "padding": 3,
+                  "children": [
+                    {
+                      "id": "eD9pX",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg m2",
+                      "fill": "$color-primary",
+                      "descendants": {
+                        "b0AEFG": {
+                          "fill": "$color-surface"
+                        }
+                      }
+                    },
+                    {
+                      "id": "W8XPpp",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 평",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "평"
+                        }
+                      }
+                    },
+                    {
+                      "id": "UwQOe",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg a",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "a"
+                        }
+                      }
+                    },
+                    {
+                      "id": "sZe5F",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg ha",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "ha"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "JiXQo",
+                  "name": "Style Control",
+                  "fill": "$color-surface-alt",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "gap": 2,
+                  "padding": 3,
+                  "children": [
+                    {
+                      "id": "AxUrx",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg Fill",
+                      "fill": "$color-primary",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "채우기",
+                          "fill": "$color-surface"
+                        }
+                      }
+                    },
+                    {
+                      "id": "XKA2S",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg Border",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "테두리"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "bx0GI",
+          "name": "Section: Checkbox / Switch",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "VqKxn",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Checkbox / Switch",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "KXWng",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "tNwU2",
+                  "name": "Checkbox Checked",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dqeBI",
+                      "name": "Box",
+                      "width": 20,
+                      "height": 20,
+                      "fill": "$color-primary",
+                      "cornerRadius": 6,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "mPtcd",
+                          "name": "Check",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$color-surface"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "aO0sz",
+                      "name": "Label",
+                      "fill": "$color-ink",
+                      "content": "지목 전체",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "CYCza",
+                  "name": "Checkbox Unchecked",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 6,
+                      "id": "kXTJS",
+                      "name": "Box",
+                      "fill": "$color-surface",
+                      "width": 20,
+                      "height": 20,
+                      "stroke": "$color-border",
+                      "strokeWidth": 1.5
+                    },
+                    {
+                      "type": "text",
+                      "id": "aEn8o",
+                      "name": "Label",
+                      "fill": "$color-ink",
+                      "content": "미선택",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QDh05",
+                  "name": "Switch On",
+                  "width": 46,
+                  "height": 26,
+                  "fill": "$color-primary",
+                  "cornerRadius": 999,
+                  "padding": 2,
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "J7xPYe",
+                      "name": "Knob",
+                      "fill": "$color-surface",
+                      "width": 22,
+                      "height": 22
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "MpNry",
+                  "name": "Switch Label",
+                  "fill": "$color-ink",
+                  "content": "필지 고정",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "ugi0t",
+                  "name": "Switch Off",
+                  "width": 46,
+                  "height": 26,
+                  "fill": "$color-border",
+                  "cornerRadius": 999,
+                  "padding": 2,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "T409Zz",
+                      "name": "Knob",
+                      "fill": "$color-surface",
+                      "width": 22,
+                      "height": 22
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NtHuA",
+          "name": "Section: Input / Textarea — 기본 / numeric / 메모",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "aDuuv",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Input / Textarea — 기본 / numeric / 메모",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "D6uJc",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "CaJcG",
+                  "type": "ref",
+                  "ref": "c5zDc",
+                  "name": "Input Default"
+                },
+                {
+                  "id": "Y1a8H",
+                  "type": "ref",
+                  "ref": "c5zDc",
+                  "name": "Input Numeric",
+                  "width": 120,
+                  "descendants": {
+                    "vhrPL": {
+                      "content": "300",
+                      "fontFamily": "$font-mono",
+                      "fill": "$color-ink"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "yInVb",
+                  "name": "Textarea",
+                  "width": 220,
+                  "height": 80,
+                  "fill": "$color-surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "kkcya",
+                      "name": "Placeholder",
+                      "fill": "$color-ink-muted",
+                      "content": "메모를 입력하세요",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pl7YL",
+          "name": "Section: ColorSwatch — fill / border / selected / sm",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "QBNAG",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "ColorSwatch — fill / border / selected / sm",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "hiPSZ",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "EiUqO",
+                  "type": "ref",
+                  "ref": "OOjNn",
+                  "name": "Swatch Fill",
+                  "fill": "#6CA945",
+                  "stroke": "#5A8F39"
+                },
+                {
+                  "id": "s0jDN",
+                  "type": "ref",
+                  "ref": "OOjNn",
+                  "name": "Swatch Fill",
+                  "fill": "#E5A300",
+                  "stroke": "#C28A00"
+                },
+                {
+                  "id": "K0kfo",
+                  "type": "ref",
+                  "ref": "OOjNn",
+                  "name": "Swatch Fill",
+                  "fill": "#2B7BC9",
+                  "stroke": "#2368AB"
+                },
+                {
+                  "id": "FEpej",
+                  "type": "ref",
+                  "ref": "OOjNn",
+                  "name": "Swatch Fill",
+                  "fill": "#C8392E",
+                  "stroke": "#A92F26"
+                },
+                {
+                  "id": "t4bk8",
+                  "type": "ref",
+                  "ref": "OOjNn",
+                  "name": "Swatch Border",
+                  "fill": "$color-surface",
+                  "stroke": "#2B7BC9",
+                  "strokeWidth": 2.5
+                },
+                {
+                  "type": "frame",
+                  "id": "tF5Xd",
+                  "name": "Swatch Selected",
+                  "cornerRadius": 8,
+                  "stroke": "$color-primary",
+                  "strokeWidth": 2,
+                  "padding": 2,
+                  "children": [
+                    {
+                      "id": "nhMDl",
+                      "type": "ref",
+                      "ref": "OOjNn",
+                      "name": "Swatch Inner",
+                      "x": 2,
+                      "y": 2
+                    }
+                  ]
+                },
+                {
+                  "id": "F4Vvm",
+                  "type": "ref",
+                  "ref": "OOjNn",
+                  "name": "Swatch Small",
+                  "width": 26,
+                  "height": 18,
+                  "fill": "#C8392E",
+                  "stroke": "#A92F26"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "y4mrw",
+          "name": "Section: Badge / AreaText",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "CPfGB",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Badge / AreaText",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "u1DWu3",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "R0WdOV",
+                  "type": "ref",
+                  "ref": "cunWf",
+                  "name": "Badge Default"
+                },
+                {
+                  "id": "uz879",
+                  "type": "ref",
+                  "ref": "cunWf",
+                  "name": "Badge Primary",
+                  "fill": "$color-primary",
+                  "stroke": "$color-primary",
+                  "descendants": {
+                    "j2whKR": {
+                      "content": "계산기",
+                      "fill": "$color-surface"
+                    }
+                  }
+                },
+                {
+                  "id": "xfwqw",
+                  "type": "ref",
+                  "ref": "cunWf",
+                  "name": "Badge Danger",
+                  "fill": "$color-danger",
+                  "stroke": "$color-danger",
+                  "descendants": {
+                    "j2whKR": {
+                      "content": "오류",
+                      "fill": "$color-surface"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "V0LaFr",
+                  "name": "AreaText 1",
+                  "fill": "$color-ink",
+                  "content": "2,340 ㎡",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "ztjmp",
+                  "name": "AreaText 2",
+                  "fill": "$color-ink",
+                  "content": "707.9 평",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UzSQP",
+          "name": "Section: ListRow — leading / trailing",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "Q1HTkK",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "ListRow — leading / trailing",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "NnTNh",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "GhqHe",
+                  "name": "List Demo",
+                  "clip": true,
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "id": "Qc0ZR",
+                      "type": "ref",
+                      "ref": "xje8J",
+                      "name": "ListRow 1"
+                    },
+                    {
+                      "id": "aU36F",
+                      "type": "ref",
+                      "ref": "xje8J",
+                      "name": "ListRow 2",
+                      "fill": "$color-surface-alt",
+                      "descendants": {
+                        "CNVtK": {
+                          "fill": "#E5A300",
+                          "stroke": "#C28A00"
+                        },
+                        "CWDx9": {
+                          "content": "435-3 곶"
+                        },
+                        "UZQtn": {
+                          "content": "380 ㎡ · 그룹: 드론 방제"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "B9Q5pf",
+          "name": "Section: ConfirmInline — 1단계 / 2단계",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "mHhqh",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "ConfirmInline — 1단계 / 2단계",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "WK1YZ",
+              "name": "Row",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "J5aCP",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Confirm Trigger",
+                  "fill": "$color-danger",
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "그룹 해체"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "V1Dfq",
+                  "name": "Arrow",
+                  "fill": "$color-ink-muted",
+                  "content": "→",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "n5Lfw",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Confirm Cancel",
+                  "fill": "$color-surface",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "취소",
+                      "fill": "$color-ink"
+                    }
+                  }
+                },
+                {
+                  "id": "OTf0y",
+                  "type": "ref",
+                  "ref": "FZJl8",
+                  "name": "Confirm Run",
+                  "fill": "$color-danger",
+                  "descendants": {
+                    "nrKfB": {
+                      "content": "해체"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MByyZ",
+          "name": "Section: EmptyState / TabBar",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "I6qWr8",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "EmptyState / TabBar",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "vYQfr",
+              "name": "Row",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jxEt9",
+                  "name": "EmptyState Demo",
+                  "width": 260,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    24,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "SVudL",
+                      "name": "ES Icon",
+                      "width": 32,
+                      "height": 32,
+                      "icon": "search",
+                      "library": "lucide",
+                      "fill": "$color-border"
+                    },
+                    {
+                      "type": "text",
+                      "id": "o3qmvb",
+                      "name": "ES Message",
+                      "fill": "$color-ink-muted",
+                      "content": "검색 결과가 없습니다",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "id": "Vb8iM",
+                      "type": "ref",
+                      "ref": "FZJl8",
+                      "name": "ES Action",
+                      "padding": [
+                        7,
+                        12
+                      ],
+                      "descendants": {
+                        "nrKfB": {
+                          "content": "초기화",
+                          "fontSize": 13
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Ms4z0",
+                  "name": "TabBar Demo",
+                  "width": 420,
+                  "fill": "$color-surface-alt",
+                  "stroke": "$color-border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "gap": 4,
+                  "padding": [
+                    8,
+                    12,
+                    0,
+                    12
+                  ],
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "id": "O7rGum",
+                      "type": "ref",
+                      "ref": "RxNSO",
+                      "name": "Tab Active"
+                    },
+                    {
+                      "id": "LaXrC",
+                      "type": "ref",
+                      "ref": "RxNSO",
+                      "name": "Tab Inactive",
+                      "fill": "$color-surface-alt",
+                      "descendants": {
+                        "G1dEAq": {
+                          "content": "드론 방제",
+                          "fill": "$color-ink-muted",
+                          "fontWeight": "400"
+                        }
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "HYAn8",
+                      "name": "Tab Add",
+                      "width": 32,
+                      "height": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "p5aLk",
+                          "name": "Add Icon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "plus",
+                          "library": "lucide",
+                          "fill": "$color-ink-muted"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "rluvY",
+          "name": "Section: Drawer / DrawerItem",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "hJcYL",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Drawer / DrawerItem",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "gsBn9",
+              "name": "Row",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ntDRZ",
+                  "name": "Drawer Demo",
+                  "width": 264,
+                  "fill": "$color-surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": [
+                    16,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "E6OoX",
+                      "name": "Drawer Section 1",
+                      "fill": "$color-ink-muted",
+                      "content": "보기",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "id": "pLHTU",
+                      "type": "ref",
+                      "ref": "ZeggO",
+                      "name": "Item Map",
+                      "fill": "$color-surface-alt",
+                      "descendants": {
+                        "y99ClA": {
+                          "fill": "$color-primary"
+                        },
+                        "XQNF9": {
+                          "fill": "$color-primary",
+                          "fontWeight": "700"
+                        }
+                      }
+                    },
+                    {
+                      "id": "djT2T",
+                      "type": "ref",
+                      "ref": "ZeggO",
+                      "name": "Item List",
+                      "descendants": {
+                        "y99ClA": {
+                          "icon": "list"
+                        },
+                        "XQNF9": {
+                          "content": "필지 목록"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "UyiEM",
+                      "name": "Drawer Section 2",
+                      "fill": "$color-ink-muted",
+                      "content": "도구",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "id": "DEXG8",
+                      "type": "ref",
+                      "ref": "ZeggO",
+                      "name": "Item Share",
+                      "descendants": {
+                        "y99ClA": {
+                          "icon": "share-2"
+                        },
+                        "XQNF9": {
+                          "content": "내보내기/불러오기"
+                        }
+                      }
+                    },
+                    {
+                      "id": "RrRSZ",
+                      "type": "ref",
+                      "ref": "ZeggO",
+                      "name": "Item Calc",
+                      "descendants": {
+                        "y99ClA": {
+                          "icon": "calculator"
+                        },
+                        "XQNF9": {
+                          "content": "자동 계산기"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YcYYY",
+          "name": "Section: Sheet 패밀리 — BottomSheet(모바일) / SidePanel(≥720px)",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "e2rac9",
+              "name": "Section Title",
+              "fill": "$color-ink-muted",
+              "content": "Sheet 패밀리 — BottomSheet(모바일) / SidePanel(≥720px)",
+              "fontFamily": "$font-sans",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "yuQY8",
+              "name": "Row",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "rAQIr",
+                  "name": "BottomSheet Demo",
+                  "clip": true,
+                  "width": 280,
+                  "height": 200,
+                  "fill": "#1A181459",
+                  "cornerRadius": "$radius-sm",
+                  "layout": "vertical",
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "AngeY",
+                      "name": "BottomSheet",
+                      "width": "fill_container",
+                      "fill": "$color-surface",
+                      "cornerRadius": [
+                        16,
+                        16,
+                        0,
+                        0
+                      ],
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        16,
+                        16,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 999,
+                          "id": "S6ayk5",
+                          "name": "Grip",
+                          "fill": "$color-border",
+                          "width": 36,
+                          "height": 4
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PTCwU",
+                          "name": "BS Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Xf5bR",
+                              "name": "BS Title",
+                              "fill": "$color-ink",
+                              "content": "산 123",
+                              "fontFamily": "$font-sans",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "x2PzJ",
+                              "name": "BS Sub",
+                              "fill": "$color-ink-muted",
+                              "content": "450 ㎡ · 137.3 평",
+                              "fontFamily": "$font-mono",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ktcxM",
+                  "name": "SidePanel Demo",
+                  "clip": true,
+                  "width": 280,
+                  "height": 200,
+                  "fill": "#1A181433",
+                  "cornerRadius": "$radius-sm",
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "p2CbE2",
+                      "name": "SidePanel",
+                      "width": 150,
+                      "height": "fill_container",
+                      "fill": "$color-surface",
+                      "stroke": "$color-border",
+                      "strokeWidth": {
+                        "left": 1
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "IyU3x",
+                          "name": "SP Title",
+                          "fill": "$color-ink",
+                          "content": "산 123",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 16,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mrq8P",
+                          "name": "SP Sub",
+                          "fill": "$color-ink-muted",
+                          "content": "450 ㎡",
+                          "fontFamily": "$font-mono",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "variables": {
+    "color-border": {
+      "type": "color",
+      "value": "#D4D0C5"
+    },
+    "color-danger": {
+      "type": "color",
+      "value": "#C8392E"
+    },
+    "color-ink": {
+      "type": "color",
+      "value": "#1A1814"
+    },
+    "color-ink-muted": {
+      "type": "color",
+      "value": "#5C5851"
+    },
+    "color-parcel-border": {
+      "type": "color",
+      "value": "#C9C4B6"
+    },
+    "color-primary": {
+      "type": "color",
+      "value": "#2F7D4F"
+    },
+    "color-surface": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "color-surface-alt": {
+      "type": "color",
+      "value": "#FAFAF7"
+    },
+    "font-mono": {
+      "type": "string",
+      "value": "IBM Plex Mono"
+    },
+    "font-sans": {
+      "type": "string",
+      "value": "Noto Sans KR"
+    },
+    "radius-lg": {
+      "type": "number",
+      "value": 16
+    },
+    "radius-md": {
+      "type": "number",
+      "value": 12
+    },
+    "radius-sm": {
+      "type": "number",
+      "value": 8
+    },
+    "space-1": {
+      "type": "number",
+      "value": 4
+    },
+    "space-2": {
+      "type": "number",
+      "value": 8
+    },
+    "space-3": {
+      "type": "number",
+      "value": 12
+    },
+    "space-4": {
+      "type": "number",
+      "value": 16
+    },
+    "space-6": {
+      "type": "number",
+      "value": 24
+    }
+  }
 }
