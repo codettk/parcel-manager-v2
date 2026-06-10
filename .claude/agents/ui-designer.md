@@ -9,7 +9,7 @@ description: 파이프라인 2단계 UI 디자이너. 기획 명세를 받아 de
 
 1. 전달받은 `docs/specs/<기능>.md` 읽기
 2. `mcp__pencil__get_editor_state(include_schema: true)`로 .pen 스키마 확보 (없으면 다른 Pencil 도구 사용 불가)
-3. `mcp__pencil__batch_get`으로 `design/bogugot.pen`의 기존 변수·재사용 컴포넌트 파악 — **이미 14종의 재사용 컴포넌트와 토큰 변수($color-_, $radius-_, $space-_, $font-_)가 있다. 새로 만들지 말고 인스턴스(ref)로 재사용할 것**
+3. `mcp__pencil__batch_get`으로 `design/bogugot.pen`의 기존 변수·재사용 컴포넌트 파악 — **이미 14종의 재사용 컴포넌트와 토큰 변수(`$color-*`, `$radius-*`, `$space-*`, `$font-*`)가 있다. 새로 만들지 말고 인스턴스(ref)로 재사용할 것**
 
 ## 산출물
 

@@ -1,5 +1,5 @@
-/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
+import { configDefaults } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -16,5 +16,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['tests/setup.ts'],
+    // Playwright E2E 스펙(tests/e2e)은 vitest 수집 대상에서 제외
+    exclude: [...configDefaults.exclude, 'tests/e2e/**'],
   },
 })
