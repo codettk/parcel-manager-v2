@@ -37,6 +37,21 @@ Docker 개발: `docker compose -f docker/docker-compose.yml up` (web + api. Supa
 - **스타일**: Tailwind v4 + CVA. 디자인 토큰은 `src/styles/tokens.css`의 `@theme` CSS 변수만 참조 — 하드코딩 hex 금지. 팔레트 6색은 DB(color_labels) 소관이라 토큰이 아님.
 - **상태**: 서버 동기화 상태는 Zustand 스토어(`src/stores/`), 시트 내부 편집은 로컬 useState draft 패턴. ref 미러 금지.
 
+## 기능 개발 파이프라인 (필수)
+
+모든 기능 개발은 `/pipeline "<기능 한 줄>"`로 7단계 파이프라인을 통과한다 (`.claude/skills/pipeline/SKILL.md`). 단계별 에이전트는 `.claude/agents/`에 정의:
+
+| 단계            | 에이전트                     | 산출물                                             | 게이트                             |
+| --------------- | ---------------------------- | -------------------------------------------------- | ---------------------------------- |
+| 1 기획          | planner                      | `docs/specs/<기능>.md` (AC 포함)                   | **사용자 승인** + AC 테스트 가능성 |
+| 2 디자인 ∥ 계약 | ui-designer + 오케스트레이터 | `design/bogugot.pen` 프레임 + `src/types/api/` zod | 토큰 위반 0, 신규 UI 신고          |
+| 3 구현 (병렬)   | frontend-dev ∥ backend-dev   | `src/features/` + `server/handlers/` + migrations  | lint·typecheck·test 통과           |
+| 4 E2E           | tester                       | `tests/e2e/<기능>.spec.ts`                         | AC 1:1 매핑 전체 green             |
+| 5 검증          | verifier                     | 적대적 리뷰 보고                                   | blocking 0 (반려 루프 최대 2회)    |
+| 6 배포 준비     | deployer                     | 커밋 + 마이그레이션 절차 + 릴리즈 노트             | CI green + **사용자 배포 승인**    |
+
+게이트 원칙: 기획 승인과 배포 승인은 반드시 사용자가 한다. 커밋은 사용자 git 이름만 사용 (Claude 흔적 금지 — 확정 규칙). push는 항상 사용자가 직접 한다.
+
 ## 컨벤션 핵심
 
 - TypeScript strict, `any` 금지. 컴포넌트 `PascalCase.tsx`, 훅 `useXxx.ts`, 유틸 `camelCase.ts`.
@@ -45,6 +60,6 @@ Docker 개발: `docker compose -f docker/docker-compose.yml up` (web + api. Supa
 - 한국어 단일 언어 앱. conventional commits 한국어 본문.
 - 주석은 코드로 표현 불가능한 제약(좌표계, 400ms 모바일 가드 등)만.
 
-## 현재 상태 (Phase 0 완료)
+## 현재 상태 (Phase 2 진행 중)
 
-스캐폴딩·Docker·Supabase CLI·어댑터 골격·CI·렌더 스파이크까지 완료. 다음은 Phase 1 (컨벤션 문서 + 디자인 토큰 확장 + UI 공통 컴포넌트 18종). Phase 1부터는 `docs/CONVENTIONS.md`가 이 문서보다 우선한다.
+Phase 0(스캐폴딩·Docker·Supabase·어댑터·CI) + Phase 1(컨벤션·토큰·UI 컴포넌트 18종·Pencil 시트) 완료. 상세 규칙은 `docs/CONVENTIONS.md`가 이 문서보다 우선한다. 다음은 Phase 3 (DB 재설계 + API 단일화), 이후 Phase 4 로직 마이그레이션 M-1~M-18.

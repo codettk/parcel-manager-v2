@@ -1,0 +1,2 @@
+# .pen은 Pencil 전용 포맷 — EOL 변환 시 손상 위험
+*.pen -text
