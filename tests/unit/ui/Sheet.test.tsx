@@ -33,11 +33,24 @@ describe('Sheet 반응형 분기', () => {
     expect(dialog.querySelector('.rounded-full')).toBeNull()
   })
 
+  it('≥720px SidePanel은 비모달 — backdrop이 없어 지도 조작이 가능하다 (v1 와이드 보존)', () => {
+    stubMatchMedia(true)
+    render(<Sheet onClose={vi.fn()}>내용</Sheet>)
+    expect(screen.queryByTestId('sheet-backdrop')).toBeNull()
+    expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBeNull()
+  })
+
   it('720px 미만이면 BottomSheet(grip 존재)로 렌더한다', () => {
     stubMatchMedia(false)
     render(<Sheet onClose={vi.fn()}>내용</Sheet>)
     const dialog = screen.getByRole('dialog')
     expect(dialog.className).toContain('bottom-0')
     expect(dialog.querySelector('.rounded-full')).not.toBeNull()
+  })
+
+  it('720px 미만 BottomSheet에는 backdrop이 유지된다 (모바일 backdrop 닫기 = v1 동치)', () => {
+    stubMatchMedia(false)
+    render(<Sheet onClose={vi.fn()}>내용</Sheet>)
+    expect(screen.queryByTestId('sheet-backdrop')).not.toBeNull()
   })
 })

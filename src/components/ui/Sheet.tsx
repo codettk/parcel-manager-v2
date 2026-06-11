@@ -8,9 +8,12 @@ export interface SheetProps {
   children: ReactNode
 }
 
-/** 뷰포트에 따라 BottomSheet(모바일)/SidePanel(≥720px)을 자동 선택 — v1의 시트별 수동 분기 제거 */
+/**
+ * 뷰포트에 따라 BottomSheet(모바일)/SidePanel(≥720px)을 자동 선택 — v1의 시트별 수동 분기 제거.
+ * onClose는 모바일 backdrop 탭에만 사용 — 와이드 SidePanel은 비모달이라 backdrop 닫기가 없다.
+ */
 export function Sheet({ onClose, children }: SheetProps) {
   const isWide = useIsWide()
-  const Container = isWide ? SidePanel : BottomSheet
-  return <Container onClose={onClose}>{children}</Container>
+  if (isWide) return <SidePanel>{children}</SidePanel>
+  return <BottomSheet onClose={onClose}>{children}</BottomSheet>
 }

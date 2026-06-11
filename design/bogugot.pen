@@ -1708,6 +1708,3987 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "GuBhy",
+      "x": 840,
+      "y": 331,
+      "name": "릴리즈 노트 — 지도 진입점",
+      "clip": true,
+      "width": 375,
+      "height": 812,
+      "fill": "$color-surface-alt",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "z8meC",
+          "x": 0,
+          "y": 0,
+          "name": "지도 레이어",
+          "clip": true,
+          "width": 375,
+          "height": 812,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "FQaZI",
+              "x": 24,
+              "y": 140,
+              "name": "필지 A",
+              "opacity": 0.45,
+              "rotation": -6.000000000000001,
+              "fill": "#6CA945",
+              "width": 150,
+              "height": 120,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "LCVIz",
+              "x": 200,
+              "y": 120,
+              "name": "필지 B",
+              "opacity": 0.45,
+              "rotation": 4,
+              "fill": "#D9A441",
+              "width": 130,
+              "height": 100,
+              "stroke": "#B8862F",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "MzRKd",
+              "x": 60,
+              "y": 330,
+              "name": "필지 C",
+              "opacity": 0.45,
+              "rotation": 2,
+              "fill": "#5B8FB9",
+              "width": 170,
+              "height": 130,
+              "stroke": "#47759B",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "Gr4DZ",
+              "x": 240,
+              "y": 310,
+              "name": "필지 D",
+              "opacity": 0.45,
+              "rotation": -3.0000000000000004,
+              "fill": "#B96A8C",
+              "width": 105,
+              "height": 150,
+              "stroke": "#9C5273",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "g8Vhaj",
+              "x": 90,
+              "y": 540,
+              "name": "필지 E",
+              "opacity": 0.45,
+              "rotation": 5,
+              "fill": "#6CA945",
+              "width": 180,
+              "height": 110,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "text",
+              "id": "n18pKN",
+              "x": 70,
+              "y": 190,
+              "name": "라벨 산 123",
+              "fill": "$color-ink",
+              "content": "산 123",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "e3Wi4",
+              "x": 240,
+              "y": 155,
+              "name": "라벨 산 124",
+              "fill": "$color-ink",
+              "content": "산 124",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "zCskn",
+              "x": 110,
+              "y": 380,
+              "name": "라벨 일반 56-1",
+              "fill": "$color-ink",
+              "content": "일반 56-1",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "T3S09S",
+              "x": 258,
+              "y": 370,
+              "name": "라벨 일반 57",
+              "fill": "$color-ink",
+              "content": "일반 57",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "jxhm4",
+              "x": 150,
+              "y": 585,
+              "name": "라벨 산 130",
+              "fill": "$color-ink",
+              "content": "산 130",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "aAAkY",
+          "x": 0,
+          "y": 0,
+          "name": "상태바",
+          "width": 375,
+          "padding": [
+            "$space-3",
+            "$space-4"
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "uYQBL",
+              "name": "시간",
+              "fill": "$color-ink",
+              "content": "9:41",
+              "fontFamily": "$font-mono",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "eybBd",
+              "name": "상태 아이콘",
+              "gap": "$space-1",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "TEDwX",
+                  "name": "signal",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "A8UC3",
+                  "name": "wifi",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "dJc5l",
+                  "name": "battery-full",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "M38ct",
+          "type": "ref",
+          "ref": "ZmUgI",
+          "name": "릴리즈 노트 버튼",
+          "x": 315,
+          "y": 56,
+          "fill": "$color-surface",
+          "stroke": "$color-border",
+          "strokeWidth": 1,
+          "descendants": {
+            "d9kW3w": {
+              "icon": "scroll-text",
+              "fill": "$color-ink"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Mm6U7",
+      "x": 1295,
+      "y": 331,
+      "name": "릴리즈 노트 — 시트 열림",
+      "clip": true,
+      "width": 375,
+      "height": 812,
+      "fill": "$color-surface-alt",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "QwL3R",
+          "x": 0,
+          "y": 0,
+          "name": "지도 레이어",
+          "clip": true,
+          "width": 375,
+          "height": 812,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "bHABl",
+              "x": 24,
+              "y": 140,
+              "name": "필지 A",
+              "opacity": 0.45,
+              "rotation": -6.000000000000001,
+              "fill": "#6CA945",
+              "width": 150,
+              "height": 120,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "nJ9SG",
+              "x": 200,
+              "y": 120,
+              "name": "필지 B",
+              "opacity": 0.45,
+              "rotation": 4,
+              "fill": "#D9A441",
+              "width": 130,
+              "height": 100,
+              "stroke": "#B8862F",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "hw0RQ",
+              "x": 60,
+              "y": 330,
+              "name": "필지 C",
+              "opacity": 0.45,
+              "rotation": 2,
+              "fill": "#5B8FB9",
+              "width": 170,
+              "height": 130,
+              "stroke": "#47759B",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "ljcoT",
+              "x": 240,
+              "y": 310,
+              "name": "필지 D",
+              "opacity": 0.45,
+              "rotation": -3.0000000000000004,
+              "fill": "#B96A8C",
+              "width": 105,
+              "height": 150,
+              "stroke": "#9C5273",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "rtyKf",
+              "x": 90,
+              "y": 540,
+              "name": "필지 E",
+              "opacity": 0.45,
+              "rotation": 5,
+              "fill": "#6CA945",
+              "width": 180,
+              "height": 110,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "text",
+              "id": "G0Rjbo",
+              "x": 70,
+              "y": 190,
+              "name": "라벨 산 123",
+              "fill": "$color-ink",
+              "content": "산 123",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "yzJSw",
+              "x": 240,
+              "y": 155,
+              "name": "라벨 산 124",
+              "fill": "$color-ink",
+              "content": "산 124",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "E2Lzp",
+              "x": 110,
+              "y": 380,
+              "name": "라벨 일반 56-1",
+              "fill": "$color-ink",
+              "content": "일반 56-1",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "K9okgw",
+              "x": 258,
+              "y": 370,
+              "name": "라벨 일반 57",
+              "fill": "$color-ink",
+              "content": "일반 57",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "W2LbQ",
+              "x": 150,
+              "y": 585,
+              "name": "라벨 산 130",
+              "fill": "$color-ink",
+              "content": "산 130",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NYfHF",
+          "x": 0,
+          "y": 0,
+          "name": "상태바",
+          "width": 375,
+          "padding": [
+            "$space-3",
+            "$space-4"
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "KwdQP",
+              "name": "시간",
+              "fill": "$color-ink",
+              "content": "9:41",
+              "fontFamily": "$font-mono",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "iGCv1",
+              "name": "상태 아이콘",
+              "gap": "$space-1",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "l62xRB",
+                  "name": "signal",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "cvPxy",
+                  "name": "wifi",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "VNeJB",
+                  "name": "battery-full",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CsWCr",
+          "type": "ref",
+          "ref": "ZmUgI",
+          "name": "릴리즈 노트 버튼",
+          "x": 315,
+          "y": 56,
+          "fill": "$color-surface",
+          "stroke": "$color-border",
+          "strokeWidth": 1,
+          "descendants": {
+            "d9kW3w": {
+              "icon": "scroll-text",
+              "fill": "$color-ink"
+            }
+          }
+        },
+        {
+          "type": "rectangle",
+          "id": "oAiGQ",
+          "x": 0,
+          "y": 0,
+          "name": "스크림",
+          "opacity": 0.45,
+          "fill": "$color-ink",
+          "width": 375,
+          "height": 812
+        },
+        {
+          "type": "frame",
+          "id": "OOuZJ",
+          "x": 0,
+          "y": 188,
+          "name": "릴리즈 노트 시트",
+          "width": 375,
+          "fill": "$color-surface",
+          "cornerRadius": [
+            "$radius-lg",
+            "$radius-lg",
+            0,
+            0
+          ],
+          "layout": "vertical",
+          "gap": "$space-4",
+          "padding": [
+            "$space-2",
+            "$space-4",
+            "$space-4",
+            "$space-4"
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "tiGbm",
+              "name": "핸들 영역",
+              "width": "fill_container",
+              "padding": [
+                "$space-1",
+                0
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 999,
+                  "id": "E7LFMk",
+                  "name": "핸들",
+                  "fill": "$color-border",
+                  "width": 36,
+                  "height": 4
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xxRSZ",
+              "name": "시트 헤더",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-1",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EQ6DL",
+                  "name": "메타",
+                  "fill": "$color-ink-muted",
+                  "content": "앱 정보",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "letterSpacing": 0.5
+                },
+                {
+                  "type": "text",
+                  "id": "AiFb1",
+                  "name": "제목",
+                  "fill": "$color-ink",
+                  "content": "릴리즈 노트",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "zvZM7",
+                  "name": "부제",
+                  "fill": "$color-ink-muted",
+                  "content": "버전별 업데이트 내역을 확인합니다.",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fD5Zz",
+              "name": "버전 카드 목록",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-3",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "WXB46",
+                  "name": "버전 카드 2026-06-11",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$color-surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "x97UHB",
+                      "name": "카드 헤더",
+                      "width": "fill_container",
+                      "stroke": "$color-border",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "gap": "$space-2",
+                      "padding": [
+                        "$space-3",
+                        "$space-4"
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "PDkSn",
+                          "name": "태그",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "tag",
+                          "library": "lucide",
+                          "fill": "$color-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Qi0uj",
+                          "name": "버전",
+                          "fill": "$color-primary",
+                          "content": "2026-06-11",
+                          "fontFamily": "$font-mono",
+                          "fontSize": 13,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "id": "oEwV9",
+                          "type": "ref",
+                          "ref": "cunWf",
+                          "name": "버전 배지",
+                          "descendants": {
+                            "j2whKR": {
+                              "content": "v2 파일럿"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SSpmk",
+                      "name": "카드 본문",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": "$space-3",
+                      "padding": [
+                        "$space-3",
+                        "$space-4"
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "p3sD5",
+                          "name": "그룹 새로운 기능",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": "$space-2",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "YGEZW",
+                              "name": "그룹 헤딩",
+                              "fill": "$color-ink-muted",
+                              "content": "새로운 기능",
+                              "fontFamily": "$font-sans",
+                              "fontSize": 11,
+                              "fontWeight": "700",
+                              "letterSpacing": 0.5
+                            },
+                            {
+                              "type": "frame",
+                              "id": "nrYqk",
+                              "name": "항목 목록",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": "$space-2",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "nkxpm",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "wJG8F",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "BRlET",
+                                      "name": "본문(강조)",
+                                      "width": "fill_container",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "bB1Q2",
+                                          "name": "세그먼트 1",
+                                          "fill": "$color-ink",
+                                          "content": "지적편집도 v2",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font-sans",
+                                          "fontSize": 13,
+                                          "fontWeight": "700"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "K4UTd",
+                                          "name": "세그먼트 2",
+                                          "fill": "$color-ink",
+                                          "content": " 파일럿을 처음 공개합니다.",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font-sans",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "Dur6X",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "x9IiH",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "mPX8u",
+                                      "name": "본문",
+                                      "fill": "$color-ink",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "필지를 탭하면 면적과 메모를 바로 확인할 수 있습니다.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "HWf2p",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "c51VX7",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "mqccl",
+                                      "name": "본문(강조)",
+                                      "width": "fill_container",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "gKkY8",
+                                          "name": "세그먼트 1",
+                                          "fill": "$color-ink",
+                                          "content": "릴리즈 노트",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font-sans",
+                                          "fontSize": 13,
+                                          "fontWeight": "700"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "p9Fw5",
+                                          "name": "세그먼트 2",
+                                          "fill": "$color-ink",
+                                          "content": " 시트가 추가되었습니다.",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font-sans",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Z6jxr",
+                          "name": "그룹 개선사항",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": "$space-2",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "QaadU",
+                              "name": "그룹 헤딩",
+                              "fill": "$color-ink-muted",
+                              "content": "개선사항",
+                              "fontFamily": "$font-sans",
+                              "fontSize": 11,
+                              "fontWeight": "700",
+                              "letterSpacing": 0.5
+                            },
+                            {
+                              "type": "frame",
+                              "id": "klmmS",
+                              "name": "항목 목록",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": "$space-2",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "l5sBp",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Wxxdt",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "gEDVq",
+                                      "name": "본문",
+                                      "fill": "$color-ink",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "지도 초기 로딩 속도를 개선했습니다.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "K1MTWk",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "JcxP3",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "VCZTi",
+                                      "name": "본문",
+                                      "fill": "$color-ink",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "작은 화면에서 시트가 지도를 가리지 않도록 높이를 조정했습니다.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TA5Tc",
+                  "name": "버전 카드 2026-06-04",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$color-surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "tZ36o",
+                      "name": "카드 헤더",
+                      "width": "fill_container",
+                      "stroke": "$color-border",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "gap": "$space-2",
+                      "padding": [
+                        "$space-3",
+                        "$space-4"
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "jmkir",
+                          "name": "태그",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "tag",
+                          "library": "lucide",
+                          "fill": "$color-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "MRCva",
+                          "name": "버전",
+                          "fill": "$color-primary",
+                          "content": "2026-06-04",
+                          "fontFamily": "$font-mono",
+                          "fontSize": 13,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "tpFc6",
+                      "name": "카드 본문",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": "$space-3",
+                      "padding": [
+                        "$space-3",
+                        "$space-4"
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TumGz",
+                          "name": "그룹 개선사항",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": "$space-2",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "dXEkC",
+                              "name": "그룹 헤딩",
+                              "fill": "$color-ink-muted",
+                              "content": "개선사항",
+                              "fontFamily": "$font-sans",
+                              "fontSize": 11,
+                              "fontWeight": "700",
+                              "letterSpacing": 0.5
+                            },
+                            {
+                              "type": "frame",
+                              "id": "dPfmM",
+                              "name": "항목 목록",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": "$space-2",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "vPTWy",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "qPTKA",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "uhxkZ",
+                                      "name": "본문(강조)",
+                                      "width": "fill_container",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "hPuGc",
+                                          "name": "세그먼트 1",
+                                          "fill": "$color-ink",
+                                          "content": "필지 경계선",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font-sans",
+                                          "fontSize": 13,
+                                          "fontWeight": "700"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "jNSPA",
+                                          "name": "세그먼트 2",
+                                          "fill": "$color-ink",
+                                          "content": " 대비를 높였습니다.",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font-sans",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "v8NJO",
+                                  "name": "항목",
+                                  "width": "fill_container",
+                                  "gap": "$space-2",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "iuaAJ",
+                                      "name": "불릿",
+                                      "fill": "$color-primary",
+                                      "content": "•",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "wW2Cf",
+                                      "name": "본문",
+                                      "fill": "$color-ink",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "겹치는 필지 라벨이 잘려 보이던 문제를 수정했습니다.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font-sans",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "XD17c",
+              "type": "ref",
+              "ref": "FZJl8",
+              "name": "닫기 버튼",
+              "width": "fill_container",
+              "fill": "$color-surface-alt",
+              "stroke": "$color-border",
+              "strokeWidth": 1,
+              "descendants": {
+                "nrKfB": {
+                  "content": "닫기",
+                  "fill": "$color-ink"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "JPcnv",
+      "x": 1750,
+      "y": 331,
+      "name": "필지 시트 — 모바일 (M-7)",
+      "clip": true,
+      "width": 375,
+      "height": 960,
+      "fill": "$color-surface-alt",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "b8RzAS",
+          "x": 0,
+          "y": 0,
+          "name": "지도 레이어",
+          "clip": true,
+          "width": 375,
+          "height": 960,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "bLulk",
+              "x": 24,
+              "y": 140,
+              "name": "필지 A",
+              "opacity": 0.45,
+              "rotation": -6.000000000000001,
+              "fill": "#6CA945",
+              "width": 150,
+              "height": 120,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "S2nLN8",
+              "x": 200,
+              "y": 120,
+              "name": "필지 B",
+              "opacity": 0.45,
+              "rotation": 4,
+              "fill": "#D9A441",
+              "width": 130,
+              "height": 100,
+              "stroke": "#B8862F",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "LUn1R",
+              "x": 60,
+              "y": 330,
+              "name": "필지 C",
+              "opacity": 0.45,
+              "rotation": 2,
+              "fill": "#5B8FB9",
+              "width": 170,
+              "height": 130,
+              "stroke": "#47759B",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "z2ROC7",
+              "x": 240,
+              "y": 310,
+              "name": "필지 D",
+              "opacity": 0.45,
+              "rotation": -3.0000000000000004,
+              "fill": "#B96A8C",
+              "width": 105,
+              "height": 150,
+              "stroke": "#9C5273",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "anwx9",
+              "x": 90,
+              "y": 540,
+              "name": "필지 E",
+              "opacity": 0.45,
+              "rotation": 5,
+              "fill": "#6CA945",
+              "width": 180,
+              "height": 110,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "text",
+              "id": "dt8XX",
+              "x": 70,
+              "y": 190,
+              "name": "라벨 산 123",
+              "fill": "$color-ink",
+              "content": "산 123",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "P93bY",
+              "x": 240,
+              "y": 155,
+              "name": "라벨 산 124",
+              "fill": "$color-ink",
+              "content": "산 124",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "DJ2wg",
+              "x": 110,
+              "y": 380,
+              "name": "라벨 일반 56-1",
+              "fill": "$color-ink",
+              "content": "일반 56-1",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "CBeWj",
+              "x": 258,
+              "y": 370,
+              "name": "라벨 일반 57",
+              "fill": "$color-ink",
+              "content": "일반 57",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "BIpAv",
+              "x": 150,
+              "y": 585,
+              "name": "라벨 산 130",
+              "fill": "$color-ink",
+              "content": "산 130",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "U42XbN",
+          "x": 0,
+          "y": 0,
+          "name": "상태바",
+          "width": 375,
+          "padding": [
+            "$space-3",
+            "$space-4"
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "HyY02",
+              "name": "시간",
+              "fill": "$color-ink",
+              "content": "9:41",
+              "fontFamily": "$font-mono",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "EvShz",
+              "name": "상태 아이콘",
+              "gap": "$space-1",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "BynEH",
+                  "name": "signal",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "tXipC",
+                  "name": "wifi",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "AgS9l",
+                  "name": "battery-full",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "bLDXj",
+          "x": 0,
+          "y": 0,
+          "name": "스크림",
+          "opacity": 0.45,
+          "fill": "$color-ink",
+          "width": 375,
+          "height": 960
+        },
+        {
+          "type": "frame",
+          "id": "SFAGT",
+          "x": 0,
+          "y": 92,
+          "name": "필지 시트",
+          "width": 375,
+          "fill": "$color-surface",
+          "cornerRadius": [
+            "$radius-lg",
+            "$radius-lg",
+            0,
+            0
+          ],
+          "layout": "vertical",
+          "gap": "$space-4",
+          "padding": [
+            "$space-2",
+            "$space-4",
+            "$space-4",
+            "$space-4"
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "mfXFO",
+              "name": "핸들 영역",
+              "width": "fill_container",
+              "padding": [
+                "$space-1",
+                0
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 999,
+                  "id": "g4j2y",
+                  "name": "핸들",
+                  "fill": "$color-border",
+                  "width": 36,
+                  "height": 4
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MSezw",
+              "name": "시트 헤더",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Yapje",
+                  "name": "메타 행",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ksIuc",
+                      "name": "메타",
+                      "fill": "$color-ink-muted",
+                      "content": "지번",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    },
+                    {
+                      "id": "ZzAM8",
+                      "type": "ref",
+                      "ref": "ZmUgI",
+                      "name": "닫기 버튼",
+                      "width": 36,
+                      "height": 36,
+                      "descendants": {
+                        "d9kW3w": {
+                          "icon": "x",
+                          "fill": "$color-ink"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "dsCyB",
+                  "type": "ref",
+                  "ref": "c5zDc",
+                  "name": "이름 입력",
+                  "width": "fill_container",
+                  "descendants": {
+                    "vhrPL": {
+                      "content": "집앞 논",
+                      "fill": "$color-ink"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "vvN7c",
+                  "name": "기본 지번 행",
+                  "gap": "$space-1",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Vb7a7",
+                      "name": "보조 라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "기본 지번:",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "m6mOLk",
+                      "name": "지번 값",
+                      "fill": "$color-ink-muted",
+                      "content": "산 123-4",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yGfgc",
+              "name": "면적 행",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "iVyqp",
+                  "name": "면적 값",
+                  "fill": "$color-ink",
+                  "content": "2,340 ㎡",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "S8pC6j",
+                  "name": "단위 컨트롤",
+                  "fill": "$color-surface-alt",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "gap": 2,
+                  "padding": 3,
+                  "children": [
+                    {
+                      "id": "jgf8e",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg ㎡",
+                      "fill": "$color-primary",
+                      "descendants": {
+                        "b0AEFG": {
+                          "fill": "$color-surface"
+                        }
+                      }
+                    },
+                    {
+                      "id": "jJZSL",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 평",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "평"
+                        }
+                      }
+                    },
+                    {
+                      "id": "sJEXL",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg a",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "a"
+                        }
+                      }
+                    },
+                    {
+                      "id": "ddkU7",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg ha",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "ha"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "U15Maj",
+              "name": "토지 정보 카드",
+              "width": "fill_container",
+              "fill": "$color-surface-alt",
+              "cornerRadius": "$radius-md",
+              "padding": "$space-3",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "l7v0F6",
+                  "name": "정보 지목",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LG9h0",
+                      "name": "라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "지목",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ARrsp",
+                      "name": "값",
+                      "fill": "$color-ink",
+                      "content": "전",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ZVdQ4",
+                  "name": "정보 소유구분",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "p2rMp",
+                      "name": "라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "소유구분",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Nygid",
+                      "name": "값",
+                      "fill": "$color-ink",
+                      "content": "개인",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "r4povM",
+                  "name": "정보 공유인",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BIpOP",
+                      "name": "라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "공유인",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "rgocE",
+                      "name": "값",
+                      "fill": "$color-ink",
+                      "content": "3명",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "CmFsu",
+              "name": "메모 섹션",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jVNee",
+                  "name": "섹션 라벨",
+                  "fill": "$color-ink-muted",
+                  "content": "메모",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "VMEoR",
+                  "name": "메모 입력",
+                  "width": "fill_container",
+                  "height": 72,
+                  "fill": "$color-surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "L6rPy6",
+                      "name": "메모 내용",
+                      "fill": "$color-ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "물빠짐이 안 좋아 배수로 정비 필요",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yVxvV",
+              "name": "표시 방식 행",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "q1bnQW",
+                  "name": "섹션 라벨",
+                  "fill": "$color-ink-muted",
+                  "content": "표시 방식",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "fnGiJ",
+                  "name": "표시 방식 컨트롤",
+                  "fill": "$color-surface-alt",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "gap": 2,
+                  "padding": 3,
+                  "children": [
+                    {
+                      "id": "HmBSO",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 채움",
+                      "fill": "$color-primary",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "채움",
+                          "fill": "$color-surface"
+                        }
+                      }
+                    },
+                    {
+                      "id": "X1KVN",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 테두리",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "테두리"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mJrcG",
+              "name": "색상 섹션",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JqA2z",
+                  "name": "섹션 라벨",
+                  "fill": "$color-ink-muted",
+                  "content": "색상",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "hukr2",
+                  "name": "색상 행 1",
+                  "width": "fill_container",
+                  "gap": "$space-2",
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "k8D7O",
+                      "name": "색 없음",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "Ol6N5",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 없음",
+                          "fill": "$color-surface",
+                          "stroke": "$color-border"
+                        },
+                        {
+                          "type": "text",
+                          "id": "pH57M",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "없음",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "m1xiFp",
+                      "name": "색 벼 (선택됨)",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CqvVA",
+                          "name": "선택 테두리",
+                          "cornerRadius": 8,
+                          "stroke": "$color-primary",
+                          "strokeWidth": 2,
+                          "padding": 2,
+                          "children": [
+                            {
+                              "id": "SM7NR",
+                              "type": "ref",
+                              "ref": "OOjNn",
+                              "name": "스와치 벼",
+                              "fill": "#6CA945",
+                              "stroke": "#5A8F39"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "qB8am",
+                          "name": "라벨",
+                          "fill": "$color-ink",
+                          "content": "벼",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FYuPf",
+                      "name": "색 콩",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "hWzf3",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 콩",
+                          "fill": "#E5A300",
+                          "stroke": "#C28A00"
+                        },
+                        {
+                          "type": "text",
+                          "id": "hNOdN",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "콩",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BC8dk",
+                      "name": "색 감자",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "Z2HJWC",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 감자",
+                          "fill": "#B96A8C",
+                          "stroke": "#9C5273"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n2dvp",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "감자",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xQWka",
+                  "name": "색상 행 2",
+                  "width": "fill_container",
+                  "gap": "$space-2",
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "KhOVN",
+                      "name": "색 매매",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "AmG6W",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 매매",
+                          "fill": "#C8392E",
+                          "stroke": "#A92F26"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ypX2l",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "매매",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PZyLv",
+                      "name": "색 임대",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "U6bgv6",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 임대",
+                          "fill": "#2B7BC9",
+                          "stroke": "#2368AB"
+                        },
+                        {
+                          "type": "text",
+                          "id": "UZq0o",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "임대",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Jx6eM",
+                      "name": "색 기타",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "Xh2z9",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 기타",
+                          "fill": "#5B8FB9",
+                          "stroke": "#47759B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "nVkmF",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "기타",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wI0HZ",
+                      "name": "스페이서",
+                      "width": "fill_container",
+                      "height": 24
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fDTPi",
+              "name": "고정 섹션",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-3",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DF5Ha",
+                  "name": "고정 스위치 행",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "PM75v",
+                      "name": "고정 라벨",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "zE3Dy",
+                          "name": "라벨",
+                          "fill": "$color-ink",
+                          "content": "고정 켜짐",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "SL4tw",
+                          "name": "설명",
+                          "fill": "$color-ink-muted",
+                          "content": "초기화 시 색상·이름·아이콘 보호",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pEyi6",
+                      "name": "스위치 켜짐",
+                      "width": 46,
+                      "height": 26,
+                      "fill": "$color-primary",
+                      "cornerRadius": 999,
+                      "padding": 2,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "J3Om0",
+                          "name": "노브",
+                          "fill": "$color-surface",
+                          "width": 22,
+                          "height": 22
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "p4mp9y",
+                  "name": "아이콘 팔레트",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": "$space-3",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "sOBF1",
+                      "name": "범주 집·건물",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "AFZUj",
+                          "name": "범주 라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "집·건물",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mTzVZ",
+                          "name": "아이콘 행",
+                          "width": "fill_container",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "aJhAj",
+                              "name": "아이콘 🏠 (선택됨)",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface-alt",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-primary",
+                              "strokeWidth": 2,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "t1kx6d",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏠",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "s1lz1",
+                              "name": "아이콘 🏡",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "s5VNt6",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏡",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "g5r5C",
+                              "name": "아이콘 🏗",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Cgtij",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏗",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "wZ9YS",
+                              "name": "아이콘 🏚",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "xvU1x",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏚",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "So2Z4",
+                              "name": "아이콘 🏭",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "aXoPS",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏭",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "xsD1p",
+                              "name": "아이콘 🛖",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "hxzXA",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🛖",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "pAbiX",
+                              "name": "아이콘 🏘",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "z8pwj",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏘",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "s58R9L",
+                              "name": "아이콘 🏢",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "i1s8fp",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏢",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "z31Re",
+                      "name": "범주 농기계",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "W4ii1Z",
+                          "name": "범주 라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "농기계",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MMMVH",
+                          "name": "아이콘 행",
+                          "width": "fill_container",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "g4ALk",
+                              "name": "아이콘 🚜",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Q8infz",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🚜",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "nup5G",
+                              "name": "아이콘 🛻",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "kyI5g",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🛻",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "T5HkD",
+                              "name": "아이콘 🔧",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "r7qZK2",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🔧",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "kuoge",
+                              "name": "아이콘 🪓",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "hpVvq",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🪓",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "RxVnY",
+                              "name": "아이콘 🪚",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "RFTuw",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🪚",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "zo1uO",
+                              "name": "아이콘 ⚙️",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TODx5",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "⚙️",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "L0oqnJ",
+                              "name": "아이콘 🔩",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ExraP",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🔩",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "tEOTS",
+                              "name": "아이콘 🪛",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "tV0pw",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🪛",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "t2Z4E",
+              "type": "ref",
+              "ref": "FZJl8",
+              "name": "저장 버튼",
+              "width": "fill_container"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "T9bzI",
+      "x": 2205,
+      "y": 331,
+      "name": "필지 시트 — 와이드 SidePanel (M-7)",
+      "clip": true,
+      "width": 1024,
+      "height": 880,
+      "fill": "$color-surface-alt",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "tV0zU",
+          "x": 0,
+          "y": 0,
+          "name": "지도 레이어",
+          "clip": true,
+          "width": 1024,
+          "height": 880,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "V8QXpu",
+              "x": 24,
+              "y": 140,
+              "name": "필지 A",
+              "opacity": 0.45,
+              "rotation": -6.000000000000001,
+              "fill": "#6CA945",
+              "width": 150,
+              "height": 120,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "vK3MR",
+              "x": 200,
+              "y": 120,
+              "name": "필지 B",
+              "opacity": 0.45,
+              "rotation": 4,
+              "fill": "#D9A441",
+              "width": 130,
+              "height": 100,
+              "stroke": "#B8862F",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "J1mYJ",
+              "x": 60,
+              "y": 330,
+              "name": "필지 C",
+              "opacity": 0.45,
+              "rotation": 2,
+              "fill": "#5B8FB9",
+              "width": 170,
+              "height": 130,
+              "stroke": "#47759B",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "g30bI",
+              "x": 240,
+              "y": 310,
+              "name": "필지 D",
+              "opacity": 0.45,
+              "rotation": -3.0000000000000004,
+              "fill": "#B96A8C",
+              "width": 105,
+              "height": 150,
+              "stroke": "#9C5273",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius-sm",
+              "id": "GdpNT",
+              "x": 90,
+              "y": 540,
+              "name": "필지 E",
+              "opacity": 0.45,
+              "rotation": 5,
+              "fill": "#6CA945",
+              "width": 180,
+              "height": 110,
+              "stroke": "#5A8F39",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "text",
+              "id": "SYoPr",
+              "x": 70,
+              "y": 190,
+              "name": "라벨 산 123",
+              "fill": "$color-ink",
+              "content": "산 123",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "ZGn0J",
+              "x": 240,
+              "y": 155,
+              "name": "라벨 산 124",
+              "fill": "$color-ink",
+              "content": "산 124",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "IIqG9",
+              "x": 110,
+              "y": 380,
+              "name": "라벨 일반 56-1",
+              "fill": "$color-ink",
+              "content": "일반 56-1",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "sTGLr",
+              "x": 258,
+              "y": 370,
+              "name": "라벨 일반 57",
+              "fill": "$color-ink",
+              "content": "일반 57",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "M1Aau",
+              "x": 150,
+              "y": 585,
+              "name": "라벨 산 130",
+              "fill": "$color-ink",
+              "content": "산 130",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Cmco6",
+          "x": 664,
+          "y": 0,
+          "name": "필지 사이드 패널",
+          "width": 360,
+          "height": 880,
+          "fill": "$color-surface",
+          "stroke": "$color-border",
+          "strokeWidth": {
+            "left": 1
+          },
+          "layout": "vertical",
+          "gap": "$space-4",
+          "padding": "$space-4",
+          "children": [
+            {
+              "type": "frame",
+              "id": "NWPWK",
+              "x": 16,
+              "y": 8,
+              "name": "핸들 영역",
+              "enabled": false,
+              "padding": [
+                "$space-1",
+                0
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 999,
+                  "id": "Txm3Z",
+                  "name": "핸들",
+                  "fill": "$color-border",
+                  "width": 36,
+                  "height": 4
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "phIzy",
+              "name": "시트 헤더",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ugarj",
+                  "name": "메타 행",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "bsLfu",
+                      "name": "메타",
+                      "fill": "$color-ink-muted",
+                      "content": "지번",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    },
+                    {
+                      "id": "MWdwi",
+                      "type": "ref",
+                      "ref": "ZmUgI",
+                      "name": "닫기 버튼",
+                      "width": 36,
+                      "height": 36,
+                      "descendants": {
+                        "d9kW3w": {
+                          "icon": "x",
+                          "fill": "$color-ink"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "VJ0Tx",
+                  "type": "ref",
+                  "ref": "c5zDc",
+                  "name": "이름 입력",
+                  "width": "fill_container",
+                  "descendants": {
+                    "vhrPL": {
+                      "content": "집앞 논",
+                      "fill": "$color-ink"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "c46Kd",
+                  "name": "기본 지번 행",
+                  "gap": "$space-1",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "vQ8JL",
+                      "name": "보조 라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "기본 지번:",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OgbIv",
+                      "name": "지번 값",
+                      "fill": "$color-ink-muted",
+                      "content": "산 123-4",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "icnuK",
+              "name": "면적 행",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qZ9K0",
+                  "name": "면적 값",
+                  "fill": "$color-ink",
+                  "content": "2,340 ㎡",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "yiEMU",
+                  "name": "단위 컨트롤",
+                  "fill": "$color-surface-alt",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "gap": 2,
+                  "padding": 3,
+                  "children": [
+                    {
+                      "id": "QwuJh",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg ㎡",
+                      "fill": "$color-primary",
+                      "descendants": {
+                        "b0AEFG": {
+                          "fill": "$color-surface"
+                        }
+                      }
+                    },
+                    {
+                      "id": "Rvtuy",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 평",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "평"
+                        }
+                      }
+                    },
+                    {
+                      "id": "W3tveF",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg a",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "a"
+                        }
+                      }
+                    },
+                    {
+                      "id": "iBmdN",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg ha",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "ha"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "epMu9",
+              "name": "토지 정보 카드",
+              "width": "fill_container",
+              "fill": "$color-surface-alt",
+              "cornerRadius": "$radius-md",
+              "padding": "$space-3",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "W9P4vK",
+                  "name": "정보 지목",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Ms5i0",
+                      "name": "라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "지목",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "HfC1m",
+                      "name": "값",
+                      "fill": "$color-ink",
+                      "content": "전",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mKWnM",
+                  "name": "정보 소유구분",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "a8zIE4",
+                      "name": "라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "소유구분",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "RxjXs",
+                      "name": "값",
+                      "fill": "$color-ink",
+                      "content": "개인",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QjWCu",
+                  "name": "정보 공유인",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "MRYqr",
+                      "name": "라벨",
+                      "fill": "$color-ink-muted",
+                      "content": "공유인",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "vyz8a",
+                      "name": "값",
+                      "fill": "$color-ink",
+                      "content": "3명",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "uNZpR",
+              "name": "메모 섹션",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "s5cu2q",
+                  "name": "섹션 라벨",
+                  "fill": "$color-ink-muted",
+                  "content": "메모",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "cVbf2",
+                  "name": "메모 입력",
+                  "width": "fill_container",
+                  "height": 72,
+                  "fill": "$color-surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "D3hk3",
+                      "name": "메모 내용",
+                      "fill": "$color-ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "물빠짐이 안 좋아 배수로 정비 필요",
+                      "fontFamily": "$font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qrN4d",
+              "name": "표시 방식 행",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Iyut8",
+                  "name": "섹션 라벨",
+                  "fill": "$color-ink-muted",
+                  "content": "표시 방식",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "K5iSNX",
+                  "name": "표시 방식 컨트롤",
+                  "fill": "$color-surface-alt",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$color-border",
+                  "strokeWidth": 1,
+                  "gap": 2,
+                  "padding": 3,
+                  "children": [
+                    {
+                      "id": "V0Xh1n",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 채움",
+                      "fill": "$color-primary",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "채움",
+                          "fill": "$color-surface"
+                        }
+                      }
+                    },
+                    {
+                      "id": "vRd4K",
+                      "type": "ref",
+                      "ref": "E5eEG8",
+                      "name": "Seg 테두리",
+                      "descendants": {
+                        "b0AEFG": {
+                          "content": "테두리"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VGJFO",
+              "name": "색상 섹션",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n5W4Q",
+                  "name": "섹션 라벨",
+                  "fill": "$color-ink-muted",
+                  "content": "색상",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "MRnVf",
+                  "name": "색상 행 1",
+                  "width": "fill_container",
+                  "gap": "$space-2",
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "PBtUc",
+                      "name": "색 없음",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "U8MPVl",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 없음",
+                          "fill": "$color-surface",
+                          "stroke": "$color-border"
+                        },
+                        {
+                          "type": "text",
+                          "id": "XrehJ",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "없음",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "REYHI",
+                      "name": "색 벼 (선택됨)",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "kjONi",
+                          "name": "선택 테두리",
+                          "cornerRadius": 8,
+                          "stroke": "$color-primary",
+                          "strokeWidth": 2,
+                          "padding": 2,
+                          "children": [
+                            {
+                              "id": "H4prE",
+                              "type": "ref",
+                              "ref": "OOjNn",
+                              "name": "스와치 벼",
+                              "fill": "#6CA945",
+                              "stroke": "#5A8F39"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "cdDKH",
+                          "name": "라벨",
+                          "fill": "$color-ink",
+                          "content": "벼",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Eh18d",
+                      "name": "색 콩",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "A0XlG",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 콩",
+                          "fill": "#E5A300",
+                          "stroke": "#C28A00"
+                        },
+                        {
+                          "type": "text",
+                          "id": "jIbz3",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "콩",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wtYvX",
+                      "name": "색 감자",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "W8mst",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 감자",
+                          "fill": "#B96A8C",
+                          "stroke": "#9C5273"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Yrcsu",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "감자",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "l9mGx",
+                  "name": "색상 행 2",
+                  "width": "fill_container",
+                  "gap": "$space-2",
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "orTlf",
+                      "name": "색 매매",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "B7lpuy",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 매매",
+                          "fill": "#C8392E",
+                          "stroke": "#A92F26"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YwLeL",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "매매",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YZ5ys",
+                      "name": "색 임대",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "MqImx",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 임대",
+                          "fill": "#2B7BC9",
+                          "stroke": "#2368AB"
+                        },
+                        {
+                          "type": "text",
+                          "id": "tYvR0",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "임대",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "D5kRUm",
+                      "name": "색 기타",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "u42ES",
+                          "type": "ref",
+                          "ref": "OOjNn",
+                          "name": "스와치 기타",
+                          "fill": "#5B8FB9",
+                          "stroke": "#47759B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "i7j86",
+                          "name": "라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "기타",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "JZvTB",
+                      "name": "스페이서",
+                      "width": "fill_container",
+                      "height": 24
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZcomN",
+              "name": "고정 섹션",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-3",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "S5koLl",
+                  "name": "고정 스위치 행",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jQfKJ",
+                      "name": "고정 라벨",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "wz0Qc",
+                          "name": "라벨",
+                          "fill": "$color-ink",
+                          "content": "고정 켜짐",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YkoAM",
+                          "name": "설명",
+                          "fill": "$color-ink-muted",
+                          "content": "초기화 시 색상·이름·아이콘 보호",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lK9EH",
+                      "name": "스위치 켜짐",
+                      "width": 46,
+                      "height": 26,
+                      "fill": "$color-primary",
+                      "cornerRadius": 999,
+                      "padding": 2,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "FZ8Co",
+                          "name": "노브",
+                          "fill": "$color-surface",
+                          "width": 22,
+                          "height": 22
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "O5xuY",
+                  "name": "아이콘 팔레트",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": "$space-3",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Nhenr",
+                      "name": "범주 집·건물",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "JhDvR",
+                          "name": "범주 라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "집·건물",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "RYebD",
+                          "name": "아이콘 행",
+                          "width": "fill_container",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "X6lFgT",
+                              "name": "아이콘 🏠 (선택됨)",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface-alt",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-primary",
+                              "strokeWidth": 2,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "PF1Fe",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏠",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JHWGU",
+                              "name": "아이콘 🏡",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "kTVNO",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏡",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "jzjIU",
+                              "name": "아이콘 🏗",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "QV6lQ",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏗",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "q3V6L",
+                              "name": "아이콘 🏚",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TWfAq",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏚",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Vr316",
+                              "name": "아이콘 🏭",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "sk1EY",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏭",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "F35lj",
+                              "name": "아이콘 🛖",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "XEe16",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🛖",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hxFzM",
+                              "name": "아이콘 🏘",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "y35Al",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏘",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "bkVnL",
+                              "name": "아이콘 🏢",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "f77PP3",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🏢",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DTca4",
+                      "name": "범주 농기계",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ODKje",
+                          "name": "범주 라벨",
+                          "fill": "$color-ink-muted",
+                          "content": "농기계",
+                          "fontFamily": "$font-sans",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "NnJ90",
+                          "name": "아이콘 행",
+                          "width": "fill_container",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "DXnIy",
+                              "name": "아이콘 🚜",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "QgYvr",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🚜",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "FD3Vk",
+                              "name": "아이콘 🛻",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "HHzGe",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🛻",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hev7k",
+                              "name": "아이콘 🔧",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "cxDM0",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🔧",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "t0ew85",
+                              "name": "아이콘 🪓",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "SuTFu",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🪓",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "l5LAo3",
+                              "name": "아이콘 🪚",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ljA7l",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🪚",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "E3Jum",
+                              "name": "아이콘 ⚙️",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "m10xE",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "⚙️",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "EJFVr",
+                              "name": "아이콘 🔩",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Ofo5O",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🔩",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "OSVjE",
+                              "name": "아이콘 🪛",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$color-surface",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$color-border",
+                              "strokeWidth": 1,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gstWu",
+                                  "name": "이모지",
+                                  "fill": "$color-ink",
+                                  "content": "🪛",
+                                  "fontFamily": "$font-sans",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "mBMqo",
+              "type": "ref",
+              "ref": "FZJl8",
+              "name": "저장 버튼",
+              "width": "fill_container"
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

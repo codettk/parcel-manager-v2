@@ -37,6 +37,7 @@ const COLORS_FIXTURE = [
 // 초기 fit(전체 보기)에서도 합성 픽셀이 확실히 출현하게 한다
 interface RawParcel {
   id: string
+  jibun: string
   c: [number, number][]
 }
 
@@ -56,6 +57,16 @@ const rawData = JSON.parse(
 const byAreaDesc = [...rawData.parcels].sort((a, b) => shoelace(b.c) - shoelace(a.c))
 export const RED_PARCEL_ID = byAreaDesc[0].id
 export const GROUP_MEMBER_IDS = [byAreaDesc[1].id, byAreaDesc[2].id]
+
+const RAW_BY_ID = new Map(rawData.parcels.map((p) => [p.id, p]))
+
+/** 탭된 필지의 실제 지번 (parcels.json 기반) — 시트 헤더 검증용 */
+export function jibunOf(parcelId: string): string | null {
+  return RAW_BY_ID.get(parcelId)?.jibun ?? null
+}
+
+// GET /api/parcels/:id 픽스처 면적(㎡) — 시트 면적 행 렌더 조건(lndpclAr != null) 충족용
+const PARCEL_FIXTURE_AREA_M2 = 1234.5
 
 const TAB_STATE_FIXTURE = {
   overrides: {
@@ -95,6 +106,39 @@ export async function mockApi(page: Page) {
       if (pathname === '/api/colors') return route.fulfill({ json: COLORS_FIXTURE })
       if (pathname === `/api/tabs/${TAB_ID}/state`)
         return route.fulfill({ json: TAB_STATE_FIXTURE })
+      // M-7 필지 시트: 단건 조회(지번·면적) — parcelResponseSchema(src/types/api/parcels.ts) 동형
+      const parcelMatch = /^\/api\/parcels\/([^/]+)$/.exec(pathname)
+      if (parcelMatch !== null && route.request().method() === 'GET') {
+        const raw = RAW_BY_ID.get(decodeURIComponent(parcelMatch[1]))
+        if (raw === undefined)
+          return route.fulfill({ status: 404, json: { error: '필지 없음 (e2e 픽스처)' } })
+        return route.fulfill({
+          json: {
+            localId: raw.id,
+            pnu: null,
+            jibun: raw.jibun,
+            jibunFull: null,
+            ldCode: null,
+            ldCodeNm: null,
+            lndcgrCode: null,
+            lndcgrCodeNm: null,
+            lndpclAr: PARCEL_FIXTURE_AREA_M2,
+            posesnSeCode: null,
+            posesnSeCodeNm: null,
+            cnrsPsnCo: null,
+            regstrSeCode: null,
+            regstrSeCodeNm: null,
+            coordinates: raw.c,
+            vworldFetchedAt: null,
+          },
+        })
+      }
+      // M-7 필지 저장(upsert) — okResponseSchema 동형. 본문 검증은 spec이 waitForRequest로 수행
+      if (
+        route.request().method() === 'POST' &&
+        pathname.startsWith(`/api/tabs/${TAB_ID}/parcels/`)
+      )
+        return route.fulfill({ json: { ok: true } })
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })
     },

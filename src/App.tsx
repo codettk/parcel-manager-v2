@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
 import { MapCanvas } from './features/map/MapCanvas'
+import { ParcelSheet } from './features/parcel/ParcelSheet'
 import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
 import { initRealtime } from './lib/realtime'
 import { selectColorById, selectSelection } from './stores/selectors'
@@ -17,6 +18,7 @@ function App() {
   const colorById = useWorkspaceStore(selectColorById)
   const selection = useUiStore(selectSelection)
   const tapParcel = useUiStore((s) => s.tapParcel)
+  const openSheet = useUiStore((s) => s.openSheet)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
   const bootRequested = useRef(false)
@@ -61,6 +63,9 @@ function App() {
         />
       </div>
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
+      {openSheet === 'parcel' && selection.selectedParcelId !== null && (
+        <ParcelSheet parcelId={selection.selectedParcelId} />
+      )}
     </main>
   )
 }
