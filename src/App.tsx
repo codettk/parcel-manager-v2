@@ -1,6 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
+import { AddToGroupBanner } from './features/group/AddToGroupBanner'
+import { GroupSheet } from './features/group/GroupSheet'
+import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { MapCanvas } from './features/map/MapCanvas'
 import { ParcelSheet } from './features/parcel/ParcelSheet'
 import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
@@ -62,9 +65,14 @@ function App() {
           onClick={() => setReleaseNotesOpen(true)}
         />
       </div>
+      <MultiSelectOverlay />
+      {selection.addToGroupModeGroupId !== null && <AddToGroupBanner />}
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
       {openSheet === 'parcel' && selection.selectedParcelId !== null && (
         <ParcelSheet parcelId={selection.selectedParcelId} />
+      )}
+      {openSheet === 'group' && selection.selectedGroupId !== null && (
+        <GroupSheet groupId={selection.selectedGroupId} />
       )}
     </main>
   )

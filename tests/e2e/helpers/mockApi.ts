@@ -139,6 +139,10 @@ export async function mockApi(page: Page) {
         pathname.startsWith(`/api/tabs/${TAB_ID}/parcels/`)
       )
         return route.fulfill({ json: { ok: true } })
+      // M-8 그룹 저장(upsert / group: null = 삭제) — okResponseSchema 동형.
+      // 본문 검증은 spec이 waitForRequest·요청 리코더로 수행
+      if (route.request().method() === 'POST' && pathname === `/api/tabs/${TAB_ID}/groups`)
+        return route.fulfill({ json: { ok: true } })
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })
     },
