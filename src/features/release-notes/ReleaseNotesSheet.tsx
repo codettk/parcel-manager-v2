@@ -21,10 +21,7 @@ export function ReleaseNotesSheet({ onClose }: ReleaseNotesSheetProps) {
 
       <div className="flex flex-col gap-3">
         {SECTIONS.map((section, i) => (
-          <section
-            key={i}
-            className="overflow-hidden rounded-md border border-border bg-surface"
-          >
+          <section key={i} className="overflow-hidden rounded-md border border-border bg-surface">
             <h3 className="flex items-center gap-2 border-b border-border px-4 py-3 text-[13px] font-bold text-primary">
               <Tag size={14} aria-hidden className="shrink-0" />
               {section.version}

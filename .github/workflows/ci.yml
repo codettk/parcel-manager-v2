@@ -32,3 +32,31 @@ jobs:
 
       - name: Unit tests
         run: pnpm test
+
+  integration:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: http://127.0.0.1:54321
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Docker는 ubuntu 러너 기본 제공. globalSetup이 db reset + import:parcels를 수행한다.
+      - name: Start local Supabase
+        run: pnpm exec supabase start
+
+      # 로컬 스택 service_role 키를 런타임에 받아온다 (하드코딩 금지 — 비밀 스캐닝 회피)
+      - name: Export Supabase service_role key
+        run: echo "SUPABASE_SERVICE_ROLE_KEY=$(pnpm exec supabase status -o env | grep '^SERVICE_ROLE_KEY=' | cut -d= -f2- | tr -d '\"')" >> "$GITHUB_ENV"
+
+      - name: Integration tests
+        run: pnpm test:integration

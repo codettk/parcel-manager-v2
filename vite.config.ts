@@ -16,7 +16,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['tests/setup.ts'],
-    // Playwright E2E 스펙(tests/e2e)은 vitest 수집 대상에서 제외
-    exclude: [...configDefaults.exclude, 'tests/e2e/**'],
+    // Playwright E2E(tests/e2e)·핸들러 통합(tests/integration, 로컬 Supabase 필요)은 단위 실행에서 제외
+    exclude: [...configDefaults.exclude, 'tests/e2e/**', 'tests/integration/**'],
   },
 })
