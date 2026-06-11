@@ -14,6 +14,7 @@ export {
   type OuterEdgesCache,
 } from './outerEdges'
 export { MAX_DPR, computeFitViewport, dataToScreen, screenToData } from './viewport'
+export { hitTest } from './hitTest'
 export {
   FILL_OPACITY,
   GROUP_DASH,

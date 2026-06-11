@@ -1,18 +1,22 @@
-// 얇은 React 호스트 — parcels.json 로드·캔버스/DPR/리사이즈 관리만 하고 렌더는 엔진에 위임.
+// 얇은 React 호스트 — parcels.json 로드·캔버스/DPR 관리·제스처 연결만 하고 렌더는 엔진에 위임.
 // 씬 데이터(overrides/groups/selection)는 props 주입 — M-5 스토어 도입 전까지 App은 빈 값으로 구동.
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Minus, Plus } from 'lucide-react'
+import { IconButton } from '../../components/ui'
 import { makeProjector, polyArea, type Bbox } from '../../utils/geo'
 import type { Group, ParcelOverride } from '../../types/api/tabState'
 import {
   EMPTY_SELECTION,
   MAX_DPR,
-  computeFitViewport,
   createOuterEdgesCache,
+  hitTest,
   renderScene,
   type EngineParcel,
   type OuterEdgesCache,
   type SelectionState,
 } from './engine'
+import { useGestures } from './useGestures'
+import { BUTTON_ZOOM_FACTOR } from './gestureMath'
 
 interface RawParcel {
   id: string
@@ -35,6 +39,8 @@ interface MapCanvasProps {
   groups?: Record<string, Group>
   colorById?: Record<string, string>
   selection?: SelectionState
+  /** 탭 히트테스트 결과 — 필지 id 또는 빈 곳 탭 시 null (선택 상태는 호스트 소관) */
+  onParcelTap?: (parcelId: string | null) => void
 }
 
 const EMPTY_OVERRIDES: Record<string, ParcelOverride> = {}
@@ -46,12 +52,21 @@ export function MapCanvas({
   groups = EMPTY_GROUPS,
   colorById = EMPTY_COLOR_BY_ID,
   selection = EMPTY_SELECTION,
+  onParcelTap,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cacheRef = useRef<OuterEdgesCache | null>(null)
   cacheRef.current ??= createOuterEdgesCache()
   const [data, setData] = useState<MapData | null>(null)
+
+  const { viewport, zoomBy } = useGestures({
+    containerRef,
+    aspect: data?.aspect ?? null,
+    onTap: (point) => {
+      if (data) onParcelTap?.(hitTest(data.parcels, point))
+    },
+  })
 
   const parcelToGroup = useMemo(() => {
     const map: Record<string, string> = {}
@@ -72,7 +87,7 @@ export function MapCanvas({
           const poly = p.c.map(([lng, lat]) => proj.project(lng, lat))
           return { id: p.id, jibun: p.jibun, poly, area: polyArea(poly) }
         })
-        // 면적 내림차순 — 작은 필지가 위에 그려지도록 (엔진 입력 계약)
+        // 면적 내림차순 — 작은 필지가 위에 그려지도록 (엔진·히트테스트 입력 계약)
         parcels.sort((a, b) => b.area - a.area)
         setData({ aspect: proj.aspect, parcels })
       })
@@ -81,51 +96,52 @@ export function MapCanvas({
     }
   }, [])
 
+  // 리사이즈는 useGestures의 fit 리셋이 viewport를 갱신해 재진입한다
   useEffect(() => {
     const cv = canvasRef.current
     const ct = containerRef.current
     const cache = cacheRef.current
-    if (!cv || !ct || !data || !cache) return
+    if (!cv || !ct || !data || !cache || !viewport) return
     const ctx = cv.getContext('2d')
     if (!ctx) return
 
-    const draw = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
-      const r = ct.getBoundingClientRect()
-      // 캔버스 크기는 런타임 계산 값이라 직접 지정 (CONVENTIONS §4 예외)
-      cv.width = Math.round(r.width * dpr)
-      cv.height = Math.round(r.height * dpr)
-      cv.style.width = `${r.width}px`
-      cv.style.height = `${r.height}px`
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
+    const r = ct.getBoundingClientRect()
+    // 캔버스 크기는 런타임 계산 값이라 직접 지정 (CONVENTIONS §4 예외)
+    cv.width = Math.round(r.width * dpr)
+    cv.height = Math.round(r.height * dpr)
+    cv.style.width = `${r.width}px`
+    cv.style.height = `${r.height}px`
 
-      // M-3(제스처) 전까지 뷰포트는 초기 fit 고정
-      const viewport = computeFitViewport(data.aspect, r.width, r.height)
-      renderScene(
-        ctx,
-        {
-          aspect: data.aspect,
-          parcels: data.parcels,
-          overrides,
-          groups,
-          parcelToGroup,
-          colorById,
-          viewport,
-          selection,
-        },
-        { width: r.width, height: r.height, dpr },
-        cache,
-      )
-    }
-
-    draw()
-    const observer = new ResizeObserver(draw)
-    observer.observe(ct)
-    return () => observer.disconnect()
-  }, [data, overrides, groups, parcelToGroup, colorById, selection])
+    renderScene(
+      ctx,
+      {
+        aspect: data.aspect,
+        parcels: data.parcels,
+        overrides,
+        groups,
+        parcelToGroup,
+        colorById,
+        viewport,
+        selection,
+      },
+      { width: r.width, height: r.height, dpr },
+      cache,
+    )
+  }, [data, viewport, overrides, groups, parcelToGroup, colorById, selection])
 
   return (
-    <div ref={containerRef} className="h-full w-full bg-surface-alt">
-      <canvas ref={canvasRef} />
+    <div className="relative h-full w-full bg-surface-alt">
+      {/* touch-none: 브라우저 기본 스크롤/줌 차단 — v1 touchmove preventDefault의 대체 */}
+      <div ref={containerRef} className="absolute inset-0 touch-none">
+        <canvas ref={canvasRef} />
+      </div>
+      {/* 줌 컨트롤 — 제스처 컨테이너의 형제라 pointerdown이 제스처로 새지 않는다 */}
+      <div className="absolute right-3 bottom-8 z-10 flex flex-col overflow-hidden rounded-md bg-surface shadow-md">
+        <IconButton icon={Plus} aria-label="확대" onClick={() => zoomBy(BUTTON_ZOOM_FACTOR)} />
+        <div className="h-px bg-border" aria-hidden />
+        <IconButton icon={Minus} aria-label="축소" onClick={() => zoomBy(1 / BUTTON_ZOOM_FACTOR)} />
+      </div>
     </div>
   )
 }
