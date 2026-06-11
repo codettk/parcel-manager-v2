@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  buildResetPatch,
-  isClearedOverride,
-  normalizeOverride,
-} from '../../../server/handlers/override'
+import { buildResetPatch, isClearedOverride, normalizeOverride } from '../../../src/utils/override'
 import type { ParcelOverride } from '../../../src/types/api/tabState'
 
 function fields(partial: Partial<ParcelOverride>): ParcelOverride {

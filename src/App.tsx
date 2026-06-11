@@ -1,17 +1,29 @@
-import { lazy, Suspense, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
-import { EMPTY_SELECTION } from './features/map/engine'
 import { MapCanvas } from './features/map/MapCanvas'
 import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
+import { selectColorById, selectSelection } from './stores/selectors'
+import { useUiStore } from './stores/ui'
+import { useWorkspaceStore } from './stores/workspace'
 
 const UIDemo = lazy(() => import('./dev/UIDemo'))
 
 function App() {
   const [releaseNotesOpen, setReleaseNotesOpen] = useState(false)
-  // M-5 스토어 도입 전 임시 비계 — 탭 단일 선택 1건, 빈 곳 탭(null) 시 해제 (명세 §선택 상태 판정)
-  const [selectedParcelId, setSelectedParcelId] = useState<string | null>(null)
-  const selection = useMemo(() => ({ ...EMPTY_SELECTION, selectedParcelId }), [selectedParcelId])
+  const overrides = useWorkspaceStore((s) => s.overrides)
+  const groups = useWorkspaceStore((s) => s.groups)
+  const colorById = useWorkspaceStore(selectColorById)
+  const selection = useUiStore(selectSelection)
+  const tapParcel = useUiStore((s) => s.tapParcel)
+
+  // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
+  const bootRequested = useRef(false)
+  useEffect(() => {
+    if (bootRequested.current) return
+    bootRequested.current = true
+    void useWorkspaceStore.getState().boot()
+  }, [])
 
   if (import.meta.env.DEV && window.location.pathname === '/__ui') {
     return (
@@ -23,7 +35,13 @@ function App() {
 
   return (
     <main className="relative h-full">
-      <MapCanvas selection={selection} onParcelTap={setSelectedParcelId} />
+      <MapCanvas
+        overrides={overrides}
+        groups={groups}
+        colorById={colorById}
+        selection={selection}
+        onParcelTap={tapParcel}
+      />
       {/* NavDrawer 도입 전 임시 진입점 — 도입 시 드로어 항목("릴리즈 노트")으로 이동 (명세 §진입점) */}
       <div className="absolute top-3 right-3 z-10 rounded-md bg-surface shadow-md">
         <IconButton

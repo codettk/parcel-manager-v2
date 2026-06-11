@@ -9,7 +9,8 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { browserName: 'chromium' } }],
   webServer: {
-    // 릴리즈 노트는 빌드 타임 ?raw 포함이므로 dev:api(3000) 불필요
+    // dev:api(3000) 불필요 — /api는 tests/e2e/helpers/mockApi.ts(page.route)로 모킹,
+    // 릴리즈 노트는 빌드 타임 ?raw 포함
     command: 'pnpm dev',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,

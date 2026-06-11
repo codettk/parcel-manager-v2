@@ -1,8 +1,11 @@
 import { expect, test, type Page } from '@playwright/test'
+import { bootWithMockedApi } from './helpers/mockApi'
 
 // 명세: docs/specs/map-gestures.md — AC-7 (드래그 팬 / 휠 줌 / 줌 버튼 / 탭 선택·해제)
 // (AC-1~AC-5·AC-8은 tests/unit/map/useGestures.test.ts·gestureMath.test.ts,
 //  AC-6은 tests/unit/map/hitTest.test.ts 단위 테스트 소관)
+// M-5 이후 탭 선택은 스토어 boot 완료(C-4 isInitializing 해제)가 전제 —
+// bootWithMockedApi가 /api 모킹 + 부팅 완료 신호 대기까지 보장한다.
 
 // 엔진 보존 색상 (src/features/map/engine/colors.ts MAP_COLORS)
 const PARCEL_FILL = { r: 255, g: 255, b: 255 } // 1차: 미지정 필지 채움 #FFFFFF
@@ -11,13 +14,9 @@ const SELECT_STROKE = { r: 31, g: 90, b: 56 } // 4차: 선택 강조 테두리 #
 
 type Rgb = { r: number; g: number; b: number }
 
-/** 앱 로드 → 첫 draw(style.width 설정) → 필지 픽셀(배경 외 색) 출현까지 poll 대기 */
+/** /api 모킹 부팅 → 첫 draw → 필지 픽셀(흰 채움) 출현까지 poll 대기 */
 async function waitForParcelsRendered(page: Page) {
-  await page.goto('/')
-  await page.waitForFunction(() => {
-    const cv = document.querySelector('canvas')
-    return cv !== null && cv.style.width !== ''
-  })
+  await bootWithMockedApi(page)
   await expect
     .poll(() => countExactPixels(page, PARCEL_FILL), { timeout: 15_000 })
     .toBeGreaterThan(0)

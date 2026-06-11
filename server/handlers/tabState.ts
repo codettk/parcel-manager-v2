@@ -9,7 +9,7 @@ import { createDb } from './db'
 import type { Db } from './db'
 import { badRequest, methodNotAllowed, notFound, ok } from './http'
 import { genGroupIds } from './ids'
-import { buildResetPatch, isClearedOverride, normalizeOverride } from './override'
+import { buildResetPatch, isClearedOverride, normalizeOverride } from '../../src/utils/override'
 import type { Handler } from './types'
 
 interface SettingRow {

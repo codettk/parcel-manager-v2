@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { expect, test, type Page } from '@playwright/test'
+import { mockApi } from './helpers/mockApi'
 
 // 명세: docs/specs/release-notes-sheet.md — AC-1~AC-4 (AC-5는 단위 테스트 소관)
 // 기대값은 실제 데이터 소스(RELEASE_NOTES.md)에서 파생 — 파일 갱신 시 테스트가 자동 추종
+// 시트는 부팅과 무관하지만 /api 모킹을 적용해 webServer(vite 단독)의 부팅 502 노이즈를 제거한다
 
 const notesPath = fileURLToPath(new URL('../../RELEASE_NOTES.md', import.meta.url))
 const notesRaw = readFileSync(notesPath, 'utf-8')
@@ -17,6 +19,7 @@ const items = lines
 const strongTexts = [...notesRaw.matchAll(/\*\*(.+?)\*\*/g)].map((m) => m[1])
 
 async function openSheet(page: Page) {
+  await mockApi(page)
   await page.goto('/')
   await page.getByRole('button', { name: '릴리즈 노트' }).click()
   const sheet = page.getByRole('dialog')

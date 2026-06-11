@@ -1,13 +1,17 @@
 import { expect, test, type Page } from '@playwright/test'
+import { mockApi } from './helpers/mockApi'
 
 // 명세: docs/specs/map-render-engine.md — AC-6·AC-7
 // (AC-1~AC-5는 tests/unit/engine/ 단위 테스트, AC-8은 ESLint no-restricted-imports 소관)
+// 탭 입력이 없는 spec이므로 부팅 완료 대기는 불필요 — /api 모킹만 적용해
+// webServer(vite 단독) 환경의 부팅 502 실패를 제거한다.
 
 // 엔진 배경 보존값 #FBFAF6 (src/features/map/engine/colors.ts MAP_COLORS.background)
 const BG = { r: 251, g: 250, b: 246 }
 
 /** 호스트(MapCanvas)가 데이터 로드 후 첫 draw를 마칠 때까지 대기 — draw에서 style.width가 설정된다 */
 async function waitForFirstDraw(page: Page) {
+  await mockApi(page)
   await page.goto('/')
   await page.waitForFunction(() => {
     const cv = document.querySelector('canvas')

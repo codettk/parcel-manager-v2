@@ -1,8 +1,9 @@
-import type { ParcelOverride, ResetItem } from '../../src/types/api/tabState'
+import type { ParcelOverride, ResetItem } from '../types/api/tabState'
 
 /**
  * v1 보존 로직: style은 color가 있을 때만 의미가 있고(없으면 'fill' 보정),
  * icon은 pinned 필지 전용. 빈 문자열은 null로 정규화한다.
+ * 서버 핸들러와 workspace 스토어가 같은 함수를 공유한다 (클라이언트/서버 발산 방지 — N-1).
  */
 export function normalizeOverride(fields: ParcelOverride): ParcelOverride {
   const color = fields.color || null
