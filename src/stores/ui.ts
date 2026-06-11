@@ -4,6 +4,9 @@ import { EMPTY_SELECTION } from '../features/map/engine'
 /** 열린 시트 식별자 — 본 건은 자리만, 구체 유니온은 M-7+에서 확장 */
 export type SheetId = never
 
+/** Realtime 연결 상태 (M-6) — disabled는 supabase 키 미설정 환경(E2E mockApi 등)을 error와 구분한다 */
+export type RealtimeStatus = 'disabled' | 'connecting' | 'subscribed' | 'error'
+
 export interface UiState {
   /** 부팅·탭 전환 로드 중 true — 입력 차단 (C-4). workspace.boot/setActiveTab이 토글한다 */
   isInitializing: boolean
@@ -20,6 +23,9 @@ export interface UiState {
    */
   tapParcel: (parcelId: string | null) => void
   setInitializing: (flag: boolean) => void
+  /** Realtime 연결 상태 — lib/realtime.ts가 쓰고, 소비자(M-7+ 시트, M-16 탭)는 읽기만 한다 */
+  realtimeStatus: RealtimeStatus
+  setRealtimeStatus: (status: RealtimeStatus) => void
 }
 
 export const useUiStore = create<UiState>()((set, get) => ({
@@ -33,4 +39,7 @@ export const useUiStore = create<UiState>()((set, get) => ({
   },
 
   setInitializing: (flag) => set({ isInitializing: flag }),
+
+  realtimeStatus: 'disabled',
+  setRealtimeStatus: (status) => set({ realtimeStatus: status }),
 }))

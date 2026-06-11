@@ -90,6 +90,8 @@ export async function mockApi(page: Page) {
     async (route) => {
       const { pathname } = new URL(route.request().url())
       if (pathname === '/api/tabs') return route.fulfill({ json: TABS_FIXTURE })
+      // supabase 키 없는 config — realtime(M-6)이 disabled로 무해 종료한다 (AC-11 사전 조건)
+      if (pathname === '/api/config') return route.fulfill({ json: {} })
       if (pathname === '/api/colors') return route.fulfill({ json: COLORS_FIXTURE })
       if (pathname === `/api/tabs/${TAB_ID}/state`)
         return route.fulfill({ json: TAB_STATE_FIXTURE })

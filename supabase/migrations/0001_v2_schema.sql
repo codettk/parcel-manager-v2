@@ -70,3 +70,6 @@ CREATE TABLE app_config (
 
 -- Realtime publication (v1에서 수동 SQL로 하던 것을 마이그레이션에 포함)
 ALTER PUBLICATION supabase_realtime ADD TABLE parcel_settings, parcel_groups, color_labels, tabs;
+
+-- DELETE 이벤트 old 레코드에 updated_by 포함 — M-6 에코 가드 (realtime-sync.md AC-7)
+ALTER TABLE color_labels REPLICA IDENTITY FULL;

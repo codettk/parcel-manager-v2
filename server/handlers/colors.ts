@@ -75,8 +75,9 @@ export const colorItemHandler: Handler = async (req, ctx) => {
   if (findError) throw new Error(findError.message)
   if (!existing) return notFound('팔레트 색을 찾을 수 없습니다')
 
-  // Realtime DELETE 이벤트 payload에는 updated_by가 없으므로, 삭제 직전 UPDATE로
-  // 누가 지웠는지를 기록해 에코 가드(AC-12)가 가능하게 한다.
+  // REPLICA IDENTITY FULL(0001)로 DELETE 이벤트 old 레코드에 updated_by가 실리지만,
+  // 그 값은 "마지막 수정자"다. 삭제 직전 UPDATE로 삭제 요청자의 clientId를 남겨야
+  // 마지막 수정자(타 클라이언트)가 원격 삭제를 자기 에코로 오인해 무시하지 않는다 (M-6 AC-7).
   const { error: markError } = await db
     .from('color_labels')
     .update({ updated_by: clientId, updated_at: new Date().toISOString() })

@@ -3,6 +3,7 @@ import { ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
 import { MapCanvas } from './features/map/MapCanvas'
 import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
+import { initRealtime } from './lib/realtime'
 import { selectColorById, selectSelection } from './stores/selectors'
 import { useUiStore } from './stores/ui'
 import { useWorkspaceStore } from './stores/workspace'
@@ -22,7 +23,16 @@ function App() {
   useEffect(() => {
     if (bootRequested.current) return
     bootRequested.current = true
-    void useWorkspaceStore.getState().boot()
+    void useWorkspaceStore
+      .getState()
+      .boot()
+      .then(async () => {
+        // boot 실패 시 activeTabId가 null — realtime 미기동 (명세 §부팅 시퀀스)
+        if (useWorkspaceStore.getState().activeTabId !== null) await initRealtime()
+      })
+      .catch((err: unknown) => {
+        if (import.meta.env.DEV) console.warn('[realtime] 기동 실패 — 동기화 없이 계속:', err)
+      })
   }, [])
 
   if (import.meta.env.DEV && window.location.pathname === '/__ui') {

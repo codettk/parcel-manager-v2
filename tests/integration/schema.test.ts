@@ -145,6 +145,24 @@ describe('AC-1: supabase db reset 후 스키마 (테이블 6종 + PK/FK/CHECK + 
     expect(uniques).toContain('pnu')
   })
 
+  it("color_labels의 REPLICA IDENTITY가 FULL('f')이고 나머지 Realtime 테이블은 default('d')다 (M-6 AC-7)", () => {
+    const rows = sql(
+      `select relname, relreplident from pg_class
+       where relnamespace = 'public'::regnamespace
+         and relname in ('color_labels', 'parcel_settings', 'parcel_groups', 'tabs')
+       order by relname`,
+    )
+    const ident: Record<string, string> = {}
+    for (const [table, replident] of rows) {
+      ident[table] = replident
+    }
+    expect(ident.color_labels).toBe('f')
+    // 명세 사전 결정: settings(복합 PK)·groups(전역 유일 키)·tabs(소프트 클로즈만)는 FULL 불필요
+    expect(ident.parcel_settings).toBe('d')
+    expect(ident.parcel_groups).toBe('d')
+    expect(ident.tabs).toBe('d')
+  })
+
   it('supabase_realtime publication에 4개 테이블이 등록되어 있다', () => {
     const tables = sql(
       "select tablename from pg_publication_tables where pubname='supabase_realtime' order by tablename",
