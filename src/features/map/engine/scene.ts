@@ -7,6 +7,12 @@ export interface EngineParcel {
   jibun: string
   poly: Point[]
   area: number
+  /** 라벨 앵커 — polyCentroid 데이터 좌표 (호스트 데이터 준비에서 1회 계산) */
+  cx: number
+  cy: number
+  /** 데이터 좌표 bbox 폭/높이 — 라벨 표시 게이트(투영 박스 크기) 입력 */
+  bw: number
+  bh: number
 }
 
 /** 화면 변환: px = tx + x·(aspect·scale), py = ty + y·scale */

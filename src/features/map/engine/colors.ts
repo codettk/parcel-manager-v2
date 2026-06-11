@@ -24,6 +24,18 @@ export const MAP_COLORS = {
   addModeFill: 'rgba(47, 125, 79, 0.30)',
 } as const
 
+/** 라벨 글자색 (M-4) — v1 MapView.jsx 라벨 레이어 보존값 */
+export const LABEL_COLORS = {
+  /** 사용자 지정 이름(override.name) + 그룹명 라벨 */
+  customName: '#1A1814',
+  /** 색 있는 필지(그룹 색 또는 개별 override.color)의 지번 */
+  colored: '#3A3631',
+  /** 기본 지번 */
+  base: '#5C5851',
+  /** halo 외곽선 — 각 줄 fillText 전에 strokeText */
+  halo: 'rgba(255,255,255,0.92)',
+} as const
+
 export const MAP_LINE_WIDTHS = {
   parcelStroke: 0.6,
   colorlessGroupStroke: 1.8,

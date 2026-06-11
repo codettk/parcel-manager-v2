@@ -18,8 +18,25 @@ export { hitTest } from './hitTest'
 export {
   FILL_OPACITY,
   GROUP_DASH,
+  LABEL_COLORS,
   MAP_COLORS,
   MAP_LINE_WIDTHS,
   SELECTED_FILL_OPACITY,
   hexA,
 } from './colors'
+export {
+  LABEL_FONT,
+  LABEL_FONT_SIZE,
+  LABEL_LINE_HEIGHT,
+  createLabelCaches,
+  renderLabels,
+  type LabelCaches,
+  type LabelCanvas2D,
+} from './labels'
+export { createWrapTextCache, wrapText, type TextMeasurer, type WrapTextCache } from './wrapText'
+export {
+  createClustersCache,
+  findClusters,
+  type ClusterSource,
+  type ClustersCache,
+} from './clusters'

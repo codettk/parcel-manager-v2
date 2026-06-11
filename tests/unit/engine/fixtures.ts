@@ -19,6 +19,10 @@ export function square(id: string, ox: number, oy: number, size = 0.1): EnginePa
       [ox, oy + size],
     ],
     area: size * size,
+    cx: ox + size / 2,
+    cy: oy + size / 2,
+    bw: size,
+    bh: size,
   }
 }
 

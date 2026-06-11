@@ -3,15 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Minus, Plus } from 'lucide-react'
 import { IconButton } from '../../components/ui'
-import { makeProjector, polyArea, type Bbox } from '../../utils/geo'
+import { makeProjector, polyArea, polyCentroid, type Bbox } from '../../utils/geo'
 import type { Group, ParcelOverride } from '../../types/api/tabState'
 import {
   EMPTY_SELECTION,
   MAX_DPR,
+  createLabelCaches,
   createOuterEdgesCache,
   hitTest,
+  renderLabels,
   renderScene,
   type EngineParcel,
+  type LabelCaches,
   type OuterEdgesCache,
   type SelectionState,
 } from './engine'
@@ -56,8 +59,11 @@ export function MapCanvas({
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const labelCanvasRef = useRef<HTMLCanvasElement>(null)
   const cacheRef = useRef<OuterEdgesCache | null>(null)
   cacheRef.current ??= createOuterEdgesCache()
+  const labelCachesRef = useRef<LabelCaches | null>(null)
+  labelCachesRef.current ??= createLabelCaches()
   const [data, setData] = useState<MapData | null>(null)
 
   const { viewport, zoomBy } = useGestures({
@@ -85,7 +91,28 @@ export function MapCanvas({
         const proj = makeProjector(d.bbox)
         const parcels = d.parcels.map((p): EngineParcel => {
           const poly = p.c.map(([lng, lat]) => proj.project(lng, lat))
-          return { id: p.id, jibun: p.jibun, poly, area: polyArea(poly) }
+          // 라벨 앵커(센트로이드)·표시 게이트(bbox) 입력은 로드 시 1회 계산 (M-4)
+          const [cx, cy] = polyCentroid(poly)
+          let minX = Infinity
+          let maxX = -Infinity
+          let minY = Infinity
+          let maxY = -Infinity
+          for (const [x, y] of poly) {
+            if (x < minX) minX = x
+            if (x > maxX) maxX = x
+            if (y < minY) minY = y
+            if (y > maxY) maxY = y
+          }
+          return {
+            id: p.id,
+            jibun: p.jibun,
+            poly,
+            area: polyArea(poly),
+            cx,
+            cy,
+            bw: maxX - minX,
+            bh: maxY - minY,
+          }
         })
         // 면적 내림차순 — 작은 필지가 위에 그려지도록 (엔진·히트테스트 입력 계약)
         parcels.sort((a, b) => b.area - a.area)
@@ -99,42 +126,48 @@ export function MapCanvas({
   // 리사이즈는 useGestures의 fit 리셋이 viewport를 갱신해 재진입한다
   useEffect(() => {
     const cv = canvasRef.current
+    const lcv = labelCanvasRef.current
     const ct = containerRef.current
     const cache = cacheRef.current
-    if (!cv || !ct || !data || !cache || !viewport) return
+    const labelCaches = labelCachesRef.current
+    if (!cv || !lcv || !ct || !data || !cache || !labelCaches || !viewport) return
     const ctx = cv.getContext('2d')
-    if (!ctx) return
+    const lctx = lcv.getContext('2d')
+    if (!ctx || !lctx) return
 
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
     const r = ct.getBoundingClientRect()
     // 캔버스 크기는 런타임 계산 값이라 직접 지정 (CONVENTIONS §4 예외)
-    cv.width = Math.round(r.width * dpr)
-    cv.height = Math.round(r.height * dpr)
-    cv.style.width = `${r.width}px`
-    cv.style.height = `${r.height}px`
+    for (const canvas of [cv, lcv]) {
+      canvas.width = Math.round(r.width * dpr)
+      canvas.height = Math.round(r.height * dpr)
+      canvas.style.width = `${r.width}px`
+      canvas.style.height = `${r.height}px`
+    }
 
-    renderScene(
-      ctx,
-      {
-        aspect: data.aspect,
-        parcels: data.parcels,
-        overrides,
-        groups,
-        parcelToGroup,
-        colorById,
-        viewport,
-        selection,
-      },
-      { width: r.width, height: r.height, dpr },
-      cache,
-    )
+    const scene = {
+      aspect: data.aspect,
+      parcels: data.parcels,
+      overrides,
+      groups,
+      parcelToGroup,
+      colorById,
+      viewport,
+      selection,
+    }
+    const size = { width: r.width, height: r.height, dpr }
+    renderScene(ctx, scene, size, cache)
+    // 라벨은 같은 씬·같은 프레임에 별도 캔버스로 (v1 라벨 레이어 보존)
+    renderLabels(lctx, scene, size, labelCaches)
   }, [data, viewport, overrides, groups, parcelToGroup, colorById, selection])
 
   return (
     <div className="relative h-full w-full bg-surface-alt">
       {/* touch-none: 브라우저 기본 스크롤/줌 차단 — v1 touchmove preventDefault의 대체 */}
       <div ref={containerRef} className="absolute inset-0 touch-none">
-        <canvas ref={canvasRef} />
+        <canvas ref={canvasRef} className="block" />
+        {/* 라벨 캔버스 — 메인 위 z-order. pointer-events 통과로 탭/팬/줌(M-3) 불변 */}
+        <canvas ref={labelCanvasRef} className="pointer-events-none absolute top-0 left-0" />
       </div>
       {/* 줌 컨트롤 — 제스처 컨테이너의 형제라 pointerdown이 제스처로 새지 않는다 */}
       <div className="absolute right-3 bottom-8 z-10 flex flex-col overflow-hidden rounded-md bg-surface shadow-md">
