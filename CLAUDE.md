@@ -33,7 +33,7 @@ Docker 개발: `docker compose -f docker/docker-compose.yml up` (web + api. Supa
 - **API 계층 (v1 부채 청산의 핵심)**: 모든 API 로직은 `server/handlers/`의 **런타임 비의존 순수 함수**로만 작성한다 — req/res 객체 직접 접근 금지. `server/adapters/express.ts`(Docker 개발)와 `server/adapters/vercel.ts`(배포)가 동일 핸들러를 양쪽 런타임에 연결하고, `api/*.ts`는 vercelAdapter로 감싼 재export만 한다 (경로 파라미터 라우트는 `vercel.json` rewrite로 매핑). v1의 server.js ↔ api/ 로직 분기 재발 방지가 목적.
 - **API 타입**: 요청/응답은 `src/types/api/`의 zod 스키마에서 `z.infer`로 추론 — 프론트 클라이언트와 핸들러가 같은 스키마를 import한다.
 - **features/ 수직 분할**: 도메인 로직(컴포넌트+훅+로직)은 `src/features/<domain>/` 안에서만. `src/components/ui/`는 도메인 무지 순수 UI만 (도메인 타입 import 금지, 의존 방향: features → ui).
-- **지도 렌더**: `src/features/map/engine/`은 React를 import하지 않는 순수 TS Canvas 2D 렌더 엔진으로 작성한다 (현재 `MapCanvas.tsx`는 Phase 0 스파이크 — M-2에서 엔진으로 대체 예정). 렌더 패스는 v1 기준 8개(1차~7차 + 1.5차 색없는그룹) + 별도 라벨 캔버스.
+- **지도 렌더**: `src/features/map/engine/`은 React를 import하지 않는 순수 TS Canvas 2D 렌더 엔진 (M-2 완료 — scene·renderScene·outerEdges memo·viewport, ESLint로 react import 금지 강제). `MapCanvas.tsx`는 캔버스/DPR/ResizeObserver 관리와 엔진 호출만 하는 얇은 React 호스트. 렌더 패스는 v1 보존 8개(1차~7차 + 1.5차 색없는그룹) + 별도 라벨 캔버스(M-4 예정). v1 보존 색상 상수는 `engine/colors.ts`(lint hex 예외 모듈)에 집약.
 - **정적 지오데이터**: `public/data/parcels.json` (필지 4,409개, v1에서 복사) — **절대 수정 금지**. 구조: `{ bbox, parcels: [{ id, jibun, c: [[lng,lat],...] }] }`. `src/utils/geo.ts`의 `makeProjector(bbox)`로 0..1 정규화 평면에 투영해 사용.
 - **DB**: 신규 Supabase 프로젝트 (v1과 분리). `app_state` JSON 컬럼은 존재하지 않는다 — 정규화 테이블이 유일한 진실이며, 탭(작업공간) 스키마가 기본 구조. 모든 스키마는 `supabase/migrations/`에 존재해야 한다 (`supabase db reset`만으로 환경 재현). 현재 `0001_v2_schema.sql` — 테이블 6종(tabs·parcels·parcel_settings·parcel_groups·color_labels·app_config) + Realtime publication 등록.
 - **스타일**: Tailwind v4 + CVA. 디자인 토큰은 `src/styles/tokens.css`의 `@theme` CSS 변수만 참조 — 하드코딩 hex 금지. 팔레트 6색은 DB(color_labels) 소관이라 토큰이 아님.
@@ -62,6 +62,6 @@ Docker 개발: `docker compose -f docker/docker-compose.yml up` (web + api. Supa
 - 한국어 단일 언어 앱. conventional commits 한국어 본문.
 - 주석은 코드로 표현 불가능한 제약(좌표계, 400ms 모바일 가드 등)만.
 
-## 현재 상태 (Phase 3 완료)
+## 현재 상태 (Phase 4 진행 중)
 
-Phase 0(스캐폴딩·Docker·Supabase·어댑터·CI) + Phase 1(컨벤션·토큰·UI 컴포넌트 18종·Pencil 시트) + Phase 2(7단계 파이프라인 하네스 + 파일럿 런 M-17 릴리즈 노트 시트 — `src/features/release-notes/`, Playwright E2E `tests/e2e/`) + Phase 3(DB 재설계 + API 단일화 — `supabase/migrations/0001_v2_schema.sql`, `server/handlers/` 도메인 핸들러, `src/types/api/` zod 계약 7종, `src/lib/api.ts` typed client, `tests/integration/` 핸들러 통합 테스트 + CI integration 잡. 명세: `docs/specs/phase3-db-api.md`) 완료. 상세 규칙은 `docs/CONVENTIONS.md`가 이 문서보다 우선한다. 다음은 Phase 4 로직 마이그레이션 M-1~M-18.
+Phase 0(스캐폴딩·Docker·Supabase·어댑터·CI) + Phase 1(컨벤션·토큰·UI 컴포넌트 18종·Pencil 시트) + Phase 2(7단계 파이프라인 하네스 + 파일럿 런 M-17 릴리즈 노트 시트 — `src/features/release-notes/`, Playwright E2E `tests/e2e/`) + Phase 3(DB 재설계 + API 단일화 — `supabase/migrations/0001_v2_schema.sql`, `server/handlers/` 도메인 핸들러, `src/types/api/` zod 계약 7종, `src/lib/api.ts` typed client, `tests/integration/` 핸들러 통합 테스트 + CI integration 잡. 명세: `docs/specs/phase3-db-api.md`) 완료. Phase 4 로직 마이그레이션 진행 중 — M-1(지오 유틸 `src/utils/geo.ts`)·M-2(Canvas 렌더 엔진 `src/features/map/engine/`, 명세: `docs/specs/map-render-engine.md`) 완료, 다음은 M-3 제스처(팬/줌/핀치). 상세 규칙은 `docs/CONVENTIONS.md`가 이 문서보다 우선한다.
