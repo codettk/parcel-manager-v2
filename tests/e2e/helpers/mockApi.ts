@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
+import type { CalcRecipe } from '../../../src/types/api/calcRecipes'
 
 // E2E 공용 /api 모킹 헬퍼 — webServer는 vite 단독(5173)이라 /api(3000 프록시)는 502가 된다.
 // M-5 이후 탭 선택은 스토어 boot 완료(C-4 isInitializing 해제)가 전제이므로,
@@ -81,6 +82,23 @@ const PARCEL_AREAS_FIXTURE: Record<string, number | null> = Object.fromEntries(
   rawData.parcels.map((p) => [p.id, LIST_AREAS_M2[p.id] ?? null]),
 )
 
+// M-10 자동 계산기 레시피 픽스처 — calculator.spec.ts가 환산값을 리터럴로 단언한다:
+// 개별 1234.5㎡(단건 조회 픽스처) → (1234.5/300)×20 = 82.3 kg,
+// 그룹(멤버 2) 합산 2469㎡ → (2469/300)×20 = 164.6 kg
+export const CALC_RECIPE_FIXTURE: CalcRecipe = {
+  id: 'r-e2e-lime',
+  name: '석회',
+  baseArea: 300,
+  baseUnit: '㎡',
+  amount: 20,
+  amountUnit: 'kg',
+}
+
+export interface MockApiOptions {
+  /** GET /api/calc-recipes 초기값 — null(기본) = 미설정. PUT이 이후 GET 응답을 덮는다 (서버 단일 소스 동형) */
+  calcRecipes?: CalcRecipe[] | null
+}
+
 const TAB_STATE_FIXTURE = {
   overrides: {
     [RED_PARCEL_ID]: {
@@ -108,7 +126,9 @@ const TAB_STATE_FIXTURE = {
  * 글롭 '**\/api\/**'는 vite 모듈 URL(/src/types/api/* 등)까지 가로채 앱 로드를 깨므로
  * pathname 접두사 술어로 API 요청만 매칭한다.
  */
-export async function mockApi(page: Page) {
+export async function mockApi(page: Page, opts: MockApiOptions = {}) {
+  // M-10 계산 레시피 — 서버 단일 소스 상태 모킹 (설정 시트가 열 때마다 GET으로 최신화)
+  let calcRecipes: CalcRecipe[] | null = opts.calcRecipes ?? null
   await page.route(
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
@@ -119,6 +139,15 @@ export async function mockApi(page: Page) {
       if (pathname === '/api/colors') return route.fulfill({ json: COLORS_FIXTURE })
       if (pathname === `/api/tabs/${TAB_ID}/state`)
         return route.fulfill({ json: TAB_STATE_FIXTURE })
+      // M-10 자동 계산기: 레시피 GET(calcRecipesResponseSchema 동형)·PUT(저장 → 이후 GET 반영)
+      if (pathname === '/api/calc-recipes') {
+        if (route.request().method() === 'GET')
+          return route.fulfill({ json: { recipes: calcRecipes } })
+        if (route.request().method() === 'PUT') {
+          calcRecipes = (route.request().postDataJSON() as { recipes: CalcRecipe[] }).recipes
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
       // M-9 목록 뷰: 전 필지 면적 일괄 조회 (페이징은 핸들러 소관 — 응답은 단일 레코드)
       if (pathname === '/api/parcel-areas' && route.request().method() === 'GET')
         return route.fulfill({ json: PARCEL_AREAS_FIXTURE })
@@ -217,8 +246,8 @@ export function countNearPixels(page: Page, color: Rgb, tol: number) {
  * "boot() 완료 + 서버 상태 렌더 반영"의 사용자 가시 신호다 (C-4 isInitializing 해제 보장 포함).
  * goto('/') + 첫 draw(style.width 설정) 대기를 포함하므로 spec은 이 호출 하나로 부팅을 끝낸다.
  */
-export async function bootWithMockedApi(page: Page) {
-  await mockApi(page)
+export async function bootWithMockedApi(page: Page, opts: MockApiOptions = {}) {
+  await mockApi(page, opts)
   await page.goto('/')
   await page.waitForFunction(() => {
     const cv = document.querySelector('canvas')

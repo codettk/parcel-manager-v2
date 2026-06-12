@@ -9,12 +9,14 @@ export function MultiSelectOverlay() {
   const multiSelectedIds = useUiStore((s) => s.multiSelectedIds)
   const openSheet = useUiStore((s) => s.openSheet)
   const addToGroupModeGroupId = useUiStore((s) => s.addToGroupModeGroupId)
+  const calculatorActive = useUiStore((s) => s.calculatorActive)
   const toggleMultiSelectMode = useUiStore((s) => s.toggleMultiSelectMode)
   const beginGroupDraft = useWorkspaceStore((s) => s.beginGroupDraft)
 
   const count = multiSelectedIds.length
-  // 시트 열림·추가모드 중에는 토글 버튼 숨김 (v1 `!addToGroupMode && !selected && !selectedGroupId` 보존)
-  const showToggle = openSheet === null && addToGroupModeGroupId === null
+  // 시트 열림·추가모드 중에는 토글 버튼 숨김 (v1 `!addToGroupMode && !selected && !selectedGroupId` 보존).
+  // 계산기 모드(M-10) 중에도 숨김 — tapParcel이 계산기 분기로 멀티선택을 우회하므로 모드 충돌 차단
+  const showToggle = openSheet === null && addToGroupModeGroupId === null && !calculatorActive
 
   return (
     <>

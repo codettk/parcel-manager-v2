@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { calcRecipesHandler } from '../../../server/handlers/calcRecipes'
 import { colorsCollectionHandler } from '../../../server/handlers/colors'
 import { fetchLandInfoHandler } from '../../../server/handlers/parcels'
 import {
@@ -54,6 +55,14 @@ describe('mutate 요청의 clientId 필수 검증 (AC-12 — 400 경로)', () =>
   it('PUT /api/colors — clientId 누락 시 400', async () => {
     const res = await colorsCollectionHandler(
       { method: 'PUT', params: {}, query: {}, body: { colors: [] } },
+      ctx,
+    )
+    expect(res.status).toBe(400)
+  })
+
+  it('PUT /api/calc-recipes — clientId 누락 시 400 (M-10 AC-10 인접)', async () => {
+    const res = await calcRecipesHandler(
+      { method: 'PUT', params: {}, query: {}, body: { recipes: [] } },
       ctx,
     )
     expect(res.status).toBe(400)

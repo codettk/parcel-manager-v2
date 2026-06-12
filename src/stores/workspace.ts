@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { genGroupId } from '../features/group/groupId'
 import { api } from '../lib/api'
+import type { CalcRecipe } from '../types/api/calcRecipes'
 import type { ColorLabel } from '../types/api/colors'
 import type { Group, ParcelOverride } from '../types/api/tabState'
 import type { Tab } from '../types/api/tabs'
@@ -56,6 +57,15 @@ export interface WorkspaceState {
   cancelGroupDraft: () => void
   /** pending 그룹의 멤버 로컬 갱신 (시트 멤버 제거) — applyRemote와 구분되는 드래프트 전용 경로 */
   updateDraftGroupMembers: (parcelIds: string[]) => void
+  /**
+   * 계산 레시피 (M-10) — 전 탭 공유 설정 (colorLabels 선례), 서버 단일 소스.
+   * Realtime 채널 없음 — 설정 시트가 열릴 때마다 loadCalcRecipes로 최신화한다 (v1 보존)
+   */
+  calcRecipes: CalcRecipe[]
+  /** GET /api/calc-recipes — null(미설정)은 빈 배열로 정규화. 실패는 reject (호출부 폴백 소관) */
+  loadCalcRecipes: () => Promise<void>
+  /** 낙관적 저장 — 동기 갱신 후 PUT 전송. 실패 시 롤백 없음(upsertParcel 동형), console.error 보고 */
+  saveCalcRecipes: (recipes: CalcRecipe[]) => void
   /** Realtime 수신 반영 (M-6 구독이 호출) — 서버 호출 없음. null = 키 삭제 */
   applyRemoteParcel: (parcelId: string, override: ParcelOverride | null) => void
   applyRemoteGroup: (groupId: string, group: Group | null) => void
@@ -211,6 +221,20 @@ export const useWorkspaceStore = create<WorkspaceState>()((set, get) => ({
     const cur = groups[pendingGroupCreate.groupId]
     if (cur === undefined) return
     set({ groups: { ...groups, [pendingGroupCreate.groupId]: { ...cur, parcelIds } } })
+  },
+
+  calcRecipes: [],
+
+  loadCalcRecipes: async () => {
+    const { recipes } = await api.calcRecipes.get()
+    set({ calcRecipes: recipes ?? [] })
+  },
+
+  saveCalcRecipes: (recipes) => {
+    set({ calcRecipes: recipes })
+    api.calcRecipes.put({ recipes }).catch((err: unknown) => {
+      console.error('[workspace] 계산 레시피 저장 실패:', err)
+    })
   },
 
   applyRemoteParcel: (parcelId, override) => {

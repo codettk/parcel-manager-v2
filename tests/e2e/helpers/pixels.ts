@@ -9,10 +9,11 @@ import type { Rgb } from './mockApi'
  * 중앙 영역(x 15%~xMaxFrac, y 15~85%)만 스캔해 우측 오버레이 버튼을 피하고,
  * 반경 margin 정사각형이 전부 같은 색인 지점만 반환해 경계/안티앨리어싱을 배제한다.
  * 와이드 테스트는 xMaxFrac을 좁혀 우측 SidePanel(360px)에 덮이지 않는 지점만 고른다.
+ * tol > 0이면 채널별 ±tol 매칭 — 합성색(compositedFill, 비정수 기대값) 영역 스캔용 (기본 0 = 정확 일치).
  */
-export function findClickPoint(page: Page, color: Rgb, margin: number, xMaxFrac = 0.7) {
+export function findClickPoint(page: Page, color: Rgb, margin: number, xMaxFrac = 0.7, tol = 0) {
   return page.evaluate(
-    ({ target, margin, xMaxFrac }) => {
+    ({ target, margin, xMaxFrac, tol }) => {
       const cv = document.querySelector('canvas')
       const ctx = cv?.getContext('2d')
       if (!cv || !ctx) return null
@@ -20,7 +21,11 @@ export function findClickPoint(page: Page, color: Rgb, margin: number, xMaxFrac 
       const { data } = ctx.getImageData(0, 0, width, height)
       const matches = (x: number, y: number) => {
         const i = (y * width + x) * 4
-        return data[i] === target.r && data[i + 1] === target.g && data[i + 2] === target.b
+        return (
+          Math.abs(data[i] - target.r) <= tol &&
+          Math.abs(data[i + 1] - target.g) <= tol &&
+          Math.abs(data[i + 2] - target.b) <= tol
+        )
       }
       const x0 = Math.floor(width * 0.15)
       const x1 = Math.floor(width * xMaxFrac)
@@ -43,7 +48,7 @@ export function findClickPoint(page: Page, color: Rgb, margin: number, xMaxFrac 
       }
       return null
     },
-    { target: color, margin, xMaxFrac },
+    { target: color, margin, xMaxFrac, tol },
   )
 }
 

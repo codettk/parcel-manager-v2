@@ -1,6 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { List, ScrollText } from 'lucide-react'
+import { Calculator, List, ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
+import { CalculatorModeBadge } from './features/calculator/CalculatorModeBadge'
+import { CalculatorResultSheet } from './features/calculator/CalculatorResultSheet'
+import { CalculatorSettingsSheet } from './features/calculator/CalculatorSettingsSheet'
 import { AddToGroupBanner } from './features/group/AddToGroupBanner'
 import { GroupSheet } from './features/group/GroupSheet'
 import { ParcelListView } from './features/list/ParcelListView'
@@ -17,6 +20,8 @@ const UIDemo = lazy(() => import('./dev/UIDemo'))
 
 function App() {
   const [releaseNotesOpen, setReleaseNotesOpen] = useState(false)
+  // 설정 시트 열림은 App 로컬 (releaseNotesOpen 선례) — 계산기 '모드'만 ui 스토어 소관
+  const [calcSettingsOpen, setCalcSettingsOpen] = useState(false)
   const overrides = useWorkspaceStore((s) => s.overrides)
   const groups = useWorkspaceStore((s) => s.groups)
   const colorById = useWorkspaceStore(selectColorById)
@@ -25,6 +30,8 @@ function App() {
   const openSheet = useUiStore((s) => s.openSheet)
   const listViewOpen = useUiStore((s) => s.listViewOpen)
   const openListView = useUiStore((s) => s.openListView)
+  const calculatorActive = useUiStore((s) => s.calculatorActive)
+  const enterCalculatorMode = useUiStore((s) => s.enterCalculatorMode)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
   const bootRequested = useRef(false)
@@ -72,11 +79,32 @@ function App() {
       <div className="absolute top-3 right-16 z-10 rounded-md bg-surface shadow-md">
         <IconButton icon={List} aria-label="필지 목록" onClick={openListView} />
       </div>
+      {/* NavDrawer 도입 전 임시 진입점 (M-10) — 멀티선택(top-16 right-3) 좌측 */}
+      <div className="absolute top-16 right-16 z-10 rounded-md bg-surface shadow-md">
+        <IconButton
+          icon={Calculator}
+          aria-label="자동 계산기"
+          onClick={() => setCalcSettingsOpen(true)}
+        />
+      </div>
       <MultiSelectOverlay />
+      {calculatorActive && <CalculatorModeBadge />}
       {selection.addToGroupModeGroupId !== null && <AddToGroupBanner />}
       {/* 목록은 시트(z-40/50) 아래 레이어 — 행 탭으로 열린 시트가 목록 위에 뜬다 (명세 §행 탭) */}
       {listViewOpen && <ParcelListView />}
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
+      {calcSettingsOpen && (
+        <CalculatorSettingsSheet
+          onClose={() => setCalcSettingsOpen(false)}
+          onStart={() => {
+            setCalcSettingsOpen(false)
+            enterCalculatorMode()
+          }}
+        />
+      )}
+      {openSheet === 'calcResult' && selection.selectedParcelId !== null && (
+        <CalculatorResultSheet parcelId={selection.selectedParcelId} />
+      )}
       {openSheet === 'parcel' && selection.selectedParcelId !== null && (
         <ParcelSheet parcelId={selection.selectedParcelId} />
       )}

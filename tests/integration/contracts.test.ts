@@ -26,7 +26,11 @@ describe('AC-14: 나머지 엔드포인트 응답의 계약 스키마 parse', ()
     expect(initial.status).toBe(200)
     calcRecipesResponseSchema.parse(initial.body)
 
-    const recipes = [{ name: '평당 환산', factor: 0.3025 }]
+    // M-10 스키마 구체화(z.unknown() → calcRecipeSchema 배열)로 임의 JSON은 400 —
+    // 본문은 계약 동형이어야 한다. 왕복·400 경로 상세는 calcRecipes.test.ts (AC-10) 소관
+    const recipes = [
+      { id: 'r-ac14', name: '석회', baseArea: 300, baseUnit: '㎡', amount: 300, amountUnit: 'L' },
+    ]
     const putRes = await call(calcRecipesHandler, 'PUT', {}, { recipes, clientId: CLIENT_ID })
     expect(putRes.status).toBe(200)
     okResponseSchema.parse(putRes.body)

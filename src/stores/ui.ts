@@ -5,7 +5,7 @@ import { selectParcelToGroup } from './selectors'
 import { useWorkspaceStore } from './workspace'
 
 /** 열린 시트 식별자 */
-export type SheetId = 'parcel' | 'group'
+export type SheetId = 'parcel' | 'group' | 'calcResult'
 
 export const AREA_UNIT_STORAGE_KEY = 'bogugot_v2_area_unit'
 
@@ -29,6 +29,7 @@ export interface UiState {
   addToGroupModeGroupId: string | null
   /**
    * 지도 탭 분기 (M-8 확장, v1 handleSelect 보존):
+   * - 계산기 모드: 그룹 분기 우회 — 필지(그룹 소속 포함) → 결과 시트, 빈 곳 → 결과만 닫고 모드 유지
    * - 멀티선택 모드: 비그룹 필지 개별 토글, 그룹 소속 필지는 그룹 멤버 전체 토글, 빈 곳 무시
    * - 추가모드: 해당 그룹 멤버 토글을 탭마다 즉시 upsertGroup, 타 그룹 소속·빈 곳 무시
    * - 일반: 그룹 멤버 → 그룹 선택 + 그룹 시트, 비소속 → 필지 시트, 빈 곳 → 해제
@@ -58,9 +59,20 @@ export interface UiState {
   /**
    * 목록 행 탭 (M-9, B-1 정정) — 멀티선택·추가모드 분기를 타지 않고 시트 분기 직행
    * (그룹 소속 → 그룹 시트, 비소속 → 필지 시트. v1 onSelectParcel 동형).
-   * pending 그룹 드래프트 중 다른 대상 탭 = 드래프트 원복 후 새 대상 (tapParcel과 동일)
+   * pending 그룹 드래프트 중 다른 대상 탭 = 드래프트 원복 후 새 대상 (tapParcel과 동일).
+   * 계산기 모드 중에는 모드 우선 — 일반 시트 대신 결과 시트 직행 (명세 미정 케이스의 구현 결정:
+   * 모드 배지가 떠 있는 채 편집 시트가 열리는 혼선 차단. tapParcel 계산기 분기와 동일 의미)
    */
   openParcelFromList: (parcelId: string) => void
+  /**
+   * 계산기 모드 (M-10) — true면 tapParcel이 멀티선택·추가모드·그룹 분기를 모두 우회하고
+   * 그룹 소속 필지도 개별 필지로 취급해 결과 시트로 직행한다 (v1 app.jsx:244 'calculator_active' 가드 보존)
+   */
+  calculatorActive: boolean
+  /** 진입(설정 시트 "계산 시작") — 모드 충돌 차단: 멀티선택·추가모드 해제 + pending 드래프트 원복 + 시트·선택 해제 */
+  enterCalculatorMode: () => void
+  /** 종료(모드 배지 "종료") — 모드 해제 + 선택·결과 시트 해제 */
+  exitCalculatorMode: () => void
   /** 면적 표시 단위 — draft가 아닌 즉시 전역 반영, localStorage 영속 (M-7) */
   areaUnit: AreaUnitId
   setAreaUnit: (unit: AreaUnitId) => void
@@ -96,6 +108,17 @@ export const useUiStore = create<UiState>()((set, get) => ({
 
   tapParcel: (parcelId) => {
     if (get().isInitializing) return
+
+    if (get().calculatorActive) {
+      // 그룹 소속이어도 개별 필지로 취급 — 그룹 시트 분기 비경유 (v1 app.jsx:244 가드 보존)
+      if (parcelId === null) {
+        set({ selectedParcelId: null, selectedGroupId: null, openSheet: null }) // 모드는 유지
+        return
+      }
+      set({ selectedParcelId: parcelId, selectedGroupId: null, openSheet: 'calcResult' })
+      return
+    }
+
     const ws = useWorkspaceStore.getState()
     const parcelToGroup = selectParcelToGroup(ws)
 
@@ -189,8 +212,36 @@ export const useUiStore = create<UiState>()((set, get) => ({
 
   openParcelFromList: (parcelId) => {
     if (get().isInitializing) return
+    if (get().calculatorActive) {
+      set({ selectedParcelId: parcelId, selectedGroupId: null, openSheet: 'calcResult' })
+      return
+    }
     openSheetForParcel(parcelId)
   },
+
+  calculatorActive: false,
+
+  enterCalculatorMode: () => {
+    const ws = useWorkspaceStore.getState()
+    if (ws.pendingGroupCreate !== null) ws.cancelGroupDraft()
+    set({
+      calculatorActive: true,
+      multiSelectMode: false,
+      multiSelectedIds: [],
+      addToGroupModeGroupId: null,
+      openSheet: null,
+      selectedParcelId: null,
+      selectedGroupId: null,
+    })
+  },
+
+  exitCalculatorMode: () =>
+    set({
+      calculatorActive: false,
+      openSheet: null,
+      selectedParcelId: null,
+      selectedGroupId: null,
+    }),
 
   areaUnit: loadAreaUnit(),
   setAreaUnit: (unit) => {
