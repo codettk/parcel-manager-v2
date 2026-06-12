@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { Calculator, List, ScrollText } from 'lucide-react'
+import { Calculator, List, Palette, ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
 import { CalculatorModeBadge } from './features/calculator/CalculatorModeBadge'
 import { CalculatorResultSheet } from './features/calculator/CalculatorResultSheet'
@@ -9,6 +9,7 @@ import { GroupSheet } from './features/group/GroupSheet'
 import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { MapCanvas } from './features/map/MapCanvas'
+import { PaletteSheet } from './features/palette/PaletteSheet'
 import { ParcelSheet } from './features/parcel/ParcelSheet'
 import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
 import { initRealtime } from './lib/realtime'
@@ -32,6 +33,8 @@ function App() {
   const openListView = useUiStore((s) => s.openListView)
   const calculatorActive = useUiStore((s) => s.calculatorActive)
   const enterCalculatorMode = useUiStore((s) => s.enterCalculatorMode)
+  const paletteOpen = useUiStore((s) => s.paletteOpen)
+  const openPalette = useUiStore((s) => s.openPalette)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
   const bootRequested = useRef(false)
@@ -87,12 +90,17 @@ function App() {
           onClick={() => setCalcSettingsOpen(true)}
         />
       </div>
+      {/* NavDrawer 도입 전 임시 진입점 (M-11) — top-3 행의 릴리즈 노트(right-3)·목록(right-16) 다음 칸 */}
+      <div className="absolute top-3 right-29 z-10 rounded-md bg-surface shadow-md">
+        <IconButton icon={Palette} aria-label="색상 팔레트" onClick={openPalette} />
+      </div>
       <MultiSelectOverlay />
       {calculatorActive && <CalculatorModeBadge />}
       {selection.addToGroupModeGroupId !== null && <AddToGroupBanner />}
       {/* 목록은 시트(z-40/50) 아래 레이어 — 행 탭으로 열린 시트가 목록 위에 뜬다 (명세 §행 탭) */}
       {listViewOpen && <ParcelListView />}
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
+      {paletteOpen && <PaletteSheet />}
       {calcSettingsOpen && (
         <CalculatorSettingsSheet
           onClose={() => setCalcSettingsOpen(false)}

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
 import type { CalcRecipe } from '../../../src/types/api/calcRecipes'
+import type { ColorLabel } from '../../../src/types/api/colors'
 
 // E2E 공용 /api 모킹 헬퍼 — webServer는 vite 단독(5173)이라 /api(3000 프록시)는 502가 된다.
 // M-5 이후 탭 선택은 스토어 boot 완료(C-4 isInitializing 해제)가 전제이므로,
@@ -29,7 +30,7 @@ const TABS_FIXTURE = [
 export const PARCEL_HEX = '#FF0000' // 개별 필지 override(style=fill)
 export const GROUP_HEX = '#0000FF' // 그룹(style=fill)
 
-const COLORS_FIXTURE = [
+export const COLORS_FIXTURE: ColorLabel[] = [
   { colorId: 'c-red', label: '빨강', hex: PARCEL_HEX, sortOrder: 0 },
   { colorId: 'c-blue', label: '파랑', hex: GROUP_HEX, sortOrder: 1 },
 ]
@@ -129,6 +130,9 @@ const TAB_STATE_FIXTURE = {
 export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // M-10 계산 레시피 — 서버 단일 소스 상태 모킹 (설정 시트가 열 때마다 GET으로 최신화)
   let calcRecipes: CalcRecipe[] | null = opts.calcRecipes ?? null
+  // M-11 팔레트 — 상태 보존 모킹 (calc-recipes 선례): PUT 전체 upsert·DELETE 단건 제거가
+  // 이후 GET 응답에 반영되어야 저장 후 재조회 경로(AC-6)가 서버 동형으로 검증된다
+  let colors: ColorLabel[] = COLORS_FIXTURE.map((c) => ({ ...c }))
   await page.route(
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
@@ -136,7 +140,20 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       if (pathname === '/api/tabs') return route.fulfill({ json: TABS_FIXTURE })
       // supabase 키 없는 config — realtime(M-6)이 disabled로 무해 종료한다 (AC-11 사전 조건)
       if (pathname === '/api/config') return route.fulfill({ json: {} })
-      if (pathname === '/api/colors') return route.fulfill({ json: COLORS_FIXTURE })
+      // M-11 색상 팔레트: GET 목록·PUT 전체 upsert(okResponseSchema 동형)·DELETE 단건 제거
+      if (pathname === '/api/colors') {
+        if (route.request().method() === 'GET') return route.fulfill({ json: colors })
+        if (route.request().method() === 'PUT') {
+          colors = (route.request().postDataJSON() as { colors: ColorLabel[] }).colors
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
+      const colorDeleteMatch = /^\/api\/colors\/([^/]+)$/.exec(pathname)
+      if (colorDeleteMatch !== null && route.request().method() === 'DELETE') {
+        const colorId = decodeURIComponent(colorDeleteMatch[1])
+        colors = colors.filter((c) => c.colorId !== colorId)
+        return route.fulfill({ json: { ok: true } })
+      }
       if (pathname === `/api/tabs/${TAB_ID}/state`)
         return route.fulfill({ json: TAB_STATE_FIXTURE })
       // M-10 자동 계산기: 레시피 GET(calcRecipesResponseSchema 동형)·PUT(저장 → 이후 GET 반영)

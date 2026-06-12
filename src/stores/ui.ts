@@ -73,6 +73,13 @@ export interface UiState {
   enterCalculatorMode: () => void
   /** 종료(모드 배지 "종료") — 모드 해제 + 선택·결과 시트 해제 */
   exitCalculatorMode: () => void
+  /**
+   * 팔레트 설정 시트 열림 (M-11) — 다른 시트와 독립 오버레이.
+   * 열림 상태만 전역(E2E·진입점 공유) — draft·deletedIds는 시트 로컬 소관 (CONVENTIONS §3)
+   */
+  paletteOpen: boolean
+  openPalette: () => void
+  closePalette: () => void
   /** 면적 표시 단위 — draft가 아닌 즉시 전역 반영, localStorage 영속 (M-7) */
   areaUnit: AreaUnitId
   setAreaUnit: (unit: AreaUnitId) => void
@@ -242,6 +249,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
       selectedParcelId: null,
       selectedGroupId: null,
     }),
+
+  paletteOpen: false,
+  openPalette: () => set({ paletteOpen: true }),
+  closePalette: () => set({ paletteOpen: false }),
 
   areaUnit: loadAreaUnit(),
   setAreaUnit: (unit) => {

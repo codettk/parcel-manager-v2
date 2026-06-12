@@ -7,6 +7,7 @@ import {
   Button,
   Checkbox,
   Chip,
+  ColorPicker,
   ColorSwatch,
   ConfirmInline,
   Drawer,
@@ -41,6 +42,7 @@ export function UIDemo() {
   const [switchOn, setSwitchOn] = useState(true)
   const [unit, setUnit] = useState<AreaUnitId>('m2')
   const [chipSel, setChipSel] = useState(false)
+  const [pickerHex, setPickerHex] = useState(DEMO_COLORS[0])
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [tabs, setTabs] = useState([
@@ -123,6 +125,12 @@ export function UIDemo() {
         <ColorSwatch hex={DEMO_COLORS[2]} styleMode="border" />
         <ColorSwatch hex={DEMO_COLORS[0]} styleMode="fill" selected />
         <ColorSwatch hex={DEMO_COLORS[3]} styleMode="fill" size="sm" />
+      </Section>
+
+      <Section title="ColorPicker — 네이티브 컬러 피커 (32px) / disabled">
+        <ColorPicker value={pickerHex} onChange={setPickerHex} aria-label="색상 선택" />
+        <span className="font-mono text-sm text-ink-muted">{pickerHex}</span>
+        <ColorPicker value={DEMO_COLORS[3]} onChange={() => {}} aria-label="비활성" disabled />
       </Section>
 
       <Section title="Badge / AreaText">

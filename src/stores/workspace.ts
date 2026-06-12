@@ -66,6 +66,16 @@ export interface WorkspaceState {
   loadCalcRecipes: () => Promise<void>
   /** 낙관적 저장 — 동기 갱신 후 PUT 전송. 실패 시 롤백 없음(upsertParcel 동형), console.error 보고 */
   saveCalcRecipes: (recipes: CalcRecipe[]) => void
+  /**
+   * 팔레트 일괄 저장 (M-11, M-5에서 이연된 colorLabels mutate) — 행 순서를 sortOrder로
+   * 명시 부여해 PUT (GET이 sort_order 정렬이므로 왕복 보존). 낙관적 — 실패 시 롤백 없음(upsertParcel 동형)
+   */
+  saveColors: (colors: ColorLabel[]) => void
+  /**
+   * 색 삭제 (M-11) — DELETE + 현재 탭 낙관적 로컬 정리(override의 color·style 비움, groups color null).
+   * 참조 정리의 권위는 서버(전 탭 null 처리)지만 자기 mutate는 Realtime 에코 가드로 무시되므로 로컬 정리 필수
+   */
+  deleteColorAndCleanup: (colorId: string) => void
   /** Realtime 수신 반영 (M-6 구독이 호출) — 서버 호출 없음. null = 키 삭제 */
   applyRemoteParcel: (parcelId: string, override: ParcelOverride | null) => void
   applyRemoteGroup: (groupId: string, group: Group | null) => void
@@ -234,6 +244,38 @@ export const useWorkspaceStore = create<WorkspaceState>()((set, get) => ({
     set({ calcRecipes: recipes })
     api.calcRecipes.put({ recipes }).catch((err: unknown) => {
       console.error('[workspace] 계산 레시피 저장 실패:', err)
+    })
+  },
+
+  saveColors: (colors) => {
+    const ordered = colors.map((c, i) => ({ ...c, sortOrder: i }))
+    set({ colorLabels: ordered })
+    api.colors.put({ colors: ordered }).catch((err: unknown) => {
+      console.error('[workspace] 팔레트 저장 실패:', err)
+    })
+  },
+
+  deleteColorAndCleanup: (colorId) => {
+    const { colorLabels, overrides, groups } = get()
+    const nextOverrides = { ...overrides }
+    for (const [pid, o] of Object.entries(overrides)) {
+      if (o.color !== colorId) continue
+      // 서버 핸들러와 동형 정규화 — 남는 의미 필드가 없으면 키 삭제 (name 등이 있으면 보존)
+      const cleared = normalizeOverride({ ...o, color: null, style: null })
+      if (isClearedOverride(cleared)) delete nextOverrides[pid]
+      else nextOverrides[pid] = cleared
+    }
+    const nextGroups = { ...groups }
+    for (const [gid, g] of Object.entries(groups)) {
+      if (g.color === colorId) nextGroups[gid] = { ...g, color: null }
+    }
+    set({
+      colorLabels: colorLabels.filter((c) => c.colorId !== colorId),
+      overrides: nextOverrides,
+      groups: nextGroups,
+    })
+    api.colors.remove(colorId).catch((err: unknown) => {
+      console.error('[workspace] 색 삭제 실패:', err)
     })
   },
 
