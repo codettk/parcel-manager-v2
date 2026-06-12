@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
 import type { CalcRecipe } from '../../../src/types/api/calcRecipes'
 import type { ColorLabel } from '../../../src/types/api/colors'
+import type { TabStateResponse } from '../../../src/types/api/tabState'
 
 // E2E 공용 /api 모킹 헬퍼 — webServer는 vite 단독(5173)이라 /api(3000 프록시)는 502가 된다.
 // M-5 이후 탭 선택은 스토어 boot 완료(C-4 isInitializing 해제)가 전제이므로,
@@ -100,7 +101,7 @@ export interface MockApiOptions {
   calcRecipes?: CalcRecipe[] | null
 }
 
-const TAB_STATE_FIXTURE = {
+const TAB_STATE_FIXTURE: TabStateResponse = {
   overrides: {
     [RED_PARCEL_ID]: {
       color: 'c-red',
@@ -133,6 +134,9 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // M-11 팔레트 — 상태 보존 모킹 (calc-recipes 선례): PUT 전체 upsert·DELETE 단건 제거가
   // 이후 GET 응답에 반영되어야 저장 후 재조회 경로(AC-6)가 서버 동형으로 검증된다
   let colors: ColorLabel[] = COLORS_FIXTURE.map((c) => ({ ...c }))
+  // M-12 JSON 불러오기 — 상태 보존 모킹: PUT import가 이후 GET state 응답에 반영되어야
+  // 적용 후 재조회 경로(importFromFile ③)가 서버 동형으로 검증된다
+  let tabState: TabStateResponse = structuredClone(TAB_STATE_FIXTURE)
   await page.route(
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
@@ -154,8 +158,23 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
         colors = colors.filter((c) => c.colorId !== colorId)
         return route.fulfill({ json: { ok: true } })
       }
-      if (pathname === `/api/tabs/${TAB_ID}/state`)
-        return route.fulfill({ json: TAB_STATE_FIXTURE })
+      if (pathname === `/api/tabs/${TAB_ID}/state`) return route.fulfill({ json: tabState })
+      // M-12 JSON 불러오기 — 전체 교체. 서버 tabImportHandler의 group_id 전부 재생성(PK 충돌
+      // 방지)을 모사한다: 파일의 groupId로 로컬을 채우면 키가 어긋남을 재조회 경로로 검증 가능
+      if (pathname === `/api/tabs/${TAB_ID}/import` && route.request().method() === 'PUT') {
+        const body = route.request().postDataJSON() as {
+          overrides: TabStateResponse['overrides']
+          groups: TabStateResponse['groups']
+        }
+        let seq = 0
+        tabState = {
+          overrides: body.overrides,
+          groups: Object.fromEntries(
+            Object.values(body.groups).map((g) => [`g-imported-${String(++seq)}`, g]),
+          ),
+        }
+        return route.fulfill({ json: { ok: true } })
+      }
       // M-10 자동 계산기: 레시피 GET(calcRecipesResponseSchema 동형)·PUT(저장 → 이후 GET 반영)
       if (pathname === '/api/calc-recipes') {
         if (route.request().method() === 'GET')

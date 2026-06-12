@@ -80,6 +80,13 @@ export interface UiState {
   paletteOpen: boolean
   openPalette: () => void
   closePalette: () => void
+  /**
+   * 공유 시트 열림 (M-12) — 팔레트(M-11) 선례: 열림만 전역,
+   * 파일 선택·미리보기·오류는 시트 로컬 소관 (CONVENTIONS §3)
+   */
+  shareOpen: boolean
+  openShare: () => void
+  closeShare: () => void
   /** 면적 표시 단위 — draft가 아닌 즉시 전역 반영, localStorage 영속 (M-7) */
   areaUnit: AreaUnitId
   setAreaUnit: (unit: AreaUnitId) => void
@@ -253,6 +260,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
   paletteOpen: false,
   openPalette: () => set({ paletteOpen: true }),
   closePalette: () => set({ paletteOpen: false }),
+
+  shareOpen: false,
+  openShare: () => set({ shareOpen: true }),
+  closeShare: () => set({ shareOpen: false }),
 
   areaUnit: loadAreaUnit(),
   setAreaUnit: (unit) => {

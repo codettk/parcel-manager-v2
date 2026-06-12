@@ -5,3 +5,7 @@ public/data
 supabase/.temp
 # 하네스가 관리하는 로컬 파일 (gitignored — 포맷 비대상)
 .claude/settings.local.json
+# 사용자 도구 산출물 (미추적 — 커밋·포맷 비대상)
+.agents
+.codex
+AGENTS.md

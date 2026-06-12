@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { genGroupId } from '../features/group/groupId'
+import { mergeColors } from '../features/share/shareFile'
 import { api } from '../lib/api'
 import type { CalcRecipe } from '../types/api/calcRecipes'
 import type { ColorLabel } from '../types/api/colors'
@@ -76,6 +77,18 @@ export interface WorkspaceState {
    * 참조 정리의 권위는 서버(전 탭 null 처리)지만 자기 mutate는 Realtime 에코 가드로 무시되므로 로컬 정리 필수
    */
   deleteColorAndCleanup: (colorId: string) => void
+  /**
+   * JSON 불러오기 적용 (M-12) — 순차 3단계: ① importState(현재 탭 settings/groups 전체 교체)
+   * ② colors가 1개 이상이면 기존 colorLabels에 upsert 병합 후 PUT(전 탭 공유 자원이라 교체 금지)
+   * ③ 서버 재조회로 로컬 갱신 — 서버가 group_id를 전부 재생성하므로 파일의 groupId를
+   * 로컬에 직접 쓰면 키가 어긋난다. refetch가 유일하게 올바른 경로 (명세 §적용).
+   * 실패는 reject — 호출부(공유 시트)가 인라인 표면화 (v1 fire-and-forget 폐기)
+   */
+  importFromFile: (file: {
+    overrides: Record<string, ParcelOverride>
+    groups: Record<string, Group>
+    colors: ColorLabel[]
+  }) => Promise<void>
   /** Realtime 수신 반영 (M-6 구독이 호출) — 서버 호출 없음. null = 키 삭제 */
   applyRemoteParcel: (parcelId: string, override: ParcelOverride | null) => void
   applyRemoteGroup: (groupId: string, group: Group | null) => void
@@ -277,6 +290,23 @@ export const useWorkspaceStore = create<WorkspaceState>()((set, get) => ({
     api.colors.remove(colorId).catch((err: unknown) => {
       console.error('[workspace] 색 삭제 실패:', err)
     })
+  },
+
+  importFromFile: async (file) => {
+    const { activeTabId } = get()
+    if (activeTabId === null) throw new Error('부팅이 끝나기 전에는 불러올 수 없습니다.')
+    await api.tabState.importState(activeTabId, {
+      overrides: file.overrides,
+      groups: file.groups,
+    })
+    if (file.colors.length > 0) {
+      await api.colors.put({ colors: mergeColors(get().colorLabels, file.colors) })
+    }
+    const [state, colorLabels] = await Promise.all([
+      api.tabState.get(activeTabId),
+      api.colors.list(),
+    ])
+    set({ overrides: state.overrides, groups: state.groups, colorLabels })
   },
 
   applyRemoteParcel: (parcelId, override) => {
