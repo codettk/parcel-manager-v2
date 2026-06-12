@@ -46,6 +46,21 @@ export interface UiState {
    * 그룹 생성 pending 중의 닫기(X·backdrop)는 cancelGroupDraft 원복과 동일 의미 (명세 ②)
    */
   closeSheet: () => void
+  /**
+   * 필지 목록 전체 화면 뷰 (M-9) — 시트와 독립 레이어.
+   * 시트가 목록 위에 열려도 listViewOpen은 유지된다 (v1 이슈 #5 수정본 보존).
+   * 진입 시 멀티선택·추가모드를 해제한다 — 모드 오버레이(z-10)가 목록(z-20) 아래
+   * 가려진 채 행 탭이 무음 데이터 변경을 일으키는 상태 차단 (검증 반려 B-1)
+   */
+  listViewOpen: boolean
+  openListView: () => void
+  closeListView: () => void
+  /**
+   * 목록 행 탭 (M-9, B-1 정정) — 멀티선택·추가모드 분기를 타지 않고 시트 분기 직행
+   * (그룹 소속 → 그룹 시트, 비소속 → 필지 시트. v1 onSelectParcel 동형).
+   * pending 그룹 드래프트 중 다른 대상 탭 = 드래프트 원복 후 새 대상 (tapParcel과 동일)
+   */
+  openParcelFromList: (parcelId: string) => void
   /** 면적 표시 단위 — draft가 아닌 즉시 전역 반영, localStorage 영속 (M-7) */
   areaUnit: AreaUnitId
   setAreaUnit: (unit: AreaUnitId) => void
@@ -53,6 +68,25 @@ export interface UiState {
   /** Realtime 연결 상태 — lib/realtime.ts가 쓰고, 소비자(M-7+ 시트, M-16 탭)는 읽기만 한다 */
   realtimeStatus: RealtimeStatus
   setRealtimeStatus: (status: RealtimeStatus) => void
+}
+
+/**
+ * 시트 분기 공통 로직 (tapParcel 일반 분기 = 목록 행 탭 openParcelFromList) —
+ * pending 드래프트에서 다른 대상으로 이동하면 먼저 원복 (닫기와 동일 의미)
+ */
+function openSheetForParcel(parcelId: string) {
+  const ws = useWorkspaceStore.getState()
+  if (ws.pendingGroupCreate !== null) {
+    const staysOnPending = selectParcelToGroup(ws)[parcelId] === ws.pendingGroupCreate.groupId
+    if (!staysOnPending) ws.cancelGroupDraft()
+  }
+  // cancelGroupDraft가 그룹 구성을 원복했을 수 있어 소속을 재산출한다
+  const gid = selectParcelToGroup(useWorkspaceStore.getState())[parcelId]
+  if (gid !== undefined) {
+    useUiStore.setState({ selectedGroupId: gid, selectedParcelId: null, openSheet: 'group' })
+  } else {
+    useUiStore.setState({ selectedParcelId: parcelId, selectedGroupId: null, openSheet: 'parcel' })
+  }
 }
 
 export const useUiStore = create<UiState>()((set, get) => ({
@@ -102,20 +136,13 @@ export const useUiStore = create<UiState>()((set, get) => ({
       return
     }
 
-    // 일반 분기 — pending 드래프트에서 다른 대상으로 이동하면 먼저 원복 (닫기와 동일 의미)
-    if (ws.pendingGroupCreate !== null) {
-      const staysOnPending =
-        parcelId !== null && parcelToGroup[parcelId] === ws.pendingGroupCreate.groupId
-      if (!staysOnPending) ws.cancelGroupDraft()
-    }
+    // 일반 분기 — 빈 곳 탭은 드래프트 원복 + 선택·시트 해제
     if (parcelId === null) {
+      if (ws.pendingGroupCreate !== null) ws.cancelGroupDraft()
       set({ selectedParcelId: null, selectedGroupId: null, openSheet: null })
       return
     }
-    // cancelGroupDraft가 그룹 구성을 원복했을 수 있어 소속을 재산출한다
-    const gid = selectParcelToGroup(useWorkspaceStore.getState())[parcelId]
-    if (gid !== undefined) set({ selectedGroupId: gid, selectedParcelId: null, openSheet: 'group' })
-    else set({ selectedParcelId: parcelId, selectedGroupId: null, openSheet: 'parcel' })
+    openSheetForParcel(parcelId)
   },
 
   toggleMultiSelectMode: () => {
@@ -146,6 +173,23 @@ export const useUiStore = create<UiState>()((set, get) => ({
     const ws = useWorkspaceStore.getState()
     if (ws.pendingGroupCreate !== null) ws.cancelGroupDraft()
     set({ openSheet: null, selectedParcelId: null, selectedGroupId: null })
+  },
+
+  listViewOpen: false,
+  // 추가모드 해제는 finishAddToGroupMode(그룹 시트 복귀)가 아닌 단순 해제 —
+  // 복귀 시트가 목록 아래 깔려 보이지 않으므로 (B-1 설계 결정)
+  openListView: () =>
+    set({
+      listViewOpen: true,
+      multiSelectMode: false,
+      multiSelectedIds: [],
+      addToGroupModeGroupId: null,
+    }),
+  closeListView: () => set({ listViewOpen: false }),
+
+  openParcelFromList: (parcelId) => {
+    if (get().isInitializing) return
+    openSheetForParcel(parcelId)
   },
 
   areaUnit: loadAreaUnit(),

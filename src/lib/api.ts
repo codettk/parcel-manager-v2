@@ -20,8 +20,10 @@ import {
 } from '../types/api/history'
 import {
   fetchLandInfoResponseSchema,
+  parcelAreasResponseSchema,
   parcelResponseSchema,
   type FetchLandInfoResponse,
+  type ParcelAreasResponse,
   type ParcelResponse,
 } from '../types/api/parcels'
 import {
@@ -201,6 +203,10 @@ export const api = {
   parcels: {
     get(parcelId: string): Promise<ParcelResponse> {
       return request('GET', `/api/parcels/${encodeURIComponent(parcelId)}`, parcelResponseSchema)
+    },
+    /** 전 필지 공부상 면적 일괄 조회 (M-9 목록 뷰) — 페이징은 핸들러 소관, 클라이언트는 1회 호출 */
+    listAreas(): Promise<ParcelAreasResponse> {
+      return request('GET', '/api/parcel-areas', parcelAreasResponseSchema)
     },
     /** Phase 3은 계약만 — 핸들러 구현(M-13) 전까지 ApiError(501) */
     fetchLandInfo(parcelId: string): Promise<FetchLandInfoResponse> {

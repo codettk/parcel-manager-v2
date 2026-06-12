@@ -3,3 +3,5 @@ node_modules
 pnpm-lock.yaml
 public/data
 supabase/.temp
+# 하네스가 관리하는 로컬 파일 (gitignored — 포맷 비대상)
+.claude/settings.local.json

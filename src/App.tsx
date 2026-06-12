@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { ScrollText } from 'lucide-react'
+import { List, ScrollText } from 'lucide-react'
 import { IconButton } from './components/ui'
 import { AddToGroupBanner } from './features/group/AddToGroupBanner'
 import { GroupSheet } from './features/group/GroupSheet'
+import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { MapCanvas } from './features/map/MapCanvas'
 import { ParcelSheet } from './features/parcel/ParcelSheet'
@@ -22,6 +23,8 @@ function App() {
   const selection = useUiStore(selectSelection)
   const tapParcel = useUiStore((s) => s.tapParcel)
   const openSheet = useUiStore((s) => s.openSheet)
+  const listViewOpen = useUiStore((s) => s.listViewOpen)
+  const openListView = useUiStore((s) => s.openListView)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
   const bootRequested = useRef(false)
@@ -65,8 +68,14 @@ function App() {
           onClick={() => setReleaseNotesOpen(true)}
         />
       </div>
+      {/* NavDrawer 도입 전 임시 진입점 (M-9) — 릴리즈 노트(top-3 right-3)·멀티선택(top-16 right-3)과 충돌 없는 위치 */}
+      <div className="absolute top-3 right-16 z-10 rounded-md bg-surface shadow-md">
+        <IconButton icon={List} aria-label="필지 목록" onClick={openListView} />
+      </div>
       <MultiSelectOverlay />
       {selection.addToGroupModeGroupId !== null && <AddToGroupBanner />}
+      {/* 목록은 시트(z-40/50) 아래 레이어 — 행 탭으로 열린 시트가 목록 위에 뜬다 (명세 §행 탭) */}
+      {listViewOpen && <ParcelListView />}
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
       {openSheet === 'parcel' && selection.selectedParcelId !== null && (
         <ParcelSheet parcelId={selection.selectedParcelId} />

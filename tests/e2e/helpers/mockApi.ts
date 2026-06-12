@@ -68,6 +68,19 @@ export function jibunOf(parcelId: string): string | null {
 // GET /api/parcels/:id 픽스처 면적(㎡) — 시트 면적 행 렌더 조건(lndpclAr != null) 충족용
 const PARCEL_FIXTURE_AREA_M2 = 1234.5
 
+export const PARCEL_COUNT = rawData.parcels.length
+
+// M-9 목록 면적 일괄 조회(GET /api/parcel-areas) 픽스처 —
+// parcelAreasResponseSchema(Record<localId, number | null>) 동형.
+// 대부분 null + 일부만 고유 실수 면적: '-' 아닌 환산 표시(AC-10)와 행 특정(AC-11)을 겸한다
+export const LIST_AREAS_M2: Record<string, number> = {
+  [RED_PARCEL_ID]: 2345.6,
+  [GROUP_MEMBER_IDS[0]]: 678.9,
+}
+const PARCEL_AREAS_FIXTURE: Record<string, number | null> = Object.fromEntries(
+  rawData.parcels.map((p) => [p.id, LIST_AREAS_M2[p.id] ?? null]),
+)
+
 const TAB_STATE_FIXTURE = {
   overrides: {
     [RED_PARCEL_ID]: {
@@ -106,6 +119,9 @@ export async function mockApi(page: Page) {
       if (pathname === '/api/colors') return route.fulfill({ json: COLORS_FIXTURE })
       if (pathname === `/api/tabs/${TAB_ID}/state`)
         return route.fulfill({ json: TAB_STATE_FIXTURE })
+      // M-9 목록 뷰: 전 필지 면적 일괄 조회 (페이징은 핸들러 소관 — 응답은 단일 레코드)
+      if (pathname === '/api/parcel-areas' && route.request().method() === 'GET')
+        return route.fulfill({ json: PARCEL_AREAS_FIXTURE })
       // M-7 필지 시트: 단건 조회(지번·면적) — parcelResponseSchema(src/types/api/parcels.ts) 동형
       const parcelMatch = /^\/api\/parcels\/([^/]+)$/.exec(pathname)
       if (parcelMatch !== null && route.request().method() === 'GET') {

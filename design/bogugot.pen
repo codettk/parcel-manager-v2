@@ -8194,6 +8194,330 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "lmfsh",
+      "x": 5129,
+      "y": 0,
+      "name": "필지 목록 — 모바일 (M-9)",
+      "clip": true,
+      "width": 375,
+      "height": 960,
+      "fill": "$color-surface",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "TwFIz",
+          "name": "상태바",
+          "width": "fill_container",
+          "padding": [
+            "$space-3",
+            "$space-4"
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "J2vfLY",
+              "name": "시간",
+              "fill": "$color-ink",
+              "content": "9:41",
+              "fontFamily": "$font-mono",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "m8nBs",
+              "name": "상태 아이콘",
+              "gap": "$space-1",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "XXKpb",
+                  "name": "signal",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "x1fDYR",
+                  "name": "wifi",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                },
+                {
+                  "type": "icon",
+                  "id": "Jixtk",
+                  "name": "battery-full",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$color-ink"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qZCog",
+          "name": "헤더",
+          "width": "fill_container",
+          "padding": [
+            0,
+            "$space-4",
+            0,
+            "$space-2"
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ZKJdI",
+              "name": "헤더 좌측",
+              "gap": "$space-1",
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "PMBlL",
+                  "type": "ref",
+                  "ref": "ZmUgI",
+                  "name": "지도로 돌아가기",
+                  "descendants": {
+                    "d9kW3w": {
+                      "icon": "arrow-left",
+                      "fill": "$color-ink"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "NzUM8",
+                  "name": "타이틀",
+                  "fill": "$color-ink",
+                  "content": "필지 목록",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 17,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "cWo9B",
+              "name": "카운트",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "MGhiu",
+                  "name": "카운트 숫자",
+                  "fill": "$color-ink-muted",
+                  "content": "4,409 / 4,409",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "CFgcZ",
+                  "name": "카운트 단위",
+                  "fill": "$color-ink-muted",
+                  "content": "필지",
+                  "fontFamily": "$font-sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "sS5eb",
+          "name": "검색 행",
+          "width": "fill_container",
+          "padding": [
+            "$space-2",
+            "$space-4"
+          ],
+          "children": [
+            {
+              "id": "tk44o",
+              "type": "ref",
+              "ref": "c5zDc",
+              "name": "검색 입력",
+              "width": "fill_container",
+              "descendants": {
+                "vhrPL": {
+                  "content": "지번·그룹명 검색…"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "B87l8V",
+          "name": "색 필터 칩 영역",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": "$space-2",
+          "padding": [
+            0,
+            "$space-4",
+            "$space-1",
+            "$space-4"
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "EORsZ",
+              "name": "칩 행 1",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "id": "pBtkE",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 전체 (활성)",
+                  "fill": "$color-primary",
+                  "stroke": "$color-primary",
+                  "descendants": {
+                    "V0smxP": {
+                      "content": "전체",
+                      "fill": "$color-surface"
+                    }
+                  }
+                },
+                {
+                  "id": "kidbN",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 벼",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#6CA945"
+                    },
+                    "V0smxP": {
+                      "content": "벼"
+                    }
+                  }
+                },
+                {
+                  "id": "ptwtq",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 콩",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#E5A300"
+                    },
+                    "V0smxP": {
+                      "content": "콩"
+                    }
+                  }
+                },
+                {
+                  "id": "BOKeL",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 감자",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#B96A8C"
+                    },
+                    "V0smxP": {
+                      "content": "감자"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nIMO2",
+              "name": "칩 행 2",
+              "gap": "$space-2",
+              "children": [
+                {
+                  "id": "Tbua0",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 매매",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#C8392E"
+                    },
+                    "V0smxP": {
+                      "content": "매매"
+                    }
+                  }
+                },
+                {
+                  "id": "Y5D3ir",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 임대",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#2B7BC9"
+                    },
+                    "V0smxP": {
+                      "content": "임대"
+                    }
+                  }
+                },
+                {
+                  "id": "mCto2",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 기타",
+                  "descendants": {
+                    "isdQF": {
+                      "enabled": true,
+                      "fill": "#5B8FB9"
+                    },
+                    "V0smxP": {
+                      "content": "기타"
+                    }
+                  }
+                },
+                {
+                  "id": "AstJf",
+                  "type": "ref",
+                  "ref": "QQkWV",
+                  "name": "칩 미지정",
+                  "descendants": {
+                    "V0smxP": {
+                      "content": "미지정"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

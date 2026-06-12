@@ -9,7 +9,7 @@ import {
   historyItemHandler,
   historyRestoreHandler,
 } from './handlers/history'
-import { fetchLandInfoHandler, parcelItemHandler } from './handlers/parcels'
+import { fetchLandInfoHandler, parcelAreasHandler, parcelItemHandler } from './handlers/parcels'
 import {
   tabGroupsHandler,
   tabImportHandler,
@@ -47,6 +47,7 @@ app.delete('/api/colors/:id', expressAdapter(colorItemHandler))
 app.get('/api/calc-recipes', expressAdapter(calcRecipesHandler))
 app.put('/api/calc-recipes', expressAdapter(calcRecipesHandler))
 
+app.get('/api/parcel-areas', expressAdapter(parcelAreasHandler))
 app.get('/api/parcels/:id', expressAdapter(parcelItemHandler))
 app.post('/api/parcels/:id/fetch-land-info', expressAdapter(fetchLandInfoHandler))
 

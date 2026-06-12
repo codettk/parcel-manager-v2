@@ -1,5 +1,5 @@
 import { fetchLandInfoRequestSchema } from '../../src/types/api/parcels'
-import type { Parcel } from '../../src/types/api/parcels'
+import type { Parcel, ParcelAreasResponse } from '../../src/types/api/parcels'
 import { createDb } from './db'
 import { badRequest, methodNotAllowed, notFound } from './http'
 import type { Handler } from './types'
@@ -56,6 +56,31 @@ export const parcelItemHandler: Handler = async (req, ctx) => {
   if (error) throw new Error(error.message)
   if (!data) return notFound('필지를 찾을 수 없습니다')
   return { status: 200, body: rowToParcel(data as ParcelRow) }
+}
+
+/** supabase-js 기본 응답 상한(1,000행)과 같은 크기 — 페이지가 가득 차지 않으면 마지막 페이지 */
+const AREAS_PAGE_SIZE = 1000
+
+/**
+ * GET /api/parcel-areas — 전 필지 공부상 면적(lndpcl_ar) 일괄 조회 (M-9 목록 뷰).
+ * supabase-js 기본 1,000행 제한을 .range() 페이징으로 우회해 전량(4,409행)을 한 응답에 모은다
+ */
+export const parcelAreasHandler: Handler = async (req, ctx) => {
+  if (req.method !== 'GET') return methodNotAllowed()
+  const db = createDb(ctx.env)
+  const areas: ParcelAreasResponse = {}
+  for (let from = 0; ; from += AREAS_PAGE_SIZE) {
+    const { data, error } = await db
+      .from('parcels')
+      .select('local_id, lndpcl_ar')
+      .order('local_id', { ascending: true })
+      .range(from, from + AREAS_PAGE_SIZE - 1)
+    if (error) throw new Error(error.message)
+    const rows = (data ?? []) as Pick<ParcelRow, 'local_id' | 'lndpcl_ar'>[]
+    for (const row of rows) areas[row.local_id] = row.lndpcl_ar
+    if (rows.length < AREAS_PAGE_SIZE) break
+  }
+  return { status: 200, body: areas }
 }
 
 /** POST /api/parcels/:id/fetch-land-info — 계약만 Phase 3에서 확정, 구현은 M-13 */

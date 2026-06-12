@@ -27,6 +27,13 @@ export const parcelResponseSchema = parcelSchema
 export type ParcelResponse = z.infer<typeof parcelResponseSchema>
 
 /**
+ * GET /api/parcel-areas — 전 필지 공부상 면적(lndpcl_ar) 일괄 조회 (M-9 목록 뷰).
+ * 핸들러가 .range() 페이징으로 전량 수집 — supabase-js 기본 1,000행 제한 우회
+ */
+export const parcelAreasResponseSchema = z.record(z.string(), z.number().nullable())
+export type ParcelAreasResponse = z.infer<typeof parcelAreasResponseSchema>
+
+/**
  * POST /api/parcels/:id/fetch-land-info — V-World 토지정보 갱신.
  * Phase 3은 계약만 확정, 구현은 M-13 — 그때까지 핸들러는 501
  */
