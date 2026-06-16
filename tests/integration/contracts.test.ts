@@ -85,10 +85,11 @@ describe('AC-14: 나머지 엔드포인트 응답의 계약 스키마 parse', ()
     expect(Object.values(state.groups)[0].parcelIds).toEqual([p1, p2])
   })
 
-  it('POST /api/parcels/:id/fetch-land-info — 구현 전 501 + errorResponseSchema', async () => {
+  it('POST /api/parcels/:id/fetch-land-info — 키 미설정 env면 503 + errorResponseSchema (M-13)', async () => {
     const [p] = await pickParcelIds(1)
+    // 로컬/CI env에는 V_WORLD_LADFRLLIST가 없으므로 구성 가드에서 503 — 외부 호출 없음
     const res = await call(fetchLandInfoHandler, 'POST', { id: p }, { clientId: CLIENT_ID })
-    expect(res.status).toBe(501)
+    expect(res.status).toBe(503)
     errorResponseSchema.parse(res.body)
   })
 

@@ -69,21 +69,29 @@ describe('mutate 요청의 clientId 필수 검증 (AC-12 — 400 경로)', () =>
   })
 })
 
-describe('fetch-land-info 스텁', () => {
-  it('유효한 요청에 501을 반환한다 (구현은 M-13)', async () => {
+describe('fetch-land-info — 검증·구성 가드 (M-13)', () => {
+  it('유효한 요청이라도 V_WORLD_LADFRLLIST 미설정 env면 503을 반환한다 (DB 미접근)', async () => {
     const res = await fetchLandInfoHandler(
       { method: 'POST', params: { id: 'p' }, query: {}, body: { clientId: 'c1' } },
       ctx,
     )
-    expect(res.status).toBe(501)
+    expect(res.status).toBe(503)
     expect(res.body).toHaveProperty('error')
   })
 
-  it('clientId 누락 시 400', async () => {
+  it('clientId 누락 시 400 (키 가드보다 먼저 검증)', async () => {
     const res = await fetchLandInfoHandler(
       { method: 'POST', params: { id: 'p' }, query: {}, body: {} },
-      ctx,
+      { env: { V_WORLD_LADFRLLIST: 'k' } },
     )
     expect(res.status).toBe(400)
+  })
+
+  it('POST 외 메서드에 405', async () => {
+    const res = await fetchLandInfoHandler(
+      { method: 'GET', params: { id: 'p' }, query: {}, body: { clientId: 'c1' } },
+      { env: { V_WORLD_LADFRLLIST: 'k' } },
+    )
+    expect(res.status).toBe(405)
   })
 })

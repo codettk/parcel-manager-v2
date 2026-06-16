@@ -1,8 +1,16 @@
 import { fetchLandInfoRequestSchema } from '../../src/types/api/parcels'
 import type { Parcel, ParcelAreasResponse } from '../../src/types/api/parcels'
 import { createDb } from './db'
-import { badRequest, methodNotAllowed, notFound } from './http'
+import {
+  badGateway,
+  badRequest,
+  conflict,
+  methodNotAllowed,
+  notFound,
+  serviceUnavailable,
+} from './http'
 import type { Handler } from './types'
+import { fetchLadfrl } from './vworld'
 
 interface ParcelRow {
   local_id: string
@@ -83,10 +91,48 @@ export const parcelAreasHandler: Handler = async (req, ctx) => {
   return { status: 200, body: areas }
 }
 
-/** POST /api/parcels/:id/fetch-land-info — 계약만 Phase 3에서 확정, 구현은 M-13 */
-export const fetchLandInfoHandler: Handler = async (req) => {
+const PNU_LENGTH = 19
+
+/**
+ * POST /api/parcels/:id/fetch-land-info — V-World 토지임야 정보 조회 후 parcels 행 갱신.
+ * 성공 시 갱신된 마스터 행 전체를 parcelSchema(camelCase)로 반환.
+ * clientId는 계약 일관성용 — parcels는 updated_by/Realtime 대상이 아니라 에코 가드에 쓰이지 않는다.
+ */
+export const fetchLandInfoHandler: Handler = async (req, ctx) => {
   if (req.method !== 'POST') return methodNotAllowed()
   const parsed = fetchLandInfoRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
-  return { status: 501, body: { error: 'V-World 토지정보 연동은 M-13에서 구현됩니다' } }
+
+  if (!ctx.env.V_WORLD_LADFRLLIST) {
+    return serviceUnavailable('V-World API 키가 설정되지 않았습니다')
+  }
+
+  const db = createDb(ctx.env)
+  const { data, error } = await db
+    .from('parcels')
+    .select('*')
+    .eq('local_id', req.params.id)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  if (!data) return notFound('필지를 찾을 수 없습니다')
+
+  const row = data as ParcelRow
+  if (!row.pnu || row.pnu.length !== PNU_LENGTH) {
+    return conflict('PNU(19자리)가 확보되지 않았습니다')
+  }
+
+  const result = await fetchLadfrl(row.pnu, ctx.env)
+  if (!result.ok) {
+    return badGateway(`V-World 토지정보 조회 실패: ${result.message}`)
+  }
+
+  const { data: updated, error: updateError } = await db
+    .from('parcels')
+    .update(result.mapping)
+    .eq('local_id', req.params.id)
+    .select('*')
+    .single()
+  if (updateError) throw new Error(updateError.message)
+
+  return { status: 200, body: rowToParcel(updated as ParcelRow) }
 }

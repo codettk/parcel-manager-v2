@@ -2,16 +2,21 @@ import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ParcelSheet } from '../../../src/features/parcel/ParcelSheet'
-import { api } from '../../../src/lib/api'
+import { ApiError, api } from '../../../src/lib/api'
 import { AREA_UNIT_STORAGE_KEY, useUiStore } from '../../../src/stores/ui'
 import { useWorkspaceStore } from '../../../src/stores/workspace'
 import type { Parcel } from '../../../src/types/api/parcels'
 import type { ParcelOverride } from '../../../src/types/api/tabState'
 
-// 명세: docs/specs/parcel-sheet.md — AC-1~AC-7 (컴포넌트 테스트). AC-8~10은 E2E(tester) 소관.
-vi.mock('../../../src/lib/api', () => ({
-  api: { parcels: { get: vi.fn() } },
-}))
+// 명세: docs/specs/parcel-sheet.md — AC-1~AC-7. vworld-land-info.md — AC-6~8 (조회 버튼).
+// ApiError는 실제 클래스를 유지해 instanceof 분기가 동작하게 한다.
+vi.mock('../../../src/lib/api', async (importActual) => {
+  const actual = await importActual<typeof import('../../../src/lib/api')>()
+  return {
+    ApiError: actual.ApiError,
+    api: { parcels: { get: vi.fn(), fetchLandInfo: vi.fn() } },
+  }
+})
 
 // jsdom에는 matchMedia가 없으므로 스텁 (Sheet → useIsWide). false = BottomSheet 경로
 function stubMatchMedia() {
@@ -48,6 +53,9 @@ const PARCEL_FIXTURE: Parcel = {
   coordinates: [],
   vworldFetchedAt: null,
 }
+
+/** V-World 조회 완료 필지 — 토지 정보 카드가 표시되는 분기 (vworldFetchedAt 채워짐) */
+const FETCHED_FIXTURE: Parcel = { ...PARCEL_FIXTURE, vworldFetchedAt: '2026-06-15T00:00:00.000Z' }
 
 const COLORS_FIXTURE = [
   { colorId: 'c-red', label: '빨강', hex: '#FF0000', sortOrder: 0 },
@@ -281,8 +289,9 @@ describe('AC-7: 면적 단위 토글은 즉시 전역 반영', () => {
 })
 
 describe('토지 정보 카드 (명세 §시트 내용 3)', () => {
-  it('pnu가 있으면 지목·소유구분·공유인수(>1)가 표시된다', async () => {
+  it('pnu가 있고 조회 완료(vworldFetchedAt)면 지목·소유구분·공유인수(>1)가 표시된다', async () => {
     setupStores({})
+    vi.mocked(api.parcels.get).mockResolvedValue(FETCHED_FIXTURE)
     await renderSheet()
 
     expect(screen.getByText('지목')).toBeInTheDocument()
@@ -291,11 +300,13 @@ describe('토지 정보 카드 (명세 §시트 내용 3)', () => {
     expect(screen.getByText('개인')).toBeInTheDocument()
     expect(screen.getByText('공유인수')).toBeInTheDocument()
     expect(screen.getByText('3명')).toBeInTheDocument()
+    // 조회 완료 필지에는 재조회 버튼이 없다
+    expect(screen.queryByRole('button', { name: '토지임야 조회' })).not.toBeInTheDocument()
   })
 
   it('cnrsPsnCo가 1이면 공유인수 행이 생략된다', async () => {
     setupStores({})
-    vi.mocked(api.parcels.get).mockResolvedValue({ ...PARCEL_FIXTURE, cnrsPsnCo: 1 })
+    vi.mocked(api.parcels.get).mockResolvedValue({ ...FETCHED_FIXTURE, cnrsPsnCo: 1 })
     await renderSheet()
 
     expect(screen.getByText('지목')).toBeInTheDocument()
@@ -313,5 +324,78 @@ describe('토지 정보 카드 (명세 §시트 내용 3)', () => {
     await user.type(screen.getByRole('textbox', { name: '이름' }), '집앞')
     expect(screen.getByText(/기본 지번:/)).toBeInTheDocument()
     expect(screen.getByText('128-4')).toBeInTheDocument()
+  })
+})
+
+describe('V-World 토지임야 조회 버튼 (vworld-land-info.md AC-6~8)', () => {
+  it('AC-6: pnu 있고 vworldFetchedAt null이면 카드 대신 "토지임야 조회" 버튼이 표시된다', async () => {
+    setupStores({})
+    await renderSheet() // PARCEL_FIXTURE: pnu 있음, vworldFetchedAt null
+
+    expect(screen.getByRole('button', { name: '토지임야 조회' })).toBeInTheDocument()
+    expect(screen.queryByText('지목')).not.toBeInTheDocument()
+  })
+
+  it('AC-6: pnu가 null이면 버튼·카드 모두 표시되지 않는다', async () => {
+    setupStores({})
+    vi.mocked(api.parcels.get).mockResolvedValue({ ...PARCEL_FIXTURE, pnu: null })
+    await renderSheet()
+
+    expect(screen.queryByRole('button', { name: '토지임야 조회' })).not.toBeInTheDocument()
+    expect(screen.queryByText('지목')).not.toBeInTheDocument()
+  })
+
+  it('AC-7: 버튼 탭 → fetchLandInfo 1회, 응답 전까지 "조회 중…" 비활성, 성공 후 버튼 사라지고 카드 표시', async () => {
+    setupStores({})
+    await renderSheet()
+    const user = userEvent.setup()
+
+    let resolveFetch: (p: Parcel) => void = () => {}
+    vi.mocked(api.parcels.fetchLandInfo).mockReturnValue(
+      new Promise<Parcel>((resolve) => {
+        resolveFetch = resolve
+      }),
+    )
+
+    await user.click(screen.getByRole('button', { name: '토지임야 조회' }))
+
+    // 응답 전: 비활성 + "조회 중…"
+    const loadingButton = screen.getByRole('button', { name: '조회 중…' })
+    expect(loadingButton).toBeDisabled()
+    expect(api.parcels.fetchLandInfo).toHaveBeenCalledExactlyOnceWith('p1')
+
+    // 성공 응답 → 버튼 사라지고 카드에 지목·소유구분 표시
+    resolveFetch(FETCHED_FIXTURE)
+    expect(await screen.findByText('지목')).toBeInTheDocument()
+    expect(screen.getByText('답')).toBeInTheDocument()
+    expect(screen.getByText('소유구분')).toBeInTheDocument()
+    expect(screen.getByText('개인')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '토지임야 조회' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '조회 중…' })).not.toBeInTheDocument()
+  })
+
+  it('AC-8: 탭 후 ApiError면 인라인 오류 문구 + 버튼 재활성, 시트는 닫히지 않는다', async () => {
+    setupStores({})
+    await renderSheet()
+    const user = userEvent.setup()
+
+    vi.mocked(api.parcels.fetchLandInfo).mockRejectedValue(
+      new ApiError(502, 'V-World 조회에 실패했습니다.'),
+    )
+
+    await user.click(screen.getByRole('button', { name: '토지임야 조회' }))
+
+    expect(await screen.findByText('V-World 조회에 실패했습니다.')).toBeInTheDocument()
+    // 버튼 재활성 (재시도 가능)
+    const retryButton = screen.getByRole('button', { name: '토지임야 조회' })
+    expect(retryButton).toBeEnabled()
+    // 시트는 닫히지 않음
+    expect(useUiStore.getState().openSheet).toBe('parcel')
+
+    // 재시도 가능 — 두 번째 호출
+    vi.mocked(api.parcels.fetchLandInfo).mockResolvedValue(FETCHED_FIXTURE)
+    await user.click(retryButton)
+    expect(await screen.findByText('지목')).toBeInTheDocument()
+    expect(api.parcels.fetchLandInfo).toHaveBeenCalledTimes(2)
   })
 })

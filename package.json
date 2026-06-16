@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "import:parcels": "tsx scripts/import-parcels.ts",
+    "fetch:vworld": "tsx scripts/fetch-vworld.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "class-variance-authority": "^0.7.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "fast-xml-parser": "^5.9.0",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

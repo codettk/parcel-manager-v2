@@ -12,7 +12,7 @@ import {
   Switch,
   Textarea,
 } from '../../components/ui'
-import { api } from '../../lib/api'
+import { ApiError, api } from '../../lib/api'
 import { useUiStore } from '../../stores/ui'
 import { useWorkspaceStore, type ParcelPatch } from '../../stores/workspace'
 import type { Parcel } from '../../types/api/parcels'
@@ -83,6 +83,8 @@ export function ParcelSheet({ parcelId }: ParcelSheetProps) {
     makeDraft(useWorkspaceStore.getState().overrides[parcelId]),
   )
   const [fetched, setFetched] = useState<{ parcelId: string; parcel: Parcel } | null>(null)
+  const [landLoading, setLandLoading] = useState(false)
+  const [landError, setLandError] = useState<string | null>(null)
 
   // 필지 전환 시 draft를 새 필지의 override로 리셋 — 미저장 편집분은 확인 없이 폐기 (v1 보존).
   // Realtime 수신으로 override가 바뀌어도 draft는 로컬 우선 유지 (M-6 소관) — 리셋 조건은 parcelId뿐.
@@ -91,6 +93,8 @@ export function ParcelSheet({ parcelId }: ParcelSheetProps) {
   if (draftParcelId !== parcelId) {
     setDraftParcelId(parcelId)
     setDraft(makeDraft(useWorkspaceStore.getState().overrides[parcelId]))
+    setLandLoading(false)
+    setLandError(null)
   }
 
   // 면적·지번·토지 정보 단건 조회 — null/실패 시 해당 행 생략, 시트 사용은 계속 (명세 §시트 내용)
@@ -124,6 +128,23 @@ export function ParcelSheet({ parcelId }: ParcelSheetProps) {
     }
     upsertParcel(parcelId, patch)
     closeSheet()
+  }
+
+  const handleFetchLandInfo = () => {
+    setLandLoading(true)
+    setLandError(null)
+    api.parcels
+      .fetchLandInfo(parcelId)
+      .then((parcel) => {
+        // 응답 행으로 표시 데이터 교체 — 버튼이 사라지고 카드·면적 행이 즉시 갱신 (명세 §ParcelSheet 버튼)
+        setFetched({ parcelId, parcel })
+        setLandLoading(false)
+      })
+      .catch((err: unknown) => {
+        // 실패 시 인라인 오류 문구 + 버튼 재활성 (재시도 가능), 시트는 닫지 않음
+        setLandError(err instanceof ApiError ? err.message : '토지 정보 조회에 실패했습니다.')
+        setLandLoading(false)
+      })
   }
 
   const landRows: { key: string; value: string }[] = []
@@ -167,7 +188,7 @@ export function ParcelSheet({ parcelId }: ParcelSheetProps) {
         )}
       </header>
 
-      {landRows.length > 0 && (
+      {info?.pnu != null && info.vworldFetchedAt != null && landRows.length > 0 && (
         <div className="mb-4 grid grid-cols-3 gap-2 rounded-md border border-border bg-surface-alt p-3">
           {landRows.map((row) => (
             <div key={row.key}>
@@ -176,6 +197,15 @@ export function ParcelSheet({ parcelId }: ParcelSheetProps) {
             </div>
           ))}
         </div>
+      )}
+
+      {info?.pnu != null && info.vworldFetchedAt == null && (
+        <section className="mb-4">
+          <Button variant="secondary" full disabled={landLoading} onClick={handleFetchLandInfo}>
+            {landLoading ? '조회 중…' : '토지임야 조회'}
+          </Button>
+          {landError !== null && <p className="mt-2 text-xs text-danger">{landError}</p>}
+        </section>
       )}
 
       <section className="mb-4">

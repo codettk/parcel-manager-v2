@@ -61,6 +61,13 @@ const byAreaDesc = [...rawData.parcels].sort((a, b) => shoelace(b.c) - shoelace(
 export const RED_PARCEL_ID = byAreaDesc[0].id
 export const GROUP_MEMBER_IDS = [byAreaDesc[1].id, byAreaDesc[2].id]
 
+// M-13 V-World 토지정보 — pnu 있고 미조회(vworldFetchedAt null)인 필지.
+// 다른 spec이 쓰는 RED_PARCEL_ID·GROUP_MEMBER_IDS와 겹치지 않게 별도 필지를 고른다
+// (회귀 격리: 이 필지만 GET 단건 조회에서 pnu가 채워진다).
+export const PNU_PARCEL_ID = byAreaDesc[3].id
+// V-World 조회 성공 시 fetch-land-info가 반환하는 갱신 행의 지목명 (카드 검증용 리터럴)
+export const LAND_INFO_LNDCGR_NM = '전'
+
 const RAW_BY_ID = new Map(rawData.parcels.map((p) => [p.id, p]))
 
 /** 탭된 필지의 실제 지번 (parcels.json 기반) — 시트 헤더 검증용 */
@@ -137,6 +144,9 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // M-12 JSON 불러오기 — 상태 보존 모킹: PUT import가 이후 GET state 응답에 반영되어야
   // 적용 후 재조회 경로(importFromFile ③)가 서버 동형으로 검증된다
   let tabState: TabStateResponse = structuredClone(TAB_STATE_FIXTURE)
+  // M-13 V-World 토지임야 조회 — 성공 후 PNU_PARCEL_ID의 단건 재조회가 조회 완료 상태를
+  // 반영하도록 하는 상태 플래그 (서버 단일 소스 동형). spec 간 격리는 page.route가 per-page라 보장.
+  let landFetched = false
   await page.route(
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
@@ -190,19 +200,23 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       // M-7 필지 시트: 단건 조회(지번·면적) — parcelResponseSchema(src/types/api/parcels.ts) 동형
       const parcelMatch = /^\/api\/parcels\/([^/]+)$/.exec(pathname)
       if (parcelMatch !== null && route.request().method() === 'GET') {
-        const raw = RAW_BY_ID.get(decodeURIComponent(parcelMatch[1]))
+        const id = decodeURIComponent(parcelMatch[1])
+        const raw = RAW_BY_ID.get(id)
         if (raw === undefined)
           return route.fulfill({ status: 404, json: { error: '필지 없음 (e2e 픽스처)' } })
+        // M-13: PNU_PARCEL_ID만 pnu가 채워진 미조회 필지 — "토지임야 조회" 버튼 노출 조건.
+        // landFetched면 fetch-land-info 성공 후 재조회 동형으로 갱신 행을 반환한다.
+        const isPnuParcel = id === PNU_PARCEL_ID
         return route.fulfill({
           json: {
             localId: raw.id,
-            pnu: null,
+            pnu: isPnuParcel ? '1111111111111111111' : null,
             jibun: raw.jibun,
             jibunFull: null,
             ldCode: null,
             ldCodeNm: null,
             lndcgrCode: null,
-            lndcgrCodeNm: null,
+            lndcgrCodeNm: isPnuParcel && landFetched ? LAND_INFO_LNDCGR_NM : null,
             lndpclAr: PARCEL_FIXTURE_AREA_M2,
             posesnSeCode: null,
             posesnSeCodeNm: null,
@@ -210,7 +224,37 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
             regstrSeCode: null,
             regstrSeCodeNm: null,
             coordinates: raw.c,
-            vworldFetchedAt: null,
+            vworldFetchedAt: isPnuParcel && landFetched ? NOW : null,
+          },
+        })
+      }
+      // M-13 V-World 토지임야 조회: 성공 시 갱신된 parcels 행 전체(parcelSchema, camelCase).
+      // 이후 landFetched 플래그로 같은 필지의 단건 재조회도 조회 완료 상태를 반영한다.
+      const landInfoMatch = /^\/api\/parcels\/([^/]+)\/fetch-land-info$/.exec(pathname)
+      if (landInfoMatch !== null && route.request().method() === 'POST') {
+        const id = decodeURIComponent(landInfoMatch[1])
+        const raw = RAW_BY_ID.get(id)
+        if (raw === undefined || id !== PNU_PARCEL_ID)
+          return route.fulfill({ status: 409, json: { error: 'pnu 없음 (e2e 픽스처)' } })
+        landFetched = true
+        return route.fulfill({
+          json: {
+            localId: raw.id,
+            pnu: '1111111111111111111',
+            jibun: raw.jibun,
+            jibunFull: null,
+            ldCode: null,
+            ldCodeNm: null,
+            lndcgrCode: '01',
+            lndcgrCodeNm: LAND_INFO_LNDCGR_NM,
+            lndpclAr: PARCEL_FIXTURE_AREA_M2,
+            posesnSeCode: null,
+            posesnSeCodeNm: null,
+            cnrsPsnCo: null,
+            regstrSeCode: null,
+            regstrSeCodeNm: null,
+            coordinates: raw.c,
+            vworldFetchedAt: NOW,
           },
         })
       }
