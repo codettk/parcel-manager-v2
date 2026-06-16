@@ -65,6 +65,11 @@ export const GROUP_MEMBER_IDS = [byAreaDesc[1].id, byAreaDesc[2].id]
 // 다른 spec이 쓰는 RED_PARCEL_ID·GROUP_MEMBER_IDS와 겹치지 않게 별도 필지를 고른다
 // (회귀 격리: 이 필지만 GET 단건 조회에서 pnu가 채워진다).
 export const PNU_PARCEL_ID = byAreaDesc[3].id
+
+// M-15 초기화 — pinned(고정)+color 보유 필지. 기본 픽스처엔 없고 reset.spec만 opt-in으로 켠다
+// (다른 spec의 override 집합·합성 픽셀 단언을 그대로 보존). 색은 c-blue(GROUP_HEX) —
+// RED_PARCEL_ID(c-red, 비고정)와 합성색이 달라 "빨강 소실 ∥ 파랑 유지"를 독립 검증할 수 있다.
+export const PINNED_PARCEL_ID = byAreaDesc[4].id
 // V-World 조회 성공 시 fetch-land-info가 반환하는 갱신 행의 지목명 (카드 검증용 리터럴)
 export const LAND_INFO_LNDCGR_NM = '전'
 
@@ -131,6 +136,15 @@ export const CALC_RECIPE_FIXTURE: CalcRecipe = {
 export interface MockApiOptions {
   /** GET /api/calc-recipes 초기값 — null(기본) = 미설정. PUT이 이후 GET 응답을 덮는다 (서버 단일 소스 동형) */
   calcRecipes?: CalcRecipe[] | null
+  /**
+   * M-15 초기화 — true면 PINNED_PARCEL_ID(pinned=true, color=c-blue)를 초기 overrides에 추가하고
+   * 기본 파랑 그룹은 제거한다. 그러면 파랑 합성 픽셀의 출처가 pinned 필지 단 하나라
+   * reset(['color']) 후에도 파랑이 남는지로 "pinned 보호"를 군더더기 없이 격리 검증할 수 있다
+   * (그룹이 있으면 그룹도 파랑이라 pinned vs 그룹을 색만으로 구분 불가).
+   * 기본 false(다른 spec 회귀 격리). POST /api/tabs/:id/reset은 항상 {ok:true} —
+   * pinned 보호·비고정 color 비움은 workspace 스토어의 낙관적 로컬 정리가 수행한다(서버 동형).
+   */
+  withPinnedParcel?: boolean
 }
 
 const TAB_STATE_FIXTURE: TabStateResponse = {
@@ -169,6 +183,18 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // M-12 JSON 불러오기 — 상태 보존 모킹: PUT import가 이후 GET state 응답에 반영되어야
   // 적용 후 재조회 경로(importFromFile ③)가 서버 동형으로 검증된다
   let tabState: TabStateResponse = structuredClone(TAB_STATE_FIXTURE)
+  // M-15 초기화 — opt-in pinned 필지 합류 + 기본 그룹 제거 (파랑 = pinned 단독 출처)
+  if (opts.withPinnedParcel === true) {
+    tabState.overrides[PINNED_PARCEL_ID] = {
+      color: 'c-blue',
+      style: 'fill',
+      name: null,
+      memo: null,
+      pinned: true,
+      icon: null,
+    }
+    tabState.groups = {}
+  }
   // M-13 V-World 토지임야 조회 — 성공 후 PNU_PARCEL_ID의 단건 재조회가 조회 완료 상태를
   // 반영하도록 하는 상태 플래그 (서버 단일 소스 동형). spec 간 격리는 page.route가 per-page라 보장.
   let landFetched = false
@@ -292,6 +318,10 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       // M-8 그룹 저장(upsert / group: null = 삭제) — okResponseSchema 동형.
       // 본문 검증은 spec이 waitForRequest·요청 리코더로 수행
       if (route.request().method() === 'POST' && pathname === `/api/tabs/${TAB_ID}/groups`)
+        return route.fulfill({ json: { ok: true } })
+      // M-15 초기화 — okResponseSchema 동형. pinned 보호·비고정 비움은 스토어 낙관적 정리 소관이라
+      // 모킹은 ok만 반환한다. 본문(items·clientId) 검증은 spec이 waitForRequest로 수행
+      if (route.request().method() === 'POST' && pathname === `/api/tabs/${TAB_ID}/reset`)
         return route.fulfill({ json: { ok: true } })
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })

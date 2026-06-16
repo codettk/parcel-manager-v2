@@ -89,6 +89,13 @@ export interface UiState {
   openShare: () => void
   closeShare: () => void
   /**
+   * 초기화 시트 열림 (M-15) — 팔레트(M-11)·공유(M-12) 선례: 열림만 전역,
+   * 선택 항목 draft는 시트 로컬 소관 (CONVENTIONS §3)
+   */
+  resetSheetOpen: boolean
+  openReset: () => void
+  closeReset: () => void
+  /**
    * 지목 필터 (M-14) — 초기 6종 전체. 세션 한정(영속 아님, v1 동일).
    * 적용은 지도 렌더+히트테스트 한정 (목록 뷰는 비적용 — v1 view!=='list' 보존).
    */
@@ -274,6 +281,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
   shareOpen: false,
   openShare: () => set({ shareOpen: true }),
   closeShare: () => set({ shareOpen: false }),
+
+  resetSheetOpen: false,
+  openReset: () => set({ resetSheetOpen: true }),
+  closeReset: () => set({ resetSheetOpen: false }),
 
   jimokFilter: [...ALL_JIMOK],
   // 필터 변경은 현재 선택·시트만 해제한다 (v1 app.jsx:687 useEffect 보존).

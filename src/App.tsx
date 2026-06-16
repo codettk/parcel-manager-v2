@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { Calculator, List, Palette, ScrollText, Share2 } from 'lucide-react'
+import { Calculator, List, Palette, RotateCcw, ScrollText, Share2 } from 'lucide-react'
 import { IconButton } from './components/ui'
 import { CalculatorModeBadge } from './features/calculator/CalculatorModeBadge'
 import { CalculatorResultSheet } from './features/calculator/CalculatorResultSheet'
@@ -12,6 +12,7 @@ import { JimokFilter } from './features/map/JimokFilter'
 import { MapCanvas } from './features/map/MapCanvas'
 import { PaletteSheet } from './features/palette/PaletteSheet'
 import { ParcelSheet } from './features/parcel/ParcelSheet'
+import { ResetSheet } from './features/tab/ResetSheet'
 import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
 import { ShareSheet } from './features/share/ShareSheet'
 import { initRealtime } from './lib/realtime'
@@ -39,6 +40,8 @@ function App() {
   const openPalette = useUiStore((s) => s.openPalette)
   const shareOpen = useUiStore((s) => s.shareOpen)
   const openShare = useUiStore((s) => s.openShare)
+  const resetSheetOpen = useUiStore((s) => s.resetSheetOpen)
+  const openReset = useUiStore((s) => s.openReset)
   const jimokFilter = useUiStore((s) => s.jimokFilter)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
@@ -104,6 +107,10 @@ function App() {
           onClick={() => setCalcSettingsOpen(true)}
         />
       </div>
+      {/* NavDrawer 도입 전 임시 진입점 (M-15) — 파괴적 작업이라 top-3 도구 행과 분리한 top-16 행, 계산기(right-16) 좌측 */}
+      <div className="absolute top-16 right-29 z-10 rounded-md bg-surface shadow-md">
+        <IconButton icon={RotateCcw} aria-label="초기화" onClick={openReset} />
+      </div>
       {/* NavDrawer 도입 전 임시 진입점 (M-11) — top-3 행의 릴리즈 노트(right-3)·목록(right-16) 다음 칸 */}
       <div className="absolute top-3 right-29 z-10 rounded-md bg-surface shadow-md">
         <IconButton icon={Palette} aria-label="색상 팔레트" onClick={openPalette} />
@@ -120,6 +127,7 @@ function App() {
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
       {paletteOpen && <PaletteSheet />}
       {shareOpen && <ShareSheet />}
+      {resetSheetOpen && <ResetSheet />}
       {calcSettingsOpen && (
         <CalculatorSettingsSheet
           onClose={() => setCalcSettingsOpen(false)}

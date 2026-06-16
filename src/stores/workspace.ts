@@ -4,7 +4,7 @@ import { mergeColors } from '../features/share/shareFile'
 import { api } from '../lib/api'
 import type { CalcRecipe } from '../types/api/calcRecipes'
 import type { ColorLabel } from '../types/api/colors'
-import type { Group, ParcelOverride } from '../types/api/tabState'
+import type { Group, ParcelOverride, ResetItem } from '../types/api/tabState'
 import type { Tab } from '../types/api/tabs'
 import { isClearedOverride, normalizeOverride } from '../utils/override'
 import { useUiStore } from './ui'
@@ -77,6 +77,14 @@ export interface WorkspaceState {
    * 참조 정리의 권위는 서버(전 탭 null 처리)지만 자기 mutate는 Realtime 에코 가드로 무시되므로 로컬 정리 필수
    */
   deleteColorAndCleanup: (colorId: string) => void
+  /**
+   * 선택 초기화 (M-15) — pinned 보호 낙관적 로컬 정리(deleteColorAndCleanup 선례) + reset API 1회.
+   * 비고정 필지에서 items 의미필드 제거(color는 style 동반), normalizeOverride/isClearedOverride로
+   * 빈 행 청소. items에 group 포함 시 groups={} 전체 해체(pinned override는 보존).
+   * 서버 핸들러(tabResetHandler)와 동형 — 자기 mutate는 Realtime 에코 가드로 무시되므로 로컬 정리가 권위.
+   * 실패 시 롤백 없음(upsertParcel 동형).
+   */
+  reset: (items: ResetItem[]) => void
   /**
    * JSON 불러오기 적용 (M-12) — 순차 3단계: ① importState(현재 탭 settings/groups 전체 교체)
    * ② colors가 1개 이상이면 기존 colorLabels에 upsert 병합 후 PUT(전 탭 공유 자원이라 교체 금지)
@@ -289,6 +297,40 @@ export const useWorkspaceStore = create<WorkspaceState>()((set, get) => ({
     })
     api.colors.remove(colorId).catch((err: unknown) => {
       console.error('[workspace] 색 삭제 실패:', err)
+    })
+  },
+
+  reset: (items) => {
+    const { activeTabId, overrides, groups } = get()
+    if (activeTabId === null) {
+      console.error('[workspace] reset: 부팅 전 호출 무시')
+      return
+    }
+    if (items.length === 0) return
+
+    const clearColor = items.includes('color')
+    const clearName = items.includes('name')
+    const clearMemo = items.includes('memo')
+    const clearGroup = items.includes('group')
+
+    const nextOverrides = { ...overrides }
+    for (const [pid, o] of Object.entries(overrides)) {
+      if (o.pinned) continue // 고정 필지 보호 (서버 .not('pinned','is',true)와 동형)
+      // 서버 핸들러와 동형 정규화 — color 초기화는 style도 함께 비운다 (buildResetPatch 보존)
+      const cleared = normalizeOverride({
+        ...o,
+        color: clearColor ? null : o.color,
+        style: clearColor ? null : o.style,
+        name: clearName ? null : o.name,
+        memo: clearMemo ? null : o.memo,
+      })
+      if (isClearedOverride(cleared)) delete nextOverrides[pid]
+      else nextOverrides[pid] = cleared
+    }
+
+    set({ overrides: nextOverrides, groups: clearGroup ? {} : groups })
+    api.tabState.reset(activeTabId, { items }).catch((err: unknown) => {
+      console.error('[workspace] 초기화 실패:', err)
     })
   },
 
