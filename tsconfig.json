@@ -6,10 +6,10 @@
     { "path": "./tsconfig.server.json" },
     { "path": "./tsconfig.test.json" }
   ],
-  "//": "compilerOptions는 tsc -b(references만 사용)가 아니라 @vercel/node가 api/ 함수를 컴파일할 때 쓰는 루트 설정이다. server/api와 동일하게 맞춰 strict 내로잉(LadfrlResult 판별)·node 타입(process)을 보장한다.",
+  "//": "compilerOptions는 tsc -b(references만 사용)가 아니라 @vercel/node가 api/ 함수를 컴파일할 때 쓰는 루트 설정이다. server/api와 동일하게 맞춰 strict 내로잉(LadfrlResult 판별)·node 타입(process)을 보장한다. lib에 DOM 필수 — @vercel/node 컴파일 환경에서 전역 fetch Response.text()가 DOM lib에서 오므로(ES2023 단독이면 TS2339 'text' 없음으로 깨짐).",
   "compilerOptions": {
     "target": "es2023",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"],

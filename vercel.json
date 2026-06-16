@@ -2,24 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/api/tabs/:tabId/state", "destination": "/api/tab-state?tabId=:tabId" },
-    {
-      "source": "/api/tabs/:tabId/parcels/:id",
-      "destination": "/api/tab-parcel?tabId=:tabId&id=:id"
-    },
-    { "source": "/api/tabs/:tabId/groups", "destination": "/api/tab-groups?tabId=:tabId" },
-    { "source": "/api/tabs/:tabId/reset", "destination": "/api/tab-reset?tabId=:tabId" },
-    { "source": "/api/tabs/:tabId/import", "destination": "/api/tab-import?tabId=:tabId" },
-    { "source": "/api/tabs/:id", "destination": "/api/tabs-item?id=:id" },
-    { "source": "/api/history/:id/restore", "destination": "/api/history-restore?id=:id" },
-    { "source": "/api/history/:id", "destination": "/api/history-item?id=:id" },
-    { "source": "/api/colors/:id", "destination": "/api/colors-item?id=:id" },
-    {
-      "source": "/api/parcels/:id/fetch-land-info",
-      "destination": "/api/parcels-fetch-land-info?id=:id"
-    },
-    { "source": "/api/parcels/:id", "destination": "/api/parcels-item?id=:id" }
-  ]
+  "outputDirectory": "dist"
 }

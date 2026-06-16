@@ -30,7 +30,7 @@ Docker 개발: `docker compose -f docker/docker-compose.yml up` (web + api. Supa
 
 ## 아키텍처
 
-- **API 계층 (v1 부채 청산의 핵심)**: 모든 API 로직은 `server/handlers/`의 **런타임 비의존 순수 함수**로만 작성한다 — req/res 객체 직접 접근 금지. `server/adapters/express.ts`(Docker 개발)와 `server/adapters/vercel.ts`(배포)가 동일 핸들러를 양쪽 런타임에 연결하고, `api/*.ts`는 vercelAdapter로 감싼 재export만 한다 (경로 파라미터 라우트는 `vercel.json` rewrite로 매핑). v1의 server.js ↔ api/ 로직 분기 재발 방지가 목적.
+- **API 계층 (v1 부채 청산의 핵심)**: 모든 API 로직은 `server/handlers/`의 **런타임 비의존 순수 함수**로만 작성한다 — req/res 객체 직접 접근 금지. 라우팅 테이블 `server/routes.ts`(`routes`+`matchRoute`+`dispatch`)가 단일 진실이며, `server/dev-server.ts`(Docker 개발, Express)와 `api/[...path].ts`(배포, Vercel 단일 catch-all 함수)가 이 테이블을 공유한다. Vercel 함수는 1개로 통합(Hobby 12개 한도 회피)이라 `vercel.json` rewrite·경로별 api 파일이 불필요하다. v1의 server.js ↔ api/ 로직 분기 재발 방지가 목적. (`server/adapters/express.ts`는 핸들러→Express 응답 변환만.)
 - **API 타입**: 요청/응답은 `src/types/api/`의 zod 스키마에서 `z.infer`로 추론 — 프론트 클라이언트와 핸들러가 같은 스키마를 import한다.
 - **클라이언트/서버 공유 로직**: 필지 override 정규화(`normalizeOverride` — 의미 필드 전부 null이면 행 삭제와 동형)는 `src/utils/override.ts` 단일 모듈을 스토어와 `server/handlers/tabState.ts`가 함께 import한다. 서버는 전체 행 치환이므로 클라이언트는 **부분 patch 전송 금지** — 병합된 전체 의미 필드를 보낸다.
 - **features/ 수직 분할**: 도메인 로직(컴포넌트+훅+로직)은 `src/features/<domain>/` 안에서만. `src/components/ui/`는 도메인 무지 순수 UI만 (도메인 타입 import 금지, 의존 방향: features → ui).
