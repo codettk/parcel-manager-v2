@@ -3,6 +3,7 @@ import {
   bootWithMockedApi,
   jibunOf,
   LAND_INFO_LNDCGR_NM,
+  openMenuItem,
   PNU_PARCEL_ID,
 } from './helpers/mockApi'
 
@@ -22,7 +23,7 @@ async function openPnuParcelSheet(page: Page) {
   expect(jibun, `픽스처 필지(${PNU_PARCEL_ID})의 지번이 parcels.json에 없음`).not.toBeNull()
   if (jibun === null) throw new Error('unreachable')
 
-  await page.getByRole('button', { name: '필지 목록' }).click()
+  await openMenuItem(page, '필지 목록')
   const list = page.getByTestId('parcel-list-view')
   await expect(list).toBeVisible()
 

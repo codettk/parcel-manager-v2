@@ -6,6 +6,7 @@ import {
   COMPOSITE_TOLERANCE,
   countNearPixels,
   GROUP_HEX,
+  openMenuItem,
   PARCEL_HEX,
   RED_PARCEL_ID,
 } from './helpers/mockApi'
@@ -30,9 +31,9 @@ function parcelIdOf(req: Request): string {
   return decodeURIComponent(segments[segments.length - 1])
 }
 
-/** 지도 우상단 임시 진입 버튼으로 팔레트 시트를 연다 */
+/** NavDrawer(메뉴) "색상 팔레트" 항목으로 팔레트 시트를 연다 */
 async function openPaletteSheet(page: Page) {
-  await page.getByRole('button', { name: '색상 팔레트' }).click()
+  await openMenuItem(page, '색상 팔레트')
   const sheet = page.getByRole('dialog')
   await expect(sheet).toBeVisible()
   // 첫 행 = sortOrder 0 = 픽스처 '빨강' — draft가 colorLabels 순서로 복사됐다는 전제 고정

@@ -4,6 +4,7 @@ import { mergeColors } from '../features/share/shareFile'
 import { api } from '../lib/api'
 import type { CalcRecipe } from '../types/api/calcRecipes'
 import type { ColorLabel } from '../types/api/colors'
+import type { HistoryItem } from '../types/api/history'
 import type { Group, ParcelOverride, ResetItem } from '../types/api/tabState'
 import type { Tab } from '../types/api/tabs'
 import { isClearedOverride, normalizeOverride } from '../utils/override'
@@ -39,11 +40,38 @@ export interface WorkspaceState {
   overrides: Record<string, ParcelOverride>
   groups: Record<string, Group>
   colorLabels: ColorLabel[]
+  /** 닫힌 탭(히스토리) 목록 — HistorySheet가 열릴 때 loadHistory로 채운다 (전역 동기화 대상 아님) */
+  history: HistoryItem[]
   bootError: string | null
   /** 부팅 시퀀스 — tabs/colors 병렬 로드 → activeTabId 결정(C-1) → tabState 로드 → 입력 해제 */
   boot: () => Promise<void>
   /** 탭 전환 — localStorage 기록 + tabState 재로드 (재로드 동안 isInitializing true — C-4) */
   setActiveTab: (tabId: string) => Promise<void>
+  /** 탭 생성 (M-16) — POST → 목록 갱신 → 새 탭으로 setActiveTab(빈 overrides). 실패는 reject (호출부 표면화) */
+  createTab: () => Promise<void>
+  /**
+   * 탭 이름 변경 (M-16) — 빈 이름은 무시(원래 이름 유지). 낙관적 라벨 갱신 + PATCH 1회.
+   * 실패 시 롤백 없음(낙관 패턴 보존)
+   */
+  renameTab: (tabId: string, name: string) => void
+  /**
+   * 탭 소프트 클로즈 (M-16) — 활성 탭 ≥2 가드(1개면 no-op, 클라 409 사전 회피).
+   * DELETE → 목록에서 제거. 닫은 탭이 활성이었으면 남은 첫 탭으로 setActiveTab.
+   * 실패는 reject (호출부 표면화). 활성 1개 no-op은 즉시 resolve
+   */
+  softCloseTab: (tabId: string) => Promise<void>
+  /** 히스토리 목록 로드 (M-16) — GET /api/history. 실패는 reject (호출부 표면화) */
+  loadHistory: () => Promise<void>
+  /**
+   * 히스토리 복원 (M-16) — POST restore → 목록 재조회 → 응답 새 tabId로 setActiveTab.
+   * 서버가 group_id를 전부 재생성하므로(C-3) setActiveTab의 tabState.get이 권위.
+   * 복원된 탭은 더 이상 히스토리가 아니므로 로컬 history에서 제거. 실패는 reject
+   */
+  restoreHistory: (tabId: string) => Promise<void>
+  /** 히스토리 이름 변경 (M-16) — 빈 이름 무시. 낙관적 로컬 갱신 + PATCH. 실패 시 롤백 없음 */
+  renameHistory: (tabId: string, name: string) => void
+  /** 히스토리 소프트 딜리트 (M-16) — 낙관적 목록 제거 + DELETE. 실패 시 롤백 없음 */
+  deleteHistory: (tabId: string) => void
   /** 낙관적 upsert — 동기 갱신 후 서버 전송. 실패 시 롤백 없음(v1 보존), console.error 보고 */
   upsertParcel: (parcelId: string, patch: ParcelPatch) => void
   /** 낙관적 upsert — group null이면 삭제 */
@@ -110,6 +138,7 @@ export const useWorkspaceStore = create<WorkspaceState>()((set, get) => ({
   overrides: {},
   groups: {},
   colorLabels: [],
+  history: [],
   bootError: null,
 
   boot: async () => {
@@ -145,6 +174,67 @@ export const useWorkspaceStore = create<WorkspaceState>()((set, get) => ({
       set({ bootError: err instanceof Error ? err.message : String(err) })
       if (import.meta.env.DEV) console.error('[workspace] 탭 상태 로드 실패:', err)
     }
+  },
+
+  createTab: async () => {
+    const tab = await api.tabs.create()
+    // 새 탭을 목록에 추가(서버 자동 정렬과 정합 — sortOrder 순 보존). setActiveTab이 빈 overrides를 로드한다
+    set({ tabs: [...get().tabs, tab].sort((a, b) => a.sortOrder - b.sortOrder) })
+    await get().setActiveTab(tab.tabId)
+  },
+
+  renameTab: (tabId, name) => {
+    const trimmed = name.trim()
+    if (trimmed === '') return // 빈 이름 무시 — 원래 이름 유지
+    set({ tabs: get().tabs.map((t) => (t.tabId === tabId ? { ...t, name: trimmed } : t)) })
+    api.tabs.update(tabId, { name: trimmed }).catch((err: unknown) => {
+      console.error('[workspace] 탭 이름 변경 실패:', err)
+    })
+  },
+
+  softCloseTab: async (tabId) => {
+    const { tabs, activeTabId } = get()
+    // 마지막 활성 탭 보호 — 서버 409 사전 회피 (C-2). 활성 1개면 no-op
+    if (tabs.length <= 1) return
+    await api.tabs.remove(tabId)
+    const remaining = tabs.filter((t) => t.tabId !== tabId)
+    set({ tabs: remaining })
+    // 닫은 탭이 활성이었으면 남은 첫 탭으로 전환 (activeTabId가 닫힌 탭에 머무르지 않게)
+    if (tabId === activeTabId && remaining.length > 0) {
+      await get().setActiveTab(remaining[0].tabId)
+    }
+  },
+
+  loadHistory: async () => {
+    const history = await api.history.list()
+    set({ history })
+  },
+
+  restoreHistory: async (tabId) => {
+    const tab = await api.history.restore(tabId)
+    // 복원된 탭은 활성 탭이 됐고 더 이상 히스토리가 아니다 — 로컬 history에서 제거
+    set({
+      tabs: [...get().tabs, tab].sort((a, b) => a.sortOrder - b.sortOrder),
+      history: get().history.filter((h) => h.tabId !== tabId),
+    })
+    // setActiveTab의 tabState.get이 서버가 재생성한 group_id를 권위로 받는다 (C-3)
+    await get().setActiveTab(tab.tabId)
+  },
+
+  renameHistory: (tabId, name) => {
+    const trimmed = name.trim()
+    if (trimmed === '') return
+    set({ history: get().history.map((h) => (h.tabId === tabId ? { ...h, name: trimmed } : h)) })
+    api.history.rename(tabId, { name: trimmed }).catch((err: unknown) => {
+      console.error('[workspace] 히스토리 이름 변경 실패:', err)
+    })
+  },
+
+  deleteHistory: (tabId) => {
+    set({ history: get().history.filter((h) => h.tabId !== tabId) })
+    api.history.remove(tabId).catch((err: unknown) => {
+      console.error('[workspace] 히스토리 삭제 실패:', err)
+    })
   },
 
   upsertParcel: (parcelId, patch) => {

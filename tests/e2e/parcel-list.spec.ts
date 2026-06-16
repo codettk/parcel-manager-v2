@@ -4,6 +4,7 @@ import {
   bootWithMockedApi,
   jibunOf,
   LIST_AREAS_M2,
+  openMenuItem,
   PARCEL_COUNT,
   RED_PARCEL_ID,
 } from './helpers/mockApi'
@@ -20,7 +21,7 @@ async function openListView(page: Page) {
   const areasRequest = page.waitForRequest(
     (req) => req.method() === 'GET' && new URL(req.url()).pathname === '/api/parcel-areas',
   )
-  await page.getByRole('button', { name: '필지 목록' }).click()
+  await openMenuItem(page, '필지 목록')
   const list = page.getByTestId('parcel-list-view')
   await expect(list).toBeVisible()
   await areasRequest

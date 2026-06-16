@@ -12,19 +12,38 @@ import type { TabStateResponse } from '../../../src/types/api/tabState'
 // (파일명이 *.spec.ts가 아니므로 playwright testMatch에 걸리지 않는다)
 
 export const TAB_ID = 'tab-e2e'
+// M-16 탭 작업공간 — AC-1(탭 격리)이 필요로 하는 두 번째 활성 탭. opts.tabs:2일 때만 합류한다
+// (다른 spec은 기본 탭 1개만 쓰므로 기존 단일 탭 동작 보존).
+export const TAB_B_ID = 'tab-e2e-b'
 const NOW = '2026-06-11T00:00:00.000Z'
 
-const TABS_FIXTURE = [
-  {
-    tabId: TAB_ID,
-    name: '기본',
-    sortOrder: 0,
-    closedAt: null,
-    createdAt: NOW,
-    updatedBy: null,
-    updatedAt: NOW,
-  },
-]
+interface TabFixture {
+  tabId: string
+  name: string
+  sortOrder: number
+  closedAt: string | null
+  createdAt: string
+  updatedBy: string | null
+  updatedAt: string
+}
+
+function makeTab(tabId: string, name: string, sortOrder: number): TabFixture {
+  return { tabId, name, sortOrder, closedAt: null, createdAt: NOW, updatedBy: null, updatedAt: NOW }
+}
+
+const TAB_A_FIXTURE = makeTab(TAB_ID, '기본', 0)
+const TAB_B_FIXTURE = makeTab(TAB_B_ID, '두번째', 1)
+
+// M-16 히스토리 — opts.history:true일 때만 GET /api/history가 반환하는 닫힌 탭 2개.
+// closedAt 내림차순(AC-6) 검증을 위해 H2가 H1보다 최근에 닫혔다.
+export const HISTORY_H1_ID = 'tab-hist-1'
+export const HISTORY_H2_ID = 'tab-hist-2'
+export const HISTORY_H1_NAME = '닫힌 작업 하나'
+export const HISTORY_H2_NAME = '닫힌 작업 둘'
+const HISTORY_H1_CLOSED_AT = '2026-06-10T08:00:00.000Z'
+const HISTORY_H2_CLOSED_AT = '2026-06-12T09:30:00.000Z' // 더 최근 — 목록 첫 행
+// 복원 시 새 탭으로 부여되는 id (POST /api/history/:id/restore 응답). C-3: group_id 전부 재생성
+export const RESTORED_TAB_ID = 'tab-restored'
 
 // 팔레트 hex는 DB(color_labels) 소관 — 검증용으로 채도 극단의 두 색을 사용해
 // 합성 결과가 지도 기본색(흰 채움·회 테두리·배경·선택 강조 #1F5A38)과 절대 겹치지 않게 한다
@@ -145,6 +164,14 @@ export interface MockApiOptions {
    * pinned 보호·비고정 color 비움은 workspace 스토어의 낙관적 로컬 정리가 수행한다(서버 동형).
    */
   withPinnedParcel?: boolean
+  /**
+   * M-16 탭 작업공간 — 활성 탭 수. 1(기본) = 단일 탭(기존 spec 회귀 보존).
+   * 2 = TAB_ID(A, 기본 픽스처 상태) + TAB_B_ID(B, 빈 상태)로 AC-1 탭 격리를 검증한다.
+   * 탭별 tabState는 per-tab 가변 맵으로 분기되며 POST upsert가 해당 탭에만 반영된다.
+   */
+  tabs?: 1 | 2
+  /** M-16 히스토리 — true면 GET /api/history가 닫힌 탭 2개(H1·H2)를 반환한다. 기본 false */
+  history?: boolean
 }
 
 const TAB_STATE_FIXTURE: TabStateResponse = {
@@ -181,11 +208,19 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // 이후 GET 응답에 반영되어야 저장 후 재조회 경로(AC-6)가 서버 동형으로 검증된다
   let colors: ColorLabel[] = COLORS_FIXTURE.map((c) => ({ ...c }))
   // M-12 JSON 불러오기 — 상태 보존 모킹: PUT import가 이후 GET state 응답에 반영되어야
-  // 적용 후 재조회 경로(importFromFile ③)가 서버 동형으로 검증된다
-  let tabState: TabStateResponse = structuredClone(TAB_STATE_FIXTURE)
+  // 적용 후 재조회 경로(importFromFile ③)가 서버 동형으로 검증된다.
+  // M-16 탭 격리(AC-1): tabState를 per-tab 맵으로 분기 — TAB_ID(A)는 기본 픽스처,
+  // TAB_B_ID(B)는 빈 상태. POST upsert가 URL의 탭 id에 따라 해당 탭에만 반영된다.
+  const tabStates = new Map<string, TabStateResponse>()
+  tabStates.set(TAB_ID, structuredClone(TAB_STATE_FIXTURE))
+  if ((opts.tabs ?? 1) >= 2) {
+    tabStates.set(TAB_B_ID, { overrides: {}, groups: {} })
+  }
   // M-15 초기화 — opt-in pinned 필지 합류 + 기본 그룹 제거 (파랑 = pinned 단독 출처)
   if (opts.withPinnedParcel === true) {
-    tabState.overrides[PINNED_PARCEL_ID] = {
+    const a = tabStates.get(TAB_ID)
+    if (a === undefined) throw new Error('unreachable')
+    a.overrides[PINNED_PARCEL_ID] = {
       color: 'c-blue',
       style: 'fill',
       name: null,
@@ -193,8 +228,21 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       pinned: true,
       icon: null,
     }
-    tabState.groups = {}
+    a.groups = {}
   }
+  // M-16 활성 탭 목록 — opts.tabs에 따라 1개 또는 2개. POST /api/tabs 생성·PATCH 이름변경·
+  // DELETE 소프트클로즈가 이 배열에 반영된다(상태 보존 — calc-recipes 선례)
+  const activeTabs: TabFixture[] = [TAB_A_FIXTURE]
+  if ((opts.tabs ?? 1) >= 2) activeTabs.push(TAB_B_FIXTURE)
+  // M-16 히스토리 — opt-in 닫힌 탭 2개. PATCH 이름변경·DELETE 소프트딜리트·restore가 반영된다
+  let historyItems: TabFixture[] = []
+  if (opts.history === true) {
+    historyItems = [
+      { ...makeTab(HISTORY_H2_ID, HISTORY_H2_NAME, 0), closedAt: HISTORY_H2_CLOSED_AT },
+      { ...makeTab(HISTORY_H1_ID, HISTORY_H1_NAME, 0), closedAt: HISTORY_H1_CLOSED_AT },
+    ]
+  }
+  let createdTabSeq = 0
   // M-13 V-World 토지임야 조회 — 성공 후 PNU_PARCEL_ID의 단건 재조회가 조회 완료 상태를
   // 반영하도록 하는 상태 플래그 (서버 단일 소스 동형). spec 간 격리는 page.route가 per-page라 보장.
   let landFetched = false
@@ -202,7 +250,93 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
       const { pathname } = new URL(route.request().url())
-      if (pathname === '/api/tabs') return route.fulfill({ json: TABS_FIXTURE })
+      const method = route.request().method()
+      // M-16 활성 탭 목록(GET) + 생성(POST). 생성 탭 id는 tab_ 접두로 H-1(genTabId) 형식 동형
+      if (pathname === '/api/tabs') {
+        if (method === 'GET') return route.fulfill({ json: activeTabs })
+        if (method === 'POST') {
+          const body = route.request().postDataJSON() as { name?: string }
+          const tab = makeTab(
+            `tab_e2enew${String(++createdTabSeq)}`,
+            body.name ?? '새 작업공간',
+            activeTabs.length,
+          )
+          activeTabs.push(tab)
+          tabStates.set(tab.tabId, { overrides: {}, groups: {} }) // 새 탭은 빈 상태 (AC-2)
+          return route.fulfill({ json: tab })
+        }
+      }
+      // M-16 탭 이름변경(PATCH)·소프트클로즈(DELETE). DELETE는 활성 탭에서 제거(상태 보존).
+      // 마지막 탭 보호(409)는 클라 가드가 사전 차단하므로 여기선 단순 제거만 — 본문 검증은 spec 소관
+      const tabItemMatch = /^\/api\/tabs\/([^/]+)$/.exec(pathname)
+      if (tabItemMatch !== null) {
+        const id = decodeURIComponent(tabItemMatch[1])
+        if (method === 'PATCH') {
+          const body = route.request().postDataJSON() as { name?: string }
+          const t = activeTabs.find((x) => x.tabId === id)
+          if (t !== undefined && body.name !== undefined) t.name = body.name
+          return route.fulfill({ json: t ?? activeTabs[0] })
+        }
+        if (method === 'DELETE') {
+          const idx = activeTabs.findIndex((x) => x.tabId === id)
+          if (idx !== -1) activeTabs.splice(idx, 1)
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
+      // M-16 히스토리 목록(GET) — closedAt 내림차순(AC-6). historyItemSchema 동형
+      if (pathname === '/api/history' && method === 'GET') {
+        const sorted = [...historyItems].sort((a, b) =>
+          (b.closedAt ?? '').localeCompare(a.closedAt ?? ''),
+        )
+        return route.fulfill({ json: sorted })
+      }
+      // M-16 히스토리 복원(POST restore) — 새 활성 탭으로 부여. 복원 탭 상태는 원본 H의 데이터와
+      // 일치(AC-7): 서버가 group_id를 재생성하므로 새 group_id로 그룹을 담는다(C-3 동형)
+      const restoreMatch = /^\/api\/history\/([^/]+)\/restore$/.exec(pathname)
+      if (restoreMatch !== null && method === 'POST') {
+        const id = decodeURIComponent(restoreMatch[1])
+        historyItems = historyItems.filter((h) => h.tabId !== id)
+        const tab = makeTab(RESTORED_TAB_ID, '닫힌 작업 둘', activeTabs.length)
+        activeTabs.push(tab)
+        // AC-7 검증용: 복원된 탭은 RED_PARCEL_ID(c-red) override + 재생성 group_id 그룹을 가진다
+        tabStates.set(RESTORED_TAB_ID, {
+          overrides: {
+            [RED_PARCEL_ID]: {
+              color: 'c-red',
+              style: 'fill',
+              name: null,
+              memo: null,
+              pinned: false,
+              icon: null,
+            },
+          },
+          groups: {
+            'grp_restored_new': {
+              name: '복원 그룹',
+              memo: null,
+              color: 'c-blue',
+              style: 'fill',
+              parcelIds: GROUP_MEMBER_IDS,
+            },
+          },
+        })
+        return route.fulfill({ json: tab })
+      }
+      // M-16 히스토리 이름변경(PATCH)·소프트딜리트(DELETE)
+      const historyItemMatch = /^\/api\/history\/([^/]+)$/.exec(pathname)
+      if (historyItemMatch !== null) {
+        const id = decodeURIComponent(historyItemMatch[1])
+        if (method === 'PATCH') {
+          const body = route.request().postDataJSON() as { name?: string }
+          const h = historyItems.find((x) => x.tabId === id)
+          if (h !== undefined && body.name !== undefined) h.name = body.name
+          return route.fulfill({ json: h ?? historyItems[0] })
+        }
+        if (method === 'DELETE') {
+          historyItems = historyItems.filter((x) => x.tabId !== id)
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
       // supabase 키 없는 config — realtime(M-6)이 disabled로 무해 종료한다 (AC-11 사전 조건)
       if (pathname === '/api/config') return route.fulfill({ json: {} })
       // M-11 색상 팔레트: GET 목록·PUT 전체 upsert(okResponseSchema 동형)·DELETE 단건 제거
@@ -219,21 +353,33 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
         colors = colors.filter((c) => c.colorId !== colorId)
         return route.fulfill({ json: { ok: true } })
       }
-      if (pathname === `/api/tabs/${TAB_ID}/state`) return route.fulfill({ json: tabState })
+      // M-16 탭 스코프 state — 탭 id별 분기(AC-1 격리의 핵심). 미지정 탭은 빈 상태로 생성.
+      const stateMatch = /^\/api\/tabs\/([^/]+)\/state$/.exec(pathname)
+      if (stateMatch !== null && method === 'GET') {
+        const id = decodeURIComponent(stateMatch[1])
+        let st = tabStates.get(id)
+        if (st === undefined) {
+          st = { overrides: {}, groups: {} }
+          tabStates.set(id, st)
+        }
+        return route.fulfill({ json: st })
+      }
       // M-12 JSON 불러오기 — 전체 교체. 서버 tabImportHandler의 group_id 전부 재생성(PK 충돌
       // 방지)을 모사한다: 파일의 groupId로 로컬을 채우면 키가 어긋남을 재조회 경로로 검증 가능
-      if (pathname === `/api/tabs/${TAB_ID}/import` && route.request().method() === 'PUT') {
+      const importMatch = /^\/api\/tabs\/([^/]+)\/import$/.exec(pathname)
+      if (importMatch !== null && method === 'PUT') {
+        const id = decodeURIComponent(importMatch[1])
         const body = route.request().postDataJSON() as {
           overrides: TabStateResponse['overrides']
           groups: TabStateResponse['groups']
         }
         let seq = 0
-        tabState = {
+        tabStates.set(id, {
           overrides: body.overrides,
           groups: Object.fromEntries(
             Object.values(body.groups).map((g) => [`g-imported-${String(++seq)}`, g]),
           ),
-        }
+        })
         return route.fulfill({ json: { ok: true } })
       }
       // M-10 자동 계산기: 레시피 GET(calcRecipesResponseSchema 동형)·PUT(저장 → 이후 GET 반영)
@@ -309,24 +455,58 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
           },
         })
       }
-      // M-7 필지 저장(upsert) — okResponseSchema 동형. 본문 검증은 spec이 waitForRequest로 수행
-      if (
-        route.request().method() === 'POST' &&
-        pathname.startsWith(`/api/tabs/${TAB_ID}/parcels/`)
-      )
+      // M-7 필지 저장(upsert) — okResponseSchema 동형. 본문 검증은 spec이 waitForRequest로 수행.
+      // M-16: 탭 스코프로 persist — URL의 탭 id에 따라 해당 탭 state에만 반영(AC-1 전환 후 복원).
+      // 서버 전체 행 치환 동형: 받은 전체 의미 필드로 override를 덮는다(부분 patch 금지).
+      const parcelUpsertMatch = /^\/api\/tabs\/([^/]+)\/parcels\/([^/]+)$/.exec(pathname)
+      if (parcelUpsertMatch !== null && method === 'POST') {
+        const tabId = decodeURIComponent(parcelUpsertMatch[1])
+        const parcelId = decodeURIComponent(parcelUpsertMatch[2])
+        const body = route.request().postDataJSON() as Record<string, unknown>
+        const st = tabStates.get(tabId)
+        if (st !== undefined) {
+          const override = {
+            color: (body.color as string | null) ?? null,
+            style: (body.style as 'fill' | 'border' | null) ?? null,
+            name: (body.name as string | null) ?? null,
+            memo: (body.memo as string | null) ?? null,
+            pinned: (body.pinned as boolean | undefined) ?? false,
+            icon: (body.icon as string | null) ?? null,
+          }
+          const cleared =
+            override.color === null &&
+            override.style === null &&
+            override.name === null &&
+            override.memo === null &&
+            !override.pinned &&
+            override.icon === null
+          if (cleared) delete st.overrides[parcelId]
+          else st.overrides[parcelId] = override
+        }
         return route.fulfill({ json: { ok: true } })
+      }
       // M-8 그룹 저장(upsert / group: null = 삭제) — okResponseSchema 동형.
       // 본문 검증은 spec이 waitForRequest·요청 리코더로 수행
-      if (route.request().method() === 'POST' && pathname === `/api/tabs/${TAB_ID}/groups`)
-        return route.fulfill({ json: { ok: true } })
+      const groupUpsertMatch = /^\/api\/tabs\/([^/]+)\/groups$/.exec(pathname)
+      if (groupUpsertMatch !== null && method === 'POST') return route.fulfill({ json: { ok: true } })
       // M-15 초기화 — okResponseSchema 동형. pinned 보호·비고정 비움은 스토어 낙관적 정리 소관이라
       // 모킹은 ok만 반환한다. 본문(items·clientId) 검증은 spec이 waitForRequest로 수행
-      if (route.request().method() === 'POST' && pathname === `/api/tabs/${TAB_ID}/reset`)
-        return route.fulfill({ json: { ok: true } })
+      const resetMatch = /^\/api\/tabs\/([^/]+)\/reset$/.exec(pathname)
+      if (resetMatch !== null && method === 'POST') return route.fulfill({ json: { ok: true } })
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })
     },
   )
+}
+
+/**
+ * M-16 — 햄버거(aria-label "메뉴")로 NavDrawer를 열고 진입 항목을 탭한다.
+ * 임시 IconButton 진입점들이 NavDrawer 안으로 이관되어, 항목 클릭 앞에 드로어 열기가 선행되어야 한다.
+ * NavDrawer는 항목 탭 시 자동으로 닫히므로(run→close), 같은 항목을 다시 열려면 매번 이 헬퍼를 호출한다.
+ */
+export async function openMenuItem(page: Page, name: string) {
+  await page.getByRole('button', { name: '메뉴' }).click()
+  await page.getByRole('button', { name, exact: true }).click()
 }
 
 // ── 부팅 완료 판정 (픽셀 신호) ───────────────────────────────────────────────

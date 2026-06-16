@@ -7,6 +7,7 @@ import {
   GROUP_HEX,
   GROUP_MEMBER_IDS,
   jibunOf,
+  openMenuItem,
 } from './helpers/mockApi'
 import { findClickPoint } from './helpers/pixels'
 
@@ -32,9 +33,9 @@ function parcelIdOf(req: Request): string {
   return decodeURIComponent(segments[segments.length - 1])
 }
 
-/** 임시 진입 버튼(지도 우상단)으로 설정 시트를 연다 — GET /api/calc-recipes 후 본문이 렌더된다 */
+/** NavDrawer(메뉴) "자동 계산기" 항목으로 설정 시트를 연다 — GET /api/calc-recipes 후 본문이 렌더된다 */
 async function openSettingsSheet(page: Page) {
-  await page.getByRole('button', { name: '자동 계산기' }).click()
+  await openMenuItem(page, '자동 계산기')
   const sheet = page.getByRole('dialog')
   await expect(sheet).toBeVisible()
   return sheet

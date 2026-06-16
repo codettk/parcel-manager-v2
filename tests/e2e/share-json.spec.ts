@@ -7,6 +7,7 @@ import {
   COMPOSITE_TOLERANCE,
   countNearPixels,
   GROUP_HEX,
+  openMenuItem,
   PARCEL_HEX,
   RED_PARCEL_ID,
   TAB_ID,
@@ -84,7 +85,7 @@ test('AC-7: 내보내기 → 상태 변경 → 같은 파일 불러오기 적용
   }
 
   // ① 내보내기 — 실제 다운로드 파일 캡처 + 포맷 검증 (version 2)
-  await page.getByRole('button', { name: '공유' }).click()
+  await openMenuItem(page, '공유')
   const shareSheet = page.getByRole('dialog')
   await expect(shareSheet.getByText('공유 — JSON 파일로 동기화')).toBeVisible()
 
@@ -118,7 +119,7 @@ test('AC-7: 내보내기 → 상태 변경 → 같은 파일 불러오기 적용
     .toBe(0)
 
   // ③ 불러오기 — 내보낸 실파일 선택 → 미리보기 확인 → 적용
-  await page.getByRole('button', { name: '공유' }).click()
+  await openMenuItem(page, '공유')
   await expect(shareSheet.getByText('공유 — JSON 파일로 동기화')).toBeVisible()
 
   const chooserPromise = page.waitForEvent('filechooser')
