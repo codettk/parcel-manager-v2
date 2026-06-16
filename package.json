@@ -16,6 +16,7 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "import:parcels": "tsx scripts/import-parcels.ts",
     "fetch:vworld": "tsx scripts/fetch-vworld.ts",
+    "seed:v1": "tsx scripts/migrate-v1-data.ts",
     "preview": "vite preview"
   },
   "dependencies": {
