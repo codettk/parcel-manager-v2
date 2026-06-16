@@ -2,15 +2,15 @@ import {
   deleteHistoryRequestSchema,
   renameHistoryRequestSchema,
   restoreHistoryRequestSchema,
-} from '../../src/types/api/history'
-import type { HistoryItem } from '../../src/types/api/history'
-import { createDb } from './db'
-import type { Db } from './db'
-import { badRequest, methodNotAllowed, notFound, ok } from './http'
-import { genGroupIds, genTabId } from './ids'
-import { nextSortOrder, rowToTab } from './tabs'
-import type { TabRow } from './tabs'
-import type { Handler } from './types'
+} from '../../src/types/api/history.js'
+import type { HistoryItem } from '../../src/types/api/history.js'
+import { createDb } from './db.js'
+import type { Db } from './db.js'
+import { badRequest, methodNotAllowed, notFound, ok } from './http.js'
+import { genGroupIds, genTabId } from './ids.js'
+import { nextSortOrder, rowToTab } from './tabs.js'
+import type { TabRow } from './tabs.js'
+import type { Handler } from './types.js'
 
 function rowToHistoryItem(row: TabRow): HistoryItem {
   return { ...rowToTab(row), closedAt: row.closed_at ?? '' }

@@ -1,23 +1,23 @@
 import 'dotenv/config'
 import express from 'express'
-import { expressAdapter } from './adapters/express'
-import { calcRecipesHandler } from './handlers/calcRecipes'
-import { colorItemHandler, colorsCollectionHandler } from './handlers/colors'
-import { configHandler } from './handlers/config'
+import { expressAdapter } from './adapters/express.js'
+import { calcRecipesHandler } from './handlers/calcRecipes.js'
+import { colorItemHandler, colorsCollectionHandler } from './handlers/colors.js'
+import { configHandler } from './handlers/config.js'
 import {
   historyCollectionHandler,
   historyItemHandler,
   historyRestoreHandler,
-} from './handlers/history'
-import { fetchLandInfoHandler, parcelAreasHandler, parcelItemHandler } from './handlers/parcels'
+} from './handlers/history.js'
+import { fetchLandInfoHandler, parcelAreasHandler, parcelItemHandler } from './handlers/parcels.js'
 import {
   tabGroupsHandler,
   tabImportHandler,
   tabParcelHandler,
   tabResetHandler,
   tabStateHandler,
-} from './handlers/tabState'
-import { tabItemHandler, tabsCollectionHandler } from './handlers/tabs'
+} from './handlers/tabState.js'
+import { tabItemHandler, tabsCollectionHandler } from './handlers/tabs.js'
 
 const app = express()
 app.use(express.json({ limit: '10mb' }))

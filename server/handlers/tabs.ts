@@ -2,13 +2,13 @@ import {
   createTabRequestSchema,
   deleteTabRequestSchema,
   updateTabRequestSchema,
-} from '../../src/types/api/tabs'
-import type { Tab } from '../../src/types/api/tabs'
-import { createDb } from './db'
-import type { Db } from './db'
-import { badRequest, conflict, methodNotAllowed, notFound, ok } from './http'
-import { genTabId } from './ids'
-import type { Handler } from './types'
+} from '../../src/types/api/tabs.js'
+import type { Tab } from '../../src/types/api/tabs.js'
+import { createDb } from './db.js'
+import type { Db } from './db.js'
+import { badRequest, conflict, methodNotAllowed, notFound, ok } from './http.js'
+import { genTabId } from './ids.js'
+import type { Handler } from './types.js'
 
 export interface TabRow {
   tab_id: string

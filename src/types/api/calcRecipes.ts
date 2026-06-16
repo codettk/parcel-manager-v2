@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { mutationBodySchema } from './common'
+import { mutationBodySchema } from './common.js'
 
 /**
  * 자동 계산기 레시피 (M-10에서 확정 — Phase 3의 z.unknown() 통과 계약을 구체화).

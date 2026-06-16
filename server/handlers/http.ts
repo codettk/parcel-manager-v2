@@ -1,5 +1,5 @@
 import type { ZodError } from 'zod'
-import type { HandlerResponse } from './types'
+import type { HandlerResponse } from './types.js'
 
 export function badRequest(error: ZodError | string): HandlerResponse {
   return {

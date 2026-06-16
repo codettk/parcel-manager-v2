@@ -1,7 +1,7 @@
-import { putCalcRecipesRequestSchema } from '../../src/types/api/calcRecipes'
-import { createDb } from './db'
-import { badRequest, methodNotAllowed, ok } from './http'
-import type { Handler } from './types'
+import { putCalcRecipesRequestSchema } from '../../src/types/api/calcRecipes.js'
+import { createDb } from './db.js'
+import { badRequest, methodNotAllowed, ok } from './http.js'
+import type { Handler } from './types.js'
 
 const CONFIG_KEY = 'calc_recipes'
 

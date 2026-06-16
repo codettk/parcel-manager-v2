@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { mutationBodySchema } from './common'
+import { mutationBodySchema } from './common.js'
 
 export const parcelStyleSchema = z.enum(['fill', 'border'])
 export type ParcelStyle = z.infer<typeof parcelStyleSchema>

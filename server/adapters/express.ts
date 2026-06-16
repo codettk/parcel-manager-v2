@@ -1,5 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
-import type { Handler } from '../handlers/types'
+import type { Handler } from '../handlers/types.js'
 
 export function expressAdapter(handler: Handler): RequestHandler {
   return async (req: Request, res: Response) => {

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { mutationBodySchema } from './common'
-import { tabSchema } from './tabs'
+import { mutationBodySchema } from './common.js'
+import { tabSchema } from './tabs.js'
 
 /** 닫힌 탭 — closedAt이 항상 존재 */
 export const historyItemSchema = tabSchema.extend({

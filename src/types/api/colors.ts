@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { mutationBodySchema } from './common'
+import { mutationBodySchema } from './common.js'
 
 /** 팔레트 색 — hex는 DB(color_labels) 소관이라 디자인 토큰이 아님 */
 export const colorLabelSchema = z.object({

@@ -3,13 +3,12 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.server.tsbuildinfo",
     "target": "es2023",
     "lib": ["ES2023"],
-    "module": "esnext",
+    "module": "nodenext",
     "types": ["node"],
     "skipLibCheck": true,
 
-    /* Bundler mode (tsx 실행 전제) */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    /* Node ESM mode (Vercel @vercel/node nodenext 일치 — 누락 확장자 게이트) */
+    "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,

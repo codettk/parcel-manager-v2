@@ -1,4 +1,4 @@
-import { vercelAdapter } from '../server/adapters/vercel'
-import { tabItemHandler } from '../server/handlers/tabs'
+import { vercelAdapter } from '../server/adapters/vercel.js'
+import { tabItemHandler } from '../server/handlers/tabs.js'
 
 export default vercelAdapter(tabItemHandler, ['id'])

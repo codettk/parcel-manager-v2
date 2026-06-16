@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { mutationBodySchema } from './common'
+import { mutationBodySchema } from './common.js'
 
 /** 필지 마스터 (전 탭 공유) — parcels 행의 API 표현. 좌표는 [lng,lat] 배열 */
 export const parcelSchema = z.object({

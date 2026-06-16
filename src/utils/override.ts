@@ -1,4 +1,4 @@
-import type { ParcelOverride, ResetItem } from '../types/api/tabState'
+import type { ParcelOverride, ResetItem } from '../types/api/tabState.js'
 
 /**
  * v1 보존 로직: style은 color가 있을 때만 의미가 있고(없으면 'fill' 보정),

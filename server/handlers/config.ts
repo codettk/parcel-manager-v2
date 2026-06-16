@@ -1,5 +1,5 @@
-import type { Handler } from './types'
-import type { ConfigResponse } from '../../src/types/api/config'
+import type { Handler } from './types.js'
+import type { ConfigResponse } from '../../src/types/api/config.js'
 
 export const configHandler: Handler = async (_req, ctx) => {
   const body: ConfigResponse = {

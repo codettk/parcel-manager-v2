@@ -1,8 +1,8 @@
-import { deleteColorRequestSchema, putColorsRequestSchema } from '../../src/types/api/colors'
-import type { ColorLabel } from '../../src/types/api/colors'
-import { createDb } from './db'
-import { badRequest, methodNotAllowed, notFound, ok } from './http'
-import type { Handler } from './types'
+import { deleteColorRequestSchema, putColorsRequestSchema } from '../../src/types/api/colors.js'
+import type { ColorLabel } from '../../src/types/api/colors.js'
+import { createDb } from './db.js'
+import { badRequest, methodNotAllowed, notFound, ok } from './http.js'
+import type { Handler } from './types.js'
 
 interface ColorRow {
   color_id: string

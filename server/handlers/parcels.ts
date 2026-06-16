@@ -1,6 +1,6 @@
-import { fetchLandInfoRequestSchema } from '../../src/types/api/parcels'
-import type { Parcel, ParcelAreasResponse } from '../../src/types/api/parcels'
-import { createDb } from './db'
+import { fetchLandInfoRequestSchema } from '../../src/types/api/parcels.js'
+import type { Parcel, ParcelAreasResponse } from '../../src/types/api/parcels.js'
+import { createDb } from './db.js'
 import {
   badGateway,
   badRequest,
@@ -8,9 +8,9 @@ import {
   methodNotAllowed,
   notFound,
   serviceUnavailable,
-} from './http'
-import type { Handler } from './types'
-import { fetchLadfrl } from './vworld'
+} from './http.js'
+import type { Handler } from './types.js'
+import { fetchLadfrl } from './vworld.js'
 
 interface ParcelRow {
   local_id: string

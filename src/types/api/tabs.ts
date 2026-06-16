@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { mutationBodySchema } from './common'
+import { mutationBodySchema } from './common.js'
 
 export const tabSchema = z.object({
   tabId: z.string(),

@@ -3,14 +3,14 @@ import {
   resetTabRequestSchema,
   upsertGroupRequestSchema,
   upsertParcelRequestSchema,
-} from '../../src/types/api/tabState'
-import type { Group, ParcelOverride, TabStateResponse } from '../../src/types/api/tabState'
-import { createDb } from './db'
-import type { Db } from './db'
-import { badRequest, methodNotAllowed, notFound, ok } from './http'
-import { genGroupIds } from './ids'
-import { buildResetPatch, isClearedOverride, normalizeOverride } from '../../src/utils/override'
-import type { Handler } from './types'
+} from '../../src/types/api/tabState.js'
+import type { Group, ParcelOverride, TabStateResponse } from '../../src/types/api/tabState.js'
+import { createDb } from './db.js'
+import type { Db } from './db.js'
+import { badRequest, methodNotAllowed, notFound, ok } from './http.js'
+import { genGroupIds } from './ids.js'
+import { buildResetPatch, isClearedOverride, normalizeOverride } from '../../src/utils/override.js'
+import type { Handler } from './types.js'
 
 interface SettingRow {
   tab_id: string

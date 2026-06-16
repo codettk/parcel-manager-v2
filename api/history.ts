@@ -1,4 +1,4 @@
-import { vercelAdapter } from '../server/adapters/vercel'
-import { historyCollectionHandler } from '../server/handlers/history'
+import { vercelAdapter } from '../server/adapters/vercel.js'
+import { historyCollectionHandler } from '../server/handlers/history.js'
 
 export default vercelAdapter(historyCollectionHandler)

@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import type { Handler } from '../handlers/types'
+import type { Handler } from '../handlers/types.js'
 
 /**
  * Vercel은 rewrite로 경로 파라미터를 query에 실어 보내므로(vercel.json),
