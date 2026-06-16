@@ -75,6 +75,31 @@ export function jibunOf(parcelId: string): string | null {
   return RAW_BY_ID.get(parcelId)?.jibun ?? null
 }
 
+// M-14 지목 필터 — 지번 끝글자 휴리스틱(src/features/map/jimok.ts classifyJimok 보존).
+// E2E(AC-9)는 '답' 분류 필지를 목록 검색으로 결정적으로 열어야 하므로,
+// jibun이 다른 행과 부분일치하지 않는('검색 시 유일') '답' 필지를 picksJSON에서 도출한다
+// (RED_PARCEL_ID 선례 — id 하드코딩 대신 parcels.json에서 산출해 데이터 변화에 견고).
+function classifyDap(jibun: string): boolean {
+  return jibun.slice(-1) === '답'
+}
+const SUBSTRING_COUNT = (() => {
+  const m = new Map<string, number>()
+  for (const p of rawData.parcels) m.set(p.jibun, (m.get(p.jibun) ?? 0) + 1)
+  return m
+})()
+function uniqueSubstringJibun(jibun: string): boolean {
+  // 부분 일치 검색이 정확히 이 행 하나만 남기는지 — 다른 어떤 지번에도 부분문자열로 들지 않아야 한다
+  if ((SUBSTRING_COUNT.get(jibun) ?? 0) !== 1) return false
+  return rawData.parcels.filter((p) => p.jibun.includes(jibun)).length === 1
+}
+const DAP_PARCEL = rawData.parcels.find(
+  (p) => classifyDap(p.jibun) && uniqueSubstringJibun(p.jibun),
+)
+if (DAP_PARCEL === undefined) throw new Error('parcels.json에 검색 유일한 답 필지가 없음 (e2e)')
+/** '답' 분류 + 지번 부분일치 검색 유일 필지 (AC-9 시트 결정적 열기용) */
+export const DAP_PARCEL_ID = DAP_PARCEL.id
+export const DAP_PARCEL_JIBUN = DAP_PARCEL.jibun
+
 // GET /api/parcels/:id 픽스처 면적(㎡) — 시트 면적 행 렌더 조건(lndpclAr != null) 충족용
 const PARCEL_FIXTURE_AREA_M2 = 1234.5
 

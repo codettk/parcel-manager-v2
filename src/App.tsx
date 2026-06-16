@@ -8,6 +8,7 @@ import { AddToGroupBanner } from './features/group/AddToGroupBanner'
 import { GroupSheet } from './features/group/GroupSheet'
 import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
+import { JimokFilter } from './features/map/JimokFilter'
 import { MapCanvas } from './features/map/MapCanvas'
 import { PaletteSheet } from './features/palette/PaletteSheet'
 import { ParcelSheet } from './features/parcel/ParcelSheet'
@@ -38,6 +39,7 @@ function App() {
   const openPalette = useUiStore((s) => s.openPalette)
   const shareOpen = useUiStore((s) => s.shareOpen)
   const openShare = useUiStore((s) => s.openShare)
+  const jimokFilter = useUiStore((s) => s.jimokFilter)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
   const bootRequested = useRef(false)
@@ -71,8 +73,17 @@ function App() {
         groups={groups}
         colorById={colorById}
         selection={selection}
+        jimokFilter={jimokFilter}
         onParcelTap={tapParcel}
       />
+      {/* 지목 필터 칩 바 (M-14) — 지도 위 상단. 목록 뷰에선 미표시(v1 view!=='list' 보존). */}
+      {/* 우측 IconButton 스택(top-3·top-16 행)·중앙 모드 배지(top-3)와 y 겹침을 피해 두 행 아래 독립 행
+          (top-28)에 전체 폭으로 배치 — 모바일 375px는 7칩이 한 줄에 안 들어가 JimokFilter가 가로 스크롤 */}
+      {!listViewOpen && (
+        <div className="absolute top-28 right-3 left-3 z-10">
+          <JimokFilter />
+        </div>
+      )}
       {/* NavDrawer 도입 전 임시 진입점 — 도입 시 드로어 항목("릴리즈 노트")으로 이동 (명세 §진입점) */}
       <div className="absolute top-3 right-3 z-10 rounded-md bg-surface shadow-md">
         <IconButton

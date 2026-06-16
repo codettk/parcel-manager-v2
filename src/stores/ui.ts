@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { EMPTY_SELECTION } from '../features/map/engine'
+import { ALL_JIMOK, type JimokKey } from '../features/map/jimok'
 import { AREA_UNITS, type AreaUnitId } from '../utils/formatArea'
 import { selectParcelToGroup } from './selectors'
 import { useWorkspaceStore } from './workspace'
@@ -87,6 +88,15 @@ export interface UiState {
   shareOpen: boolean
   openShare: () => void
   closeShare: () => void
+  /**
+   * 지목 필터 (M-14) — 초기 6종 전체. 세션 한정(영속 아님, v1 동일).
+   * 적용은 지도 렌더+히트테스트 한정 (목록 뷰는 비적용 — v1 view!=='list' 보존).
+   */
+  jimokFilter: JimokKey[]
+  /** 필터 전체 교체 ('전체' 칩 토글) — 변경 시 선택·시트 해제 (v1 useEffect 보존) */
+  setJimokFilter: (next: JimokKey[]) => void
+  /** 개별 지목 토글 — 변경 시 선택·시트 해제 (v1 useEffect 보존) */
+  toggleJimok: (key: JimokKey) => void
   /** 면적 표시 단위 — draft가 아닌 즉시 전역 반영, localStorage 영속 (M-7) */
   areaUnit: AreaUnitId
   setAreaUnit: (unit: AreaUnitId) => void
@@ -264,6 +274,19 @@ export const useUiStore = create<UiState>()((set, get) => ({
   shareOpen: false,
   openShare: () => set({ shareOpen: true }),
   closeShare: () => set({ shareOpen: false }),
+
+  jimokFilter: [...ALL_JIMOK],
+  // 필터 변경은 현재 선택·시트만 해제한다 (v1 app.jsx:687 useEffect 보존).
+  // 모드(멀티선택·추가·계산기)는 v1에 연관 동작이 없어 건드리지 않는다 (최소 변경).
+  setJimokFilter: (next) =>
+    set({ jimokFilter: next, selectedParcelId: null, selectedGroupId: null, openSheet: null }),
+  toggleJimok: (key) =>
+    set((s) => {
+      const next = s.jimokFilter.includes(key)
+        ? s.jimokFilter.filter((k) => k !== key)
+        : [...s.jimokFilter, key]
+      return { jimokFilter: next, selectedParcelId: null, selectedGroupId: null, openSheet: null }
+    }),
 
   areaUnit: loadAreaUnit(),
   setAreaUnit: (unit) => {

@@ -20,6 +20,7 @@ import {
 } from './engine'
 import { useGestures } from './useGestures'
 import { BUTTON_ZOOM_FACTOR } from './gestureMath'
+import { ALL_JIMOK, visibleParcelIds, type JimokKey } from './jimok'
 
 interface RawParcel {
   id: string
@@ -42,6 +43,11 @@ interface MapCanvasProps {
   groups?: Record<string, Group>
   colorById?: Record<string, string>
   selection?: SelectionState
+  /**
+   * 지목 필터 (M-14) — 선택 지목 배열. 가려진 필지는 안 그려지고·안 탭되고·라벨도 없다
+   * (scene.parcels·hitTest·라벨 캔버스 동일 가시 집합). 미지정 시 6종 전체(전부 가시).
+   */
+  jimokFilter?: JimokKey[]
   /** 탭 히트테스트 결과 — 필지 id 또는 빈 곳 탭 시 null (선택 상태는 호스트 소관) */
   onParcelTap?: (parcelId: string | null) => void
 }
@@ -49,12 +55,14 @@ interface MapCanvasProps {
 const EMPTY_OVERRIDES: Record<string, ParcelOverride> = {}
 const EMPTY_GROUPS: Record<string, Group> = {}
 const EMPTY_COLOR_BY_ID: Record<string, string> = {}
+const DEFAULT_JIMOK_FILTER: JimokKey[] = [...ALL_JIMOK]
 
 export function MapCanvas({
   overrides = EMPTY_OVERRIDES,
   groups = EMPTY_GROUPS,
   colorById = EMPTY_COLOR_BY_ID,
   selection = EMPTY_SELECTION,
+  jimokFilter = DEFAULT_JIMOK_FILTER,
   onParcelTap,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,11 +74,21 @@ export function MapCanvas({
   labelCachesRef.current ??= createLabelCaches()
   const [data, setData] = useState<MapData | null>(null)
 
+  // 지목 필터 가시 집합 — 렌더·히트테스트·라벨 세 경로가 같은 배열을 입력해 일관성 보장 (M-14).
+  // parcels.json 재로드 없이 이미 구성된 data.parcels에서 가시성만 거른다.
+  const visibleParcels = useMemo(() => {
+    if (!data) return null
+    const visibleIds = visibleParcelIds(jimokFilter, data.parcels)
+    if (visibleIds.size === data.parcels.length) return data.parcels // 전체 선택 — 재배열 회피
+    return data.parcels.filter((p) => visibleIds.has(p.id))
+  }, [data, jimokFilter])
+
   const { viewport, zoomBy } = useGestures({
     containerRef,
     aspect: data?.aspect ?? null,
     onTap: (point) => {
-      if (data) onParcelTap?.(hitTest(data.parcels, point))
+      // 필터로 가려진 필지는 탭 대상에서 제외 (가시 집합으로 히트테스트)
+      if (visibleParcels) onParcelTap?.(hitTest(visibleParcels, point))
     },
   })
 
@@ -130,7 +148,7 @@ export function MapCanvas({
     const ct = containerRef.current
     const cache = cacheRef.current
     const labelCaches = labelCachesRef.current
-    if (!cv || !lcv || !ct || !data || !cache || !labelCaches || !viewport) return
+    if (!cv || !lcv || !ct || !data || !visibleParcels || !cache || !labelCaches || !viewport) return
     const ctx = cv.getContext('2d')
     const lctx = lcv.getContext('2d')
     if (!ctx || !lctx) return
@@ -147,7 +165,8 @@ export function MapCanvas({
 
     const scene = {
       aspect: data.aspect,
-      parcels: data.parcels,
+      // 지목 필터 가시 집합 — 렌더·라벨이 동일 배열 사용 (가려진 필지는 미표시·라벨 없음)
+      parcels: visibleParcels,
       overrides,
       groups,
       parcelToGroup,
@@ -159,7 +178,7 @@ export function MapCanvas({
     renderScene(ctx, scene, size, cache)
     // 라벨은 같은 씬·같은 프레임에 별도 캔버스로 (v1 라벨 레이어 보존)
     renderLabels(lctx, scene, size, labelCaches)
-  }, [data, viewport, overrides, groups, parcelToGroup, colorById, selection])
+  }, [data, visibleParcels, viewport, overrides, groups, parcelToGroup, colorById, selection])
 
   return (
     <div className="relative h-full w-full bg-surface-alt">
