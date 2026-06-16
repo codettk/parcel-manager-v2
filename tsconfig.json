@@ -5,5 +5,16 @@
     { "path": "./tsconfig.node.json" },
     { "path": "./tsconfig.server.json" },
     { "path": "./tsconfig.test.json" }
-  ]
+  ],
+  "//": "compilerOptions는 tsc -b(references만 사용)가 아니라 @vercel/node가 api/ 함수를 컴파일할 때 쓰는 루트 설정이다. server/api와 동일하게 맞춰 strict 내로잉(LadfrlResult 판별)·node 타입(process)을 보장한다.",
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "strict": true
+  }
 }
