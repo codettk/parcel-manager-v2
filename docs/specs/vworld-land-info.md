@@ -6,22 +6,22 @@
 
 ## 판정 상세 (선별적 포팅)
 
-| 구분   | 항목                                                                                                                                                  | 근거                                                                                          |
-| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| 구분   | 항목                                                                                                                                                                | 근거                                                                                           |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | 보존   | V-World 호출 사양: `POST https://api.vworld.kr/ned/data/ladfrlList`, form-urlencoded, `pnu`(19자리)·`format=xml`·`numOfRows=1`·`pageNo=1`·`key`·`domain`(있을 때만) | v1 운영에서 검증된 호출 경로 — 키·도메인 등록 그대로 동작                                      |
-| 보존   | 응답 파싱: XML(fast-xml-parser) → `fields.ladfrlVOList`(배열이면 첫 항목)                                                                              | v1 검증 경로. JSON 포맷 전환은 실키 없이 검증 불가한 변경이라 채택하지 않음                    |
-| 보존   | 필드 매핑 10종 + 정규화(문자열 trim 후 빈 값 null, `lndpclAr` parseFloat, `cnrsPsnCo` parseInt) + `vworld_fetched_at = now()`                          | v1 핸들러·스크립트 공통 매핑 — §V-World 매핑 표 참조                                           |
-| 보존   | 일괄 스크립트 동작: pnu 19자리 + `vworld_fetched_at IS NULL`만 대상(멱등), `--force` 재조회, 200ms 간격(rate limit), 페이징 수집, 실패 사유별 리포트   | v1 `fetch-vworld.js` 검증 동작                                                                 |
-| 보존   | 버튼 노출 조건: pnu 있고 `vworldFetchedAt` null일 때만 "토지임야 조회" 버튼, 조회 완료면 카드(재조회 버튼 없음 — 갱신은 스크립트 소관)                 | v1 ParcelSheet 동작                                                                            |
-| 재설계 | **호출 구현 단일화**: 핸들러(fetch)·스크립트(https.request) 이중 구현 → `server/handlers/vworld.ts` 공용 모듈 하나를 양쪽이 import                     | 명세서 M-13 확정 ("fetch 기반으로 단일화")                                                     |
-| 재설계 | 키 부재 시 v1 400 → **503** ("V-World API 키가 설정되지 않았습니다")                                                                                   | 클라이언트 과실이 아닌 서버 구성 문제 — 400은 오분류                                           |
-| 재설계 | pnu 미확보 시 v1 400 → **409** (기존 `conflict()` 헬퍼)                                                                                                | 요청이 아닌 리소스 상태 문제                                                                   |
-| 재설계 | V-World 호출 실패·파싱 실패·무자료 시 v1 500/500/404 혼재 → **502 단일화**                                                                             | 외부 게이트웨이 오류로 통일 — 프론트는 "조회 실패 + 재시도" 한 분기면 충분                     |
-| 재설계 | 성공 응답: v1 `{ok, data:<snake_case 부분>}` → **갱신된 parcels 행 전체**(`parcelSchema`, camelCase)                                                   | Phase 3 확정 계약(`fetchLandInfoResponseSchema = parcelSchema`) — 프론트가 카드 즉시 갱신 가능 |
-| 재설계 | 버튼 UX: v1 무소음 실패(console.error만) → 조회 중 비활성 표시 + 실패 시 인라인 오류 문구 + 재시도 가능                                                | v1의 침묵 실패는 사용자가 결과를 알 수 없음                                                    |
-| 폐기   | `lad_frtl_sc`/`lad_frtl_sc_nm`/`last_updt_dt` 저장                                                                                                     | v2 확정 스키마(명세서 §6.1 parcels)에 컬럼 없음 + v1 UI 미사용 (select 문자열에만 존재)        |
-| 폐기   | 응답 pnu 역갱신 (`update.pnu = fields.pnu`)                                                                                                            | 요청 자체가 pnu 기준 조회라 무의미하고 `pnu UNIQUE` 충돌 위험만 있음                           |
-| 폐기   | 실 V-World 통합 테스트(키 있을 때 조건부 실행)                                                                                                         | 외부 API 실호출은 CI 비결정성·키 노출 문제 — 일괄 스크립트 첫 실행이 실질 검증을 대신함        |
+| 보존   | 응답 파싱: XML(fast-xml-parser) → `fields.ladfrlVOList`(배열이면 첫 항목)                                                                                           | v1 검증 경로. JSON 포맷 전환은 실키 없이 검증 불가한 변경이라 채택하지 않음                    |
+| 보존   | 필드 매핑 10종 + 정규화(문자열 trim 후 빈 값 null, `lndpclAr` parseFloat, `cnrsPsnCo` parseInt) + `vworld_fetched_at = now()`                                       | v1 핸들러·스크립트 공통 매핑 — §V-World 매핑 표 참조                                           |
+| 보존   | 일괄 스크립트 동작: pnu 19자리 + `vworld_fetched_at IS NULL`만 대상(멱등), `--force` 재조회, 200ms 간격(rate limit), 페이징 수집, 실패 사유별 리포트                | v1 `fetch-vworld.js` 검증 동작                                                                 |
+| 보존   | 버튼 노출 조건: pnu 있고 `vworldFetchedAt` null일 때만 "토지임야 조회" 버튼, 조회 완료면 카드(재조회 버튼 없음 — 갱신은 스크립트 소관)                              | v1 ParcelSheet 동작                                                                            |
+| 재설계 | **호출 구현 단일화**: 핸들러(fetch)·스크립트(https.request) 이중 구현 → `server/handlers/vworld.ts` 공용 모듈 하나를 양쪽이 import                                  | 명세서 M-13 확정 ("fetch 기반으로 단일화")                                                     |
+| 재설계 | 키 부재 시 v1 400 → **503** ("V-World API 키가 설정되지 않았습니다")                                                                                                | 클라이언트 과실이 아닌 서버 구성 문제 — 400은 오분류                                           |
+| 재설계 | pnu 미확보 시 v1 400 → **409** (기존 `conflict()` 헬퍼)                                                                                                             | 요청이 아닌 리소스 상태 문제                                                                   |
+| 재설계 | V-World 호출 실패·파싱 실패·무자료 시 v1 500/500/404 혼재 → **502 단일화**                                                                                          | 외부 게이트웨이 오류로 통일 — 프론트는 "조회 실패 + 재시도" 한 분기면 충분                     |
+| 재설계 | 성공 응답: v1 `{ok, data:<snake_case 부분>}` → **갱신된 parcels 행 전체**(`parcelSchema`, camelCase)                                                                | Phase 3 확정 계약(`fetchLandInfoResponseSchema = parcelSchema`) — 프론트가 카드 즉시 갱신 가능 |
+| 재설계 | 버튼 UX: v1 무소음 실패(console.error만) → 조회 중 비활성 표시 + 실패 시 인라인 오류 문구 + 재시도 가능                                                             | v1의 침묵 실패는 사용자가 결과를 알 수 없음                                                    |
+| 폐기   | `lad_frtl_sc`/`lad_frtl_sc_nm`/`last_updt_dt` 저장                                                                                                                  | v2 확정 스키마(명세서 §6.1 parcels)에 컬럼 없음 + v1 UI 미사용 (select 문자열에만 존재)        |
+| 폐기   | 응답 pnu 역갱신 (`update.pnu = fields.pnu`)                                                                                                                         | 요청 자체가 pnu 기준 조회라 무의미하고 `pnu UNIQUE` 충돌 위험만 있음                           |
+| 폐기   | 실 V-World 통합 테스트(키 있을 때 조건부 실행)                                                                                                                      | 외부 API 실호출은 CI 비결정성·키 노출 문제 — 일괄 스크립트 첫 실행이 실질 검증을 대신함        |
 
 ## 사용자 스토리
 

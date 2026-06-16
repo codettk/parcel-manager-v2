@@ -1,10 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import {
-  bootWithMockedApi,
-  DAP_PARCEL_ID,
-  DAP_PARCEL_JIBUN,
-  openMenuItem,
-} from './helpers/mockApi'
+import { bootWithMockedApi, DAP_PARCEL_ID, DAP_PARCEL_JIBUN, openMenuItem } from './helpers/mockApi'
 
 // 명세: docs/specs/jimok-filter.md — AC-8·AC-9 (E2E 소관은 이 2건)
 // AC-1~3은 tests/unit/jimokFilter.test.ts(순수 함수), AC-4~7은 tests/unit/JimokFilter.test.tsx

@@ -42,7 +42,13 @@ function makeHistory(tabId: string, name: string, closedAt: string): HistoryItem
 }
 
 function seedHistory(items: HistoryItem[]) {
-  useWorkspaceStore.setState({ history: items, loadHistory, restoreHistory, renameHistory, deleteHistory })
+  useWorkspaceStore.setState({
+    history: items,
+    loadHistory,
+    restoreHistory,
+    renameHistory,
+    deleteHistory,
+  })
 }
 
 beforeEach(() => {

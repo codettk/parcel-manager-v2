@@ -46,9 +46,7 @@ describe('AC-9: reset(["color"]) — pinned 보호 + color/style 제거 + api 1�
 
     const { overrides } = useWorkspaceStore.getState()
     expect(overrides.p1).toBeUndefined()
-    expect(overrides.p2).toEqual(
-      makeOverride({ color: null, style: null, name: '북단' }),
-    )
+    expect(overrides.p2).toEqual(makeOverride({ color: null, style: null, name: '북단' }))
     expect(overrides.p3).toEqual(makeOverride({ color: 'sky', style: 'fill', pinned: true }))
 
     expect(api.tabState.reset).toHaveBeenCalledExactlyOnceWith('tab_a', { items: ['color'] })

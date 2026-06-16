@@ -116,5 +116,8 @@ export async function fetchLadfrl(pnu: string, env: VWorldEnv): Promise<LadfrlRe
     return { ok: false, kind: 'no-data', message: 'V-World 응답에 토지임야 데이터가 없습니다' }
   }
 
-  return { ok: true, mapping: toMapping(fields as Record<string, unknown>, new Date().toISOString()) }
+  return {
+    ok: true,
+    mapping: toMapping(fields as Record<string, unknown>, new Date().toISOString()),
+  }
 }

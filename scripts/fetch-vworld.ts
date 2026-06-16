@@ -125,7 +125,10 @@ async function main(): Promise<void> {
 }
 
 // 직접 실행 시에만 main 구동 — import(테스트) 시에는 실행하지 않는다
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('fetch-vworld.ts')) {
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1]?.endsWith('fetch-vworld.ts')
+) {
   main().catch((e: unknown) => {
     console.error(e instanceof Error ? e.message : e)
     process.exitCode = 1

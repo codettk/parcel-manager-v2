@@ -6,17 +6,17 @@
 
 ## 보존 / 재설계 / 폐기 판정표
 
-| 항목                                | v1 동작                                                      | v2 판정      | 근거                                                            |
-| ----------------------------------- | ----------------------------------------------------------- | ------------ | --------------------------------------------------------------- |
-| 초기화 항목 선택 (색·이름·메모·그룹)| 체크박스 4종, 기본 선택 `['color','group']`                 | **보존**     | v1 ResetSheet.jsx:3,43-48                                       |
-| pinned(고정) 필지 보호              | `if (out[id].pinned) return` — 고정 행 제외                 | **보존**     | v1 app.jsx:452,477 / v2 핸들러 `.not('pinned','is',true)` 이미 구현 |
-| color 초기화 시 style 동반 제거     | `delete ov.color; delete ov.style`                          | **보존**     | v1 app.jsx:454 / v2 `buildResetPatch(['color'])={color,style:null}` |
-| 그룹 초기화 = 그룹 전체 해체        | `if (items.includes('group')) setGroups({})`               | **보존**     | v1 app.jsx:448 / v2 핸들러 `parcel_groups.delete().eq(tab_id)`  |
-| ConfirmInline (2단계 인라인 확인)   | `pendingAction` 상태 + 확인 박스                            | **보존**     | 공통 `src/components/ui/ConfirmInline.tsx` 재사용                |
-| 빈 의미필드 행 청소                 | `if (Object.keys(ov).length===0) delete out[id]`           | **보존**     | v1 app.jsx:457 / v2 핸들러 isClearedOverride 청소 이미 구현      |
-| 스냅샷 생성 UI (이름 입력·저장후초기화)| `pendingAction==='save-reset'`, label 입력, `/api/snapshots` | **폐기**     | §7.3 / §8.1 — 히스토리는 탭(M-16)으로 대체, 스냅샷 테이블 없음   |
-| 히스토리 목록 (복원·이름수정·삭제)  | snapshots fetch·restore·rename·deleteAll                    | **폐기**     | M-16 탭 작업공간 소관 (HistorySheet)                            |
-| 아이콘(icon) 초기화                 | 없음 (icon은 pinned 전용, pinned 보호로 자동 제외)          | **폐기(미대상)** | v1에도 icon 초기화 항목 없음 — pinned 보호에 종속               |
+| 항목                                    | v1 동작                                                      | v2 판정          | 근거                                                                |
+| --------------------------------------- | ------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------- |
+| 초기화 항목 선택 (색·이름·메모·그룹)    | 체크박스 4종, 기본 선택 `['color','group']`                  | **보존**         | v1 ResetSheet.jsx:3,43-48                                           |
+| pinned(고정) 필지 보호                  | `if (out[id].pinned) return` — 고정 행 제외                  | **보존**         | v1 app.jsx:452,477 / v2 핸들러 `.not('pinned','is',true)` 이미 구현 |
+| color 초기화 시 style 동반 제거         | `delete ov.color; delete ov.style`                           | **보존**         | v1 app.jsx:454 / v2 `buildResetPatch(['color'])={color,style:null}` |
+| 그룹 초기화 = 그룹 전체 해체            | `if (items.includes('group')) setGroups({})`                 | **보존**         | v1 app.jsx:448 / v2 핸들러 `parcel_groups.delete().eq(tab_id)`      |
+| ConfirmInline (2단계 인라인 확인)       | `pendingAction` 상태 + 확인 박스                             | **보존**         | 공통 `src/components/ui/ConfirmInline.tsx` 재사용                   |
+| 빈 의미필드 행 청소                     | `if (Object.keys(ov).length===0) delete out[id]`             | **보존**         | v1 app.jsx:457 / v2 핸들러 isClearedOverride 청소 이미 구현         |
+| 스냅샷 생성 UI (이름 입력·저장후초기화) | `pendingAction==='save-reset'`, label 입력, `/api/snapshots` | **폐기**         | §7.3 / §8.1 — 히스토리는 탭(M-16)으로 대체, 스냅샷 테이블 없음      |
+| 히스토리 목록 (복원·이름수정·삭제)      | snapshots fetch·restore·rename·deleteAll                     | **폐기**         | M-16 탭 작업공간 소관 (HistorySheet)                                |
+| 아이콘(icon) 초기화                     | 없음 (icon은 pinned 전용, pinned 보호로 자동 제외)           | **폐기(미대상)** | v1에도 icon 초기화 항목 없음 — pinned 보호에 종속                   |
 
 ## 사용자 스토리
 

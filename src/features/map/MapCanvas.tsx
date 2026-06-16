@@ -148,7 +148,8 @@ export function MapCanvas({
     const ct = containerRef.current
     const cache = cacheRef.current
     const labelCaches = labelCachesRef.current
-    if (!cv || !lcv || !ct || !data || !visibleParcels || !cache || !labelCaches || !viewport) return
+    if (!cv || !lcv || !ct || !data || !visibleParcels || !cache || !labelCaches || !viewport)
+      return
     const ctx = cv.getContext('2d')
     const lctx = lcv.getContext('2d')
     if (!ctx || !lctx) return

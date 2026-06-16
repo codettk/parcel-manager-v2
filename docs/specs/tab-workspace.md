@@ -8,31 +8,31 @@
 
 > M-16은 "신규"이나 **백엔드 전체가 Phase 3에서 이미 구현·테스트 완료**다. 이 절은 backend-dev의 작업 범위를 0에 가깝게 좁히고, frontend-dev가 무엇을 새로 만들지 명확히 한다.
 
-| 계층 | 항목 | 상태 |
-| --- | --- | --- |
-| DB | `tabs` 테이블 (tab_id·name·sort_order·closed_at·history_deleted_at·created_at·updated_by·updated_at) + FK CASCADE + Realtime publication | **완료** (`supabase/migrations/0001_v2_schema.sql`) |
-| 핸들러 | `tabsCollectionHandler`(GET 목록·자동 기본탭 생성·POST 생성), `tabItemHandler`(PATCH 이름/순서·DELETE 소프트클로즈+마지막탭 409) | **완료** (`server/handlers/tabs.ts`) |
-| 핸들러 | `historyCollectionHandler`(GET), `historyItemHandler`(PATCH 이름·DELETE 소프트딜리트), `historyRestoreHandler`(POST restore — settings/groups 복사 + group_id 전부 재생성) | **완료** (`server/handlers/history.ts`) |
-| ID 생성 | `genTabId`(tab_<ts36><rand4>, H-1), `genGroupIds`(복원용 충돌없는 grp_ 배치, C-3) | **완료** (`server/handlers/ids.ts`) |
-| 계약(zod) | `tabSchema`·`createTabRequestSchema`·`updateTabRequestSchema`·`deleteTabRequestSchema` / `historyItemSchema`·`renameHistoryRequestSchema`·`restoreHistoryRequestSchema`·`deleteHistoryRequestSchema` | **완료** (`src/types/api/tabs.ts`·`history.ts`) |
-| 클라이언트 | `api.tabs.{list,create,update,close}` · `api.history.{list,rename,restore,remove}` | **완료** (`src/lib/api.ts`) |
-| 통합 테스트 | AC-3(생성/목록/이름변경)·AC-4(마지막탭 409+소프트클로즈)·AC-5(활성탭 0개 자동생성)·AC-6(복원 group_id 재생성)·AC-7(히스토리 이름변경+소프트딜리트) | **완료**·green (`tests/integration/tabs.test.ts`·`history.test.ts`) |
-| 스토어 | `workspace.boot()`(C-1 폴백 포함)·`setActiveTab()`(C-4 isInitializing)·`applyRemoteTabs()` | **완료** (`src/stores/workspace.ts`) |
-| Realtime | `tabs` 전역 채널(refetch + 활성탭 소실 시 첫탭 폴백) + 탭 전환 시 탭스코프 2채널 재구독 | **완료** (`src/lib/realtime.ts`) |
-| UI 컴포넌트 | `TabBar`(가로스크롤·인라인편집·소프트클로즈·추가, 도메인무지)·`Drawer`/`DrawerSection`/`DrawerItem` | **완료** (`src/components/ui/`, Phase 1) |
-| UI 스토어 | `isInitializing`(입력차단 C-4) | **완료** (`src/stores/ui.ts`) |
+| 계층        | 항목                                                                                                                                                                                                 | 상태                                                                |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| DB          | `tabs` 테이블 (tab_id·name·sort_order·closed_at·history_deleted_at·created_at·updated_by·updated_at) + FK CASCADE + Realtime publication                                                             | **완료** (`supabase/migrations/0001_v2_schema.sql`)                 |
+| 핸들러      | `tabsCollectionHandler`(GET 목록·자동 기본탭 생성·POST 생성), `tabItemHandler`(PATCH 이름/순서·DELETE 소프트클로즈+마지막탭 409)                                                                     | **완료** (`server/handlers/tabs.ts`)                                |
+| 핸들러      | `historyCollectionHandler`(GET), `historyItemHandler`(PATCH 이름·DELETE 소프트딜리트), `historyRestoreHandler`(POST restore — settings/groups 복사 + group_id 전부 재생성)                           | **완료** (`server/handlers/history.ts`)                             |
+| ID 생성     | `genTabId`(tab*<ts36><rand4>, H-1), `genGroupIds`(복원용 충돌없는 grp* 배치, C-3)                                                                                                                    | **완료** (`server/handlers/ids.ts`)                                 |
+| 계약(zod)   | `tabSchema`·`createTabRequestSchema`·`updateTabRequestSchema`·`deleteTabRequestSchema` / `historyItemSchema`·`renameHistoryRequestSchema`·`restoreHistoryRequestSchema`·`deleteHistoryRequestSchema` | **완료** (`src/types/api/tabs.ts`·`history.ts`)                     |
+| 클라이언트  | `api.tabs.{list,create,update,close}` · `api.history.{list,rename,restore,remove}`                                                                                                                   | **완료** (`src/lib/api.ts`)                                         |
+| 통합 테스트 | AC-3(생성/목록/이름변경)·AC-4(마지막탭 409+소프트클로즈)·AC-5(활성탭 0개 자동생성)·AC-6(복원 group_id 재생성)·AC-7(히스토리 이름변경+소프트딜리트)                                                   | **완료**·green (`tests/integration/tabs.test.ts`·`history.test.ts`) |
+| 스토어      | `workspace.boot()`(C-1 폴백 포함)·`setActiveTab()`(C-4 isInitializing)·`applyRemoteTabs()`                                                                                                           | **완료** (`src/stores/workspace.ts`)                                |
+| Realtime    | `tabs` 전역 채널(refetch + 활성탭 소실 시 첫탭 폴백) + 탭 전환 시 탭스코프 2채널 재구독                                                                                                              | **완료** (`src/lib/realtime.ts`)                                    |
+| UI 컴포넌트 | `TabBar`(가로스크롤·인라인편집·소프트클로즈·추가, 도메인무지)·`Drawer`/`DrawerSection`/`DrawerItem`                                                                                                  | **완료** (`src/components/ui/`, Phase 1)                            |
+| UI 스토어   | `isInitializing`(입력차단 C-4)                                                                                                                                                                       | **완료** (`src/stores/ui.ts`)                                       |
 
 **남은 작업(이 기능의 실질 범위)**: ① 워크스페이스 탭 CRUD 스토어 액션(create·rename·softClose·history list/restore/rename/delete) ② `HistorySheet`(닫힌 탭 목록 + 복원/이름변경/삭제) ③ `NavDrawer`(앱 메뉴 — 히스토리 진입점 + 기존 임시 IconButton 진입점 정리) ④ App에 `TabBar` 마운트 + 지도 상단 레이아웃 ⑤ TabBar 액션 ↔ 스토어 결선 ⑥ 히스토리 항목의 필지 수 표시를 위한 카운트 제공.
 
 ## 판정 상세 (선별적 포팅)
 
-| 구분 | 항목 | 근거 |
-| --- | --- | --- |
-| 신규(v1 계획서 이관) | 탭 = 독립 작업공간(필지 설정·그룹 분리), 탭 = 히스토리 항목, 닫기 = 소프트 클로즈, 복원 = 새 탭 복사 | v1 탭 계획서(2026-06-01) 확정 방향. v1 스냅샷(`app_config.reset_snapshots` FIFO 10개)을 대체 |
-| 폐기 | v1 스냅샷 UI·`api/snapshots`·`api/reset` | 마이그레이션 명세서 §7.3-1. 히스토리는 닫힌 탭으로 대체(M-15 ResetSheet에서 스냅샷 UI 제거 완료) |
-| 폐기 | v1 `activeTabIdRef` useRef 미러링 | CONVENTIONS "ref 미러 금지" — 콜백 동기 접근은 `getState()`. realtime은 `workspace.subscribe`로 activeTabId 변화 감지(기구현) |
-| 재설계 | 탭 전환 안전 처리(v1 `isSwitching`) → v2 `isInitializing` 단일 플래그 재사용(부팅·전환 공용) | C-4. `setActiveTab`이 이미 토글 |
-| 재설계 | v1 인라인 편집 진입 = "활성 탭 단탭" → v2 **더블클릭/롱프레스** | 단탭은 모바일에서 전환과 충돌·오작동 위험. 기존 `TabBar`가 `onDoubleClick`(활성탭) 채택 — 이 명세는 그것을 확정 |
+| 구분                 | 항목                                                                                                 | 근거                                                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 신규(v1 계획서 이관) | 탭 = 독립 작업공간(필지 설정·그룹 분리), 탭 = 히스토리 항목, 닫기 = 소프트 클로즈, 복원 = 새 탭 복사 | v1 탭 계획서(2026-06-01) 확정 방향. v1 스냅샷(`app_config.reset_snapshots` FIFO 10개)을 대체                                  |
+| 폐기                 | v1 스냅샷 UI·`api/snapshots`·`api/reset`                                                             | 마이그레이션 명세서 §7.3-1. 히스토리는 닫힌 탭으로 대체(M-15 ResetSheet에서 스냅샷 UI 제거 완료)                              |
+| 폐기                 | v1 `activeTabIdRef` useRef 미러링                                                                    | CONVENTIONS "ref 미러 금지" — 콜백 동기 접근은 `getState()`. realtime은 `workspace.subscribe`로 activeTabId 변화 감지(기구현) |
+| 재설계               | 탭 전환 안전 처리(v1 `isSwitching`) → v2 `isInitializing` 단일 플래그 재사용(부팅·전환 공용)         | C-4. `setActiveTab`이 이미 토글                                                                                               |
+| 재설계               | v1 인라인 편집 진입 = "활성 탭 단탭" → v2 **더블클릭/롱프레스**                                      | 단탭은 모바일에서 전환과 충돌·오작동 위험. 기존 `TabBar`가 `onDoubleClick`(활성탭) 채택 — 이 명세는 그것을 확정               |
 
 ## 사용자 스토리
 
@@ -126,13 +126,13 @@
 
 ## C-1~C-4·H-1 해소 매핑 (검증 추적표)
 
-| 리스크 | 정의(v1 계획서) | v2 해소 | 검증 AC |
-| --- | --- | --- | --- |
-| C-1 | localStorage `activeTabId` 스테일 참조 | `boot()`가 GET /api/tabs 결과에 없으면 첫 탭 폴백(기구현) + realtime refetch가 활성탭 소실 시 첫탭 폴백 | AC-9 (+ `boot` 단위 동작은 state-stores 명세 소관) |
-| C-2 | 마지막 탭 클로즈 API 무방비 | `tabItemHandler`가 활성 탭 수 ≤1이면 409(기구현·테스트됨), 클라도 `×` 가드 | AC-4, AC-10 |
-| C-3 | 복원 시 group_id 충돌 | `historyRestoreHandler`가 `genGroupIds`로 전부 재생성(기구현·테스트됨) | AC-7, AC-11 |
-| C-4 | 초기 로드·전환 중 입력 누락 | `isInitializing` 단일 플래그가 `tapParcel`·mutate 차단(기구현, 재사용) | AC-5 |
-| H-1 | 초기 탭 동시 생성 레이스 | `tab_<ts36><rand4>` ID + GET의 자동생성 `ON CONFLICT` 의미론 | AC-12 |
+| 리스크 | 정의(v1 계획서)                        | v2 해소                                                                                                 | 검증 AC                                            |
+| ------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| C-1    | localStorage `activeTabId` 스테일 참조 | `boot()`가 GET /api/tabs 결과에 없으면 첫 탭 폴백(기구현) + realtime refetch가 활성탭 소실 시 첫탭 폴백 | AC-9 (+ `boot` 단위 동작은 state-stores 명세 소관) |
+| C-2    | 마지막 탭 클로즈 API 무방비            | `tabItemHandler`가 활성 탭 수 ≤1이면 409(기구현·테스트됨), 클라도 `×` 가드                              | AC-4, AC-10                                        |
+| C-3    | 복원 시 group_id 충돌                  | `historyRestoreHandler`가 `genGroupIds`로 전부 재생성(기구현·테스트됨)                                  | AC-7, AC-11                                        |
+| C-4    | 초기 로드·전환 중 입력 누락            | `isInitializing` 단일 플래그가 `tapParcel`·mutate 차단(기구현, 재사용)                                  | AC-5                                               |
+| H-1    | 초기 탭 동시 생성 레이스               | `tab_<ts36><rand4>` ID + GET의 자동생성 `ON CONFLICT` 의미론                                            | AC-12                                              |
 
 ## 비범위
 

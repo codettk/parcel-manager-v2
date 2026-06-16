@@ -58,10 +58,7 @@ afterEach(async () => {
   vworldMock.mockReset()
   vi.unstubAllGlobals()
   // 테스트가 만진 pnu/vworld_fetched_at 정리 — 다른 통합 테스트 격리
-  await db
-    .from('parcels')
-    .update({ pnu: null, vworld_fetched_at: null })
-    .not('pnu', 'is', null)
+  await db.from('parcels').update({ pnu: null, vworld_fetched_at: null }).not('pnu', 'is', null)
 })
 
 async function setPnu(localId: string, pnu: string | null): Promise<void> {
@@ -127,7 +124,12 @@ describe('AC-3: 미존재 필지 404 / pnu null 409(미호출)', () => {
   it('존재하지 않는 id에 404를 반환한다', async () => {
     const ctx = ctxWith({ V_WORLD_LADFRLLIST: 'test-key' })
     const res = await fetchLandInfoHandler(
-      { method: 'POST', params: { id: 'no_such_parcel' }, query: {}, body: { clientId: CLIENT_ID } },
+      {
+        method: 'POST',
+        params: { id: 'no_such_parcel' },
+        query: {},
+        body: { clientId: CLIENT_ID },
+      },
       ctx,
     )
     expect(res.status).toBe(404)

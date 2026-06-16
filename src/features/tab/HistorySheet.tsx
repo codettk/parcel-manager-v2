@@ -118,11 +118,7 @@ export function HistorySheet() {
                 />
                 {!editing && (
                   <div className="flex items-center justify-end gap-2 px-3 pb-2.5">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => startEdit(item)}
-                    >
+                    <Button size="sm" variant="secondary" onClick={() => startEdit(item)}>
                       <Pencil aria-hidden className="size-3.5" />
                       이름 변경
                     </Button>

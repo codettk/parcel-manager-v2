@@ -311,7 +311,7 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
             },
           },
           groups: {
-            'grp_restored_new': {
+            grp_restored_new: {
               name: '복원 그룹',
               memo: null,
               color: 'c-blue',
@@ -488,7 +488,8 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       // M-8 그룹 저장(upsert / group: null = 삭제) — okResponseSchema 동형.
       // 본문 검증은 spec이 waitForRequest·요청 리코더로 수행
       const groupUpsertMatch = /^\/api\/tabs\/([^/]+)\/groups$/.exec(pathname)
-      if (groupUpsertMatch !== null && method === 'POST') return route.fulfill({ json: { ok: true } })
+      if (groupUpsertMatch !== null && method === 'POST')
+        return route.fulfill({ json: { ok: true } })
       // M-15 초기화 — okResponseSchema 동형. pinned 보호·비고정 비움은 스토어 낙관적 정리 소관이라
       // 모킹은 ok만 반환한다. 본문(items·clientId) 검증은 spec이 waitForRequest로 수행
       const resetMatch = /^\/api\/tabs\/([^/]+)\/reset$/.exec(pathname)

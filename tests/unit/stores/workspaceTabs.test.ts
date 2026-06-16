@@ -73,7 +73,9 @@ describe('createTab() — AC-2', () => {
     useWorkspaceStore.setState({
       tabs: [TAB_A],
       activeTabId: 'tab_a',
-      overrides: { p1: { color: 'eco', style: 'fill', name: null, memo: null, pinned: false, icon: null } },
+      overrides: {
+        p1: { color: 'eco', style: 'fill', name: null, memo: null, pinned: false, icon: null },
+      },
     })
     const NEW = makeTab('tab_new', '새 작업공간', 1)
     vi.mocked(api.tabs.create).mockResolvedValue(NEW)
