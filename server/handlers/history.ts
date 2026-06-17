@@ -4,6 +4,7 @@ import {
   restoreHistoryRequestSchema,
 } from '../../src/types/api/history.js'
 import type { HistoryItem } from '../../src/types/api/history.js'
+import { requireUser } from './auth.js'
 import { createDb } from './db.js'
 import type { Db } from './db.js'
 import { badRequest, methodNotAllowed, notFound, ok } from './http.js'
@@ -50,6 +51,8 @@ export const historyItemHandler: Handler = async (req, ctx) => {
   if (req.method === 'PATCH') {
     const parsed = renameHistoryRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     const { data, error } = await db
       .from('tabs')
@@ -71,6 +74,8 @@ export const historyItemHandler: Handler = async (req, ctx) => {
   if (req.method === 'DELETE') {
     const parsed = deleteHistoryRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     const source = await findHistoryRow(db, tabId)
     if (!source) return notFound('히스토리 항목을 찾을 수 없습니다')
@@ -94,6 +99,8 @@ export const historyRestoreHandler: Handler = async (req, ctx) => {
   if (req.method !== 'POST') return methodNotAllowed()
   const parsed = restoreHistoryRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
   const { clientId } = parsed.data
   const db = createDb(ctx.env)
 
@@ -108,6 +115,7 @@ export const historyRestoreHandler: Handler = async (req, ctx) => {
       name: source.name,
       sort_order: await nextSortOrder(db),
       updated_by: clientId,
+      created_by: auth.user.id,
     })
     .select('*')
     .single()
@@ -126,6 +134,7 @@ export const historyRestoreHandler: Handler = async (req, ctx) => {
         ...r,
         tab_id: newTab.tab_id,
         updated_by: clientId,
+        created_by: auth.user.id,
         updated_at: now,
       })),
     )
@@ -146,6 +155,7 @@ export const historyRestoreHandler: Handler = async (req, ctx) => {
         group_id: newIds[i],
         tab_id: newTab.tab_id,
         updated_by: clientId,
+        created_by: auth.user.id,
         updated_at: now,
       })),
     )

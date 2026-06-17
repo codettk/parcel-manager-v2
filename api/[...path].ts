@@ -25,6 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const qs = search.toString()
   const url = '/api/' + segments.join('/') + (qs ? `?${qs}` : '')
 
-  const result = await dispatch(req.method ?? 'GET', url, req.body, process.env)
+  const authorization = req.headers.authorization
+  const result = await dispatch(req.method ?? 'GET', url, req.body, process.env, authorization)
   res.status(result.status).json(result.body)
 }

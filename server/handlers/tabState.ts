@@ -5,6 +5,7 @@ import {
   upsertParcelRequestSchema,
 } from '../../src/types/api/tabState.js'
 import type { Group, ParcelOverride, TabStateResponse } from '../../src/types/api/tabState.js'
+import { requireUser } from './auth.js'
 import { createDb } from './db.js'
 import type { Db } from './db.js'
 import { badRequest, methodNotAllowed, notFound, ok } from './http.js'
@@ -98,6 +99,8 @@ export const tabParcelHandler: Handler = async (req, ctx) => {
   if (req.method !== 'POST') return methodNotAllowed()
   const parsed = upsertParcelRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
   const { tabId, id: parcelId } = req.params
   const db = createDb(ctx.env)
   if (!(await tabExists(db, tabId))) return notFound(TAB_NOT_FOUND)
@@ -127,6 +130,7 @@ export const tabParcelHandler: Handler = async (req, ctx) => {
       parcel_local_id: parcelId,
       ...fields,
       updated_by: parsed.data.clientId,
+      created_by: auth.user.id,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'tab_id,parcel_local_id' },
@@ -144,6 +148,8 @@ export const tabGroupsHandler: Handler = async (req, ctx) => {
   if (req.method !== 'POST') return methodNotAllowed()
   const parsed = upsertGroupRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
   const tabId = req.params.tabId
   const { groupId, group, clientId } = parsed.data
   const db = createDb(ctx.env)
@@ -169,6 +175,7 @@ export const tabGroupsHandler: Handler = async (req, ctx) => {
       style: group.style,
       parcel_ids: group.parcelIds,
       updated_by: clientId,
+      created_by: auth.user.id,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'group_id' },
@@ -182,6 +189,8 @@ export const tabResetHandler: Handler = async (req, ctx) => {
   if (req.method !== 'POST') return methodNotAllowed()
   const parsed = resetTabRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
   const tabId = req.params.tabId
   const { items, clientId } = parsed.data
   const db = createDb(ctx.env)
@@ -196,7 +205,12 @@ export const tabResetHandler: Handler = async (req, ctx) => {
   if (Object.keys(patch).length > 0) {
     const { error } = await db
       .from('parcel_settings')
-      .update({ ...patch, updated_by: clientId, updated_at: new Date().toISOString() })
+      .update({
+        ...patch,
+        updated_by: clientId,
+        created_by: auth.user.id,
+        updated_at: new Date().toISOString(),
+      })
       .eq('tab_id', tabId)
       .not('pinned', 'is', true)
     if (error) throw new Error(error.message)
@@ -228,6 +242,8 @@ export const tabImportHandler: Handler = async (req, ctx) => {
   if (req.method !== 'PUT') return methodNotAllowed()
   const parsed = importTabRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
   const tabId = req.params.tabId
   const { overrides, groups, clientId } = parsed.data
   const db = createDb(ctx.env)
@@ -251,6 +267,7 @@ export const tabImportHandler: Handler = async (req, ctx) => {
       parcel_local_id: parcelId,
       ...fields,
       updated_by: clientId,
+      created_by: auth.user.id,
       updated_at: now,
     }))
   for (let i = 0; i < settingRows.length; i += INSERT_CHUNK) {
@@ -275,6 +292,7 @@ export const tabImportHandler: Handler = async (req, ctx) => {
     style: group.style,
     parcel_ids: group.parcelIds,
     updated_by: clientId,
+    created_by: auth.user.id,
     updated_at: now,
   }))
   for (let i = 0; i < groupRows.length; i += INSERT_CHUNK) {

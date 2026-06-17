@@ -1,12 +1,15 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchLandInfoHandler } from '../../server/handlers/parcels'
 import type { HandlerContext } from '../../server/handlers/types'
 import { runFetchVworld } from '../../scripts/fetch-vworld'
 import { errorResponseSchema } from '../../src/types/api/common'
 import { parcelSchema } from '../../src/types/api/parcels'
-import { db, pickParcelIds } from './helpers'
+import { db, getTestToken, pickParcelIds } from './helpers'
 
 const CLIENT_ID = 'itest-vworld'
+
+// fetch-land-info도 mutate라 인증을 강제한다(AC-12). 테스트 사용자 토큰을 ctx.auth에 싣는다.
+let authToken = ''
 
 /** V-World ladfrlList 정상 XML(단일 항목). 빈 문자열 필드 1종 포함 — null 정규화 검증용 */
 function ladfrlXml(opts: { lndcgrNm?: string; ar?: string; cnrs?: string } = {}): string {
@@ -37,7 +40,7 @@ function xmlResponse(xml: string): Response {
 const PNU = '4159025021' + '10000001' + '0' // 19자리
 
 function ctxWith(env: Record<string, string | undefined>): HandlerContext {
-  return { env: { ...process.env, ...env } }
+  return { env: { ...process.env, ...env }, auth: { token: authToken } }
 }
 
 const VWORLD_URL = 'https://api.vworld.kr/ned/data/ladfrlList'
@@ -46,6 +49,10 @@ const VWORLD_URL = 'https://api.vworld.kr/ned/data/ladfrlList'
 // V-World 호출 검증·기대 응답은 vworldMock으로만 한다.
 const vworldMock = vi.fn<typeof fetch>()
 const realFetch = globalThis.fetch.bind(globalThis)
+
+beforeAll(async () => {
+  authToken = await getTestToken()
+})
 
 beforeEach(() => {
   vi.stubGlobal('fetch', ((input: Parameters<typeof fetch>[0], init?: RequestInit) => {

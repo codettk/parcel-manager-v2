@@ -4,6 +4,7 @@ import {
   updateTabRequestSchema,
 } from '../../src/types/api/tabs.js'
 import type { Tab } from '../../src/types/api/tabs.js'
+import { requireUser } from './auth.js'
 import { createDb } from './db.js'
 import type { Db } from './db.js'
 import { badRequest, conflict, methodNotAllowed, notFound, ok } from './http.js'
@@ -75,6 +76,8 @@ export const tabsCollectionHandler: Handler = async (req, ctx) => {
   if (req.method === 'POST') {
     const parsed = createTabRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     const { data, error } = await db
       .from('tabs')
@@ -83,6 +86,7 @@ export const tabsCollectionHandler: Handler = async (req, ctx) => {
         name: parsed.data.name ?? '새 작업공간',
         sort_order: await nextSortOrder(db),
         updated_by: parsed.data.clientId,
+        created_by: auth.user.id,
       })
       .select('*')
       .single()
@@ -100,9 +104,12 @@ export const tabItemHandler: Handler = async (req, ctx) => {
   if (req.method === 'PATCH') {
     const parsed = updateTabRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     const patch: Record<string, string | number> = {
       updated_by: parsed.data.clientId,
+      created_by: auth.user.id,
       updated_at: new Date().toISOString(),
     }
     if (parsed.data.name !== undefined) patch.name = parsed.data.name
@@ -122,6 +129,8 @@ export const tabItemHandler: Handler = async (req, ctx) => {
   if (req.method === 'DELETE') {
     const parsed = deleteTabRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     const { data: active, error } = await db.from('tabs').select('tab_id').is('closed_at', null)
     if (error) throw new Error(error.message)

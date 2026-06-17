@@ -1,4 +1,5 @@
 import { putCalcRecipesRequestSchema } from '../../src/types/api/calcRecipes.js'
+import { requireUser } from './auth.js'
 import { createDb } from './db.js'
 import { badRequest, methodNotAllowed, ok } from './http.js'
 import type { Handler } from './types.js'
@@ -22,6 +23,8 @@ export const calcRecipesHandler: Handler = async (req, ctx) => {
   if (req.method === 'PUT') {
     const parsed = putCalcRecipesRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     const { error } = await db.from('app_config').upsert(
       {

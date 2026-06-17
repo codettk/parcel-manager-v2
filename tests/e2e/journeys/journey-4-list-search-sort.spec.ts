@@ -31,9 +31,13 @@ function rowByArea(list: ReturnType<Page['getByTestId']>, m2: number) {
   return list.getByRole('button').filter({ hasText: formatArea(m2, 'm2') })
 }
 
+// 비가상화 4,409행 목록을 검색·정렬·재검색하며 role 트리를 여러 번 풀스캔하는 최중량 여정이라,
+// 전체 스위트 동시 부하(authed 부팅이 여는 supabase realtime ws 재연결 churn 포함) 아래서
+// 기본 30s 액션 타임아웃을 간헐 초과한다(단독 실행은 ~18s 안정 통과). 여정 자체를 넉넉히 잡는다.
 test('④ 목록 진입 → 지번 검색 → 초기화 → 면적순 정렬 → 행 탭 시트 → 지도 복귀', async ({
   page,
 }) => {
+  test.setTimeout(90_000)
   await bootWithMockedApi(page)
   const list = await openListView(page)
 

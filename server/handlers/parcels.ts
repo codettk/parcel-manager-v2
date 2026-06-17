@@ -1,5 +1,6 @@
 import { fetchLandInfoRequestSchema } from '../../src/types/api/parcels.js'
 import type { Parcel, ParcelAreasResponse } from '../../src/types/api/parcels.js'
+import { requireUser } from './auth.js'
 import { createDb } from './db.js'
 import {
   badGateway,
@@ -102,6 +103,8 @@ export const fetchLandInfoHandler: Handler = async (req, ctx) => {
   if (req.method !== 'POST') return methodNotAllowed()
   const parsed = fetchLandInfoRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
 
   if (!ctx.env.V_WORLD_LADFRLLIST) {
     return serviceUnavailable('V-World API 키가 설정되지 않았습니다')

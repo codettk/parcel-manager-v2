@@ -1,3 +1,4 @@
+import { meHandler } from './handlers/auth.js'
 import { calcRecipesHandler } from './handlers/calcRecipes.js'
 import { colorItemHandler, colorsCollectionHandler } from './handlers/colors.js'
 import { configHandler } from './handlers/config.js'
@@ -30,6 +31,8 @@ export interface Route {
 
 export const routes: Route[] = [
   { method: 'GET', pattern: '/api/config', handler: configHandler },
+
+  { method: 'GET', pattern: '/api/me', handler: meHandler },
 
   { method: 'GET', pattern: '/api/tabs', handler: tabsCollectionHandler },
   { method: 'POST', pattern: '/api/tabs', handler: tabsCollectionHandler },
@@ -88,15 +91,24 @@ export function matchRoute(
   return null
 }
 
+/** Authorization 헤더(대소문자 무관)에서 Bearer 토큰을 추출 — 없으면 null */
+export function extractBearerToken(authorization: string | undefined | null): string | null {
+  if (!authorization) return null
+  const match = /^Bearer\s+(.+)$/i.exec(authorization.trim())
+  return match ? match[1].trim() : null
+}
+
 /**
  * 런타임 비의존 디스패치 — Vercel catch-all과 테스트가 공유한다.
  * 매칭 실패 404, 핸들러 throw 500(express 어댑터와 동형). url은 '/api/...?q=1' 전체 경로.
+ * authorization: Authorization 헤더 원문(있을 때만) — 핸들러 ctx.auth.token으로 전달(세션 신원).
  */
 export async function dispatch(
   method: string,
   url: string,
   body: unknown,
   env: Record<string, string | undefined>,
+  authorization?: string | null,
 ): Promise<HandlerResponse> {
   const parsed = new URL(url, 'http://localhost')
   const match = matchRoute(method, parsed.pathname)
@@ -106,7 +118,10 @@ export async function dispatch(
   const query: Record<string, string | undefined> = {}
   for (const [key, value] of parsed.searchParams.entries()) query[key] = value
   try {
-    return await match.handler({ method, params: match.params, query, body }, { env })
+    return await match.handler(
+      { method, params: match.params, query, body },
+      { env, auth: { token: extractBearerToken(authorization) } },
+    )
   } catch (e) {
     return { status: 500, body: { error: e instanceof Error ? e.message : String(e) } }
   }
