@@ -2,6 +2,7 @@ import {
   Building2,
   Calculator,
   CircleUser,
+  ClipboardList,
   History,
   List,
   MapPinned,
@@ -46,6 +47,7 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
   const openAccount = useUiStore((s) => s.openAccount)
   const openStaffView = useUiStore((s) => s.openStaffView)
   const openContactsView = useUiStore((s) => s.openContactsView)
+  const openWorkLogView = useUiStore((s) => s.openWorkLogView)
 
   /** 항목 동작 실행 후 드로어를 닫는다 — 모든 항목 공통 */
   const run = (action: () => void) => () => {
@@ -84,6 +86,12 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
           icon={Building2}
           label="거래처 관리"
           onClick={run(openContactsView)}
+          trailing={<ProBadge />}
+        />
+        <DrawerItem
+          icon={ClipboardList}
+          label="업무일지"
+          onClick={run(openWorkLogView)}
           trailing={<ProBadge />}
         />
       </DrawerSection>

@@ -15,6 +15,7 @@ import { AddToGroupBanner } from './features/group/AddToGroupBanner'
 import { GroupSheet } from './features/group/GroupSheet'
 import { ContactsView } from './features/erp/ContactsView'
 import { StaffView } from './features/erp/StaffView'
+import { WorkLogView } from './features/erp/worklog/WorkLogView'
 import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { JimokFilter } from './features/map/JimokFilter'
@@ -74,6 +75,7 @@ function App() {
   const jimokFilter = useUiStore((s) => s.jimokFilter)
   const staffViewOpen = useUiStore((s) => s.staffViewOpen)
   const contactsViewOpen = useUiStore((s) => s.contactsViewOpen)
+  const workLogViewOpen = useUiStore((s) => s.workLogViewOpen)
   const activeRegionId = useUiStore((s) => s.activeRegionId)
   const regionSelectOpen = useUiStore((s) => s.regionSelectOpen)
   const regionManageOpen = useUiStore((s) => s.regionManageOpen)
@@ -241,6 +243,7 @@ function App() {
         {/* 영농 PRO 풀스크린 뷰 (슬라이스 5a, z-30) — 자체 시트(생성·수정)는 뷰 내부 로컬 상태 */}
         {staffViewOpen && <StaffView />}
         {contactsViewOpen && <ContactsView />}
+        {workLogViewOpen && <WorkLogView />}
       </div>
 
       <NavDrawer

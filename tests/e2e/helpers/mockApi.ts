@@ -194,9 +194,7 @@ export interface MockApiOptions {
    * - { status }: 503(키 부재, AC-13)·502(외부 실패, AC-13) 에러를 반환.
    * 좌표·clientId는 본문 그대로 받되 응답에 에코하지 않는다(절충 3 동형).
    */
-  geocode?:
-    | { area: { sido: string; sigungu: string; emd: string } | null }
-    | { status: number }
+  geocode?: { area: { sido: string; sigungu: string; emd: string } | null } | { status: number }
 }
 
 /** src/stores/ui.ts ACTIVE_REGION_STORAGE_KEY · regionCatalog SEED_REGION.id 와 일치해야 한다 */
@@ -433,6 +431,44 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   const erpContacts: ErpContactRow[] = []
   let erpStaffSeq = 0
   let erpContactSeq = 0
+  // 슬라이스 5b 업무일지 — 상태 보존 모킹(생성·수정·하드삭제가 GET에 반영). 전역 공유 단일 테이블.
+  // 라인 staffNameSnapshot은 서버 동형으로 erpStaff 마스터에서 그 시점 이름을 스냅샷한다(절충 2).
+  // totalCost는 공유 computeLogTotal과 동형(Σ round(appliedWage × workRatio)).
+  interface ErpWorkLogWorker {
+    staffId: string
+    staffNameSnapshot: string
+    appliedWage: number
+    workRatio: number
+  }
+  interface ErpWorkLogRow {
+    logId: string
+    workDate: string
+    title: string
+    memo: string | null
+    workers: ErpWorkLogWorker[]
+    totalCost: number
+    createdBy: string | null
+    createdAt: string
+    updatedAt: string
+  }
+  const erpWorkLogs: ErpWorkLogRow[] = []
+  let erpWorkLogSeq = 0
+  const workLogTotal = (workers: { appliedWage: number; workRatio: number }[]): number =>
+    workers.reduce(
+      (sum, w) =>
+        sum +
+        Math.round((w.appliedWage < 0 ? 0 : w.appliedWage) * (w.workRatio < 0 ? 0 : w.workRatio)),
+      0,
+    )
+  const snapshotWorkers = (
+    raw: { staffId: string; appliedWage: number; workRatio: number }[],
+  ): ErpWorkLogWorker[] =>
+    raw.map((w) => ({
+      staffId: w.staffId,
+      staffNameSnapshot: erpStaff.find((s) => s.staffId === w.staffId)?.name ?? '',
+      appliedWage: w.appliedWage,
+      workRatio: w.workRatio,
+    }))
   await page.route(
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
@@ -734,8 +770,7 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       if (pathname === '/api/staff') {
         const includeInactive = new URL(route.request().url()).searchParams.get('includeInactive')
         if (method === 'GET') {
-          const rows =
-            includeInactive === 'true' ? erpStaff : erpStaff.filter((s) => s.active)
+          const rows = includeInactive === 'true' ? erpStaff : erpStaff.filter((s) => s.active)
           return route.fulfill({ json: rows })
         }
         if (method === 'POST') {
@@ -775,6 +810,71 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
         }
         if (method === 'DELETE') {
           if (row !== undefined) row.active = false // 소프트 비활성 (AC-4)
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
+      // 슬라이스 5b 영농 ERP 업무일지 — 상태 보존 모킹(생성·수정·하드삭제). work_date 내림차순 + 기간 필터.
+      if (pathname === '/api/work-logs') {
+        if (method === 'GET') {
+          const sp = new URL(route.request().url()).searchParams
+          const fromQ = sp.get('from')
+          const toQ = sp.get('to')
+          const rows = erpWorkLogs
+            .filter(
+              (l) => (fromQ === null || l.workDate >= fromQ) && (toQ === null || l.workDate <= toQ),
+            )
+            .sort((a, b) => (a.workDate < b.workDate ? 1 : a.workDate > b.workDate ? -1 : 0))
+          return route.fulfill({ json: rows })
+        }
+        if (method === 'POST') {
+          const body = route.request().postDataJSON() as {
+            workDate: string
+            title: string
+            memo?: string
+            workers: { staffId: string; appliedWage: number; workRatio: number }[]
+          }
+          const workers = snapshotWorkers(body.workers ?? [])
+          const row: ErpWorkLogRow = {
+            logId: `wlg-e2e-${String(++erpWorkLogSeq)}`,
+            workDate: body.workDate,
+            title: body.title,
+            memo: body.memo ?? null,
+            workers,
+            totalCost: workLogTotal(workers),
+            createdBy: SEED_USER_ID,
+            createdAt: NOW,
+            updatedAt: NOW,
+          }
+          erpWorkLogs.push(row)
+          return route.fulfill({ json: row })
+        }
+      }
+      const workLogItemMatch = /^\/api\/work-logs\/([^/]+)$/.exec(pathname)
+      if (workLogItemMatch !== null) {
+        const id = decodeURIComponent(workLogItemMatch[1])
+        const row = erpWorkLogs.find((l) => l.logId === id)
+        if (method === 'PATCH') {
+          const body = route.request().postDataJSON() as {
+            workDate?: string
+            title?: string
+            memo?: string | null
+            workers?: { staffId: string; appliedWage: number; workRatio: number }[]
+          }
+          if (row !== undefined) {
+            if (body.workDate !== undefined) row.workDate = body.workDate
+            if (body.title !== undefined) row.title = body.title
+            if (body.memo !== undefined) row.memo = body.memo
+            if (body.workers !== undefined) {
+              row.workers = snapshotWorkers(body.workers) // 라인 전체 치환(AC-7)
+              row.totalCost = workLogTotal(row.workers)
+            }
+            row.updatedAt = NOW
+          }
+          return route.fulfill({ json: row ?? erpWorkLogs[0] })
+        }
+        if (method === 'DELETE') {
+          const idx = erpWorkLogs.findIndex((l) => l.logId === id)
+          if (idx !== -1) erpWorkLogs.splice(idx, 1) // 하드 삭제(AC-8)
           return route.fulfill({ json: { ok: true } })
         }
       }

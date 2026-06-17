@@ -26,6 +26,7 @@ import {
 } from './handlers/tabState.js'
 import { tabItemHandler, tabsCollectionHandler } from './handlers/tabs.js'
 import type { Handler, HandlerResponse } from './handlers/types.js'
+import { workLogItemHandler, workLogsCollectionHandler } from './handlers/workLogs.js'
 
 /**
  * 런타임 비의존 라우팅 테이블 — Express dev-server와 Vercel catch-all(api/[...path].ts)이
@@ -89,6 +90,12 @@ export const routes: Route[] = [
   { method: 'POST', pattern: '/api/contacts', handler: contactsCollectionHandler },
   { method: 'PATCH', pattern: '/api/contacts/:id', handler: contactsItemHandler },
   { method: 'DELETE', pattern: '/api/contacts/:id', handler: contactsItemHandler },
+
+  // 영농 ERP 업무일지(전역 공유, requireUser). 컬렉션 2세그 vs 아이템 3세그로 충돌 없음.
+  { method: 'GET', pattern: '/api/work-logs', handler: workLogsCollectionHandler },
+  { method: 'POST', pattern: '/api/work-logs', handler: workLogsCollectionHandler },
+  { method: 'PATCH', pattern: '/api/work-logs/:id', handler: workLogItemHandler },
+  { method: 'DELETE', pattern: '/api/work-logs/:id', handler: workLogItemHandler },
 ]
 
 /**
