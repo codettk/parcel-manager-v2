@@ -148,6 +148,18 @@ export interface UiState {
   realtimeStatus: RealtimeStatus
   setRealtimeStatus: (status: RealtimeStatus) => void
   /**
+   * 영농 ERP 인력 관리 뷰 열림 (슬라이스 5a) — region 풀스크린 뷰 선례: 지도를 대체하는 풀스크린 레이어.
+   * 생성·수정 시트는 뷰 내부 로컬 상태(draft 패턴)라 전역은 뷰 열림만 (CONVENTIONS §3).
+   * PRO 게이팅 강제 없음 — 진입점만 PRO 섹션에 둔다(슬라이스 6 자리, AC-15).
+   */
+  staffViewOpen: boolean
+  openStaffView: () => void
+  closeStaffView: () => void
+  /** 거래처 관리 뷰 열림 (슬라이스 5a) — 인력 뷰 동형 */
+  contactsViewOpen: boolean
+  openContactsView: () => void
+  closeContactsView: () => void
+  /**
    * 현재 진입한 region id (전국 지적도 진입 게이트). null이면 지역 선택 화면을 띄운다 (AC-4).
    * 적재 region만 유효 — localStorage(ACTIVE_REGION_STORAGE_KEY) 영속으로 새로고침 직행 (AC-10).
    */
@@ -355,6 +367,14 @@ export const useUiStore = create<UiState>()((set, get) => ({
   accountOpen: false,
   openAccount: () => set({ accountOpen: true }),
   closeAccount: () => set({ accountOpen: false }),
+
+  staffViewOpen: false,
+  openStaffView: () => set({ staffViewOpen: true }),
+  closeStaffView: () => set({ staffViewOpen: false }),
+
+  contactsViewOpen: false,
+  openContactsView: () => set({ contactsViewOpen: true }),
+  closeContactsView: () => set({ contactsViewOpen: false }),
 
   jimokFilter: [...ALL_JIMOK],
   // 필터 변경은 현재 선택·시트만 해제한다 (v1 app.jsx:687 useEffect 보존).

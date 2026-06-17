@@ -2,6 +2,7 @@ import { meHandler } from './handlers/auth.js'
 import { calcRecipesHandler } from './handlers/calcRecipes.js'
 import { colorItemHandler, colorsCollectionHandler } from './handlers/colors.js'
 import { configHandler } from './handlers/config.js'
+import { contactsCollectionHandler, contactsItemHandler } from './handlers/contacts.js'
 import { reverseGeocodeHandler } from './handlers/geocode.js'
 import {
   historyCollectionHandler,
@@ -15,6 +16,7 @@ import {
   regionsCatalogHandler,
   regionsMineHandler,
 } from './handlers/regions.js'
+import { staffCollectionHandler, staffItemHandler } from './handlers/staff.js'
 import {
   tabGroupsHandler,
   tabImportHandler,
@@ -76,6 +78,17 @@ export const routes: Route[] = [
   { method: 'GET', pattern: '/api/parcel-areas', handler: parcelAreasHandler },
   { method: 'GET', pattern: '/api/parcels/:id', handler: parcelItemHandler },
   { method: 'POST', pattern: '/api/parcels/:id/fetch-land-info', handler: fetchLandInfoHandler },
+
+  // 영농 ERP 인력·거래처 마스터(전역 공유, requireUser). 컬렉션 2세그 vs 아이템 3세그로 충돌 없음.
+  { method: 'GET', pattern: '/api/staff', handler: staffCollectionHandler },
+  { method: 'POST', pattern: '/api/staff', handler: staffCollectionHandler },
+  { method: 'PATCH', pattern: '/api/staff/:id', handler: staffItemHandler },
+  { method: 'DELETE', pattern: '/api/staff/:id', handler: staffItemHandler },
+
+  { method: 'GET', pattern: '/api/contacts', handler: contactsCollectionHandler },
+  { method: 'POST', pattern: '/api/contacts', handler: contactsCollectionHandler },
+  { method: 'PATCH', pattern: '/api/contacts/:id', handler: contactsItemHandler },
+  { method: 'DELETE', pattern: '/api/contacts/:id', handler: contactsItemHandler },
 ]
 
 /**

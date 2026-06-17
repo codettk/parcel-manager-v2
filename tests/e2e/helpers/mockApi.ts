@@ -403,6 +403,36 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // M-13 V-World 토지임야 조회 — 성공 후 PNU_PARCEL_ID의 단건 재조회가 조회 완료 상태를
   // 반영하도록 하는 상태 플래그 (서버 단일 소스 동형). spec 간 격리는 page.route가 per-page라 보장.
   let landFetched = false
+  // 슬라이스 5a 영농 ERP — 인력·거래처 상태 보존 모킹 (전역 공유 단일 테이블, 절충 1).
+  // 빈 상태로 시작 → 생성·수정·소프트비활성·재활성화가 이 배열에 반영되어 GET 재조회에 보인다.
+  interface ErpStaffRow {
+    staffId: string
+    name: string
+    phone: string | null
+    role: string | null
+    dailyWage: number | null
+    memo: string | null
+    active: boolean
+    createdBy: string | null
+    createdAt: string
+    updatedAt: string
+  }
+  interface ErpContactRow {
+    contactId: string
+    name: string
+    manager: string | null
+    phone: string | null
+    kind: 'buy' | 'sell' | 'both'
+    memo: string | null
+    active: boolean
+    createdBy: string | null
+    createdAt: string
+    updatedAt: string
+  }
+  const erpStaff: ErpStaffRow[] = []
+  const erpContacts: ErpContactRow[] = []
+  let erpStaffSeq = 0
+  let erpContactSeq = 0
   await page.route(
     (url) => url.pathname.startsWith('/api/'),
     async (route) => {
@@ -698,6 +728,103 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
             json: { error: `geocode ${String(opts.geocode.status)} (e2e)` },
           })
         return route.fulfill({ json: { area: opts.geocode.area } })
+      }
+      // 슬라이스 5a 영농 ERP 인력 — 상태 보존 모킹(생성·수정·소프트비활성·재활성화가 GET에 반영).
+      // GET ?includeInactive=true면 전량, 아니면 active만 (AC-2 동형). created_by 신원·전역 공유.
+      if (pathname === '/api/staff') {
+        const includeInactive = new URL(route.request().url()).searchParams.get('includeInactive')
+        if (method === 'GET') {
+          const rows =
+            includeInactive === 'true' ? erpStaff : erpStaff.filter((s) => s.active)
+          return route.fulfill({ json: rows })
+        }
+        if (method === 'POST') {
+          const body = route.request().postDataJSON() as Record<string, unknown>
+          const row = {
+            staffId: `staff-e2e-${String(++erpStaffSeq)}`,
+            name: String(body.name ?? ''),
+            phone: (body.phone as string | undefined) ?? null,
+            role: (body.role as string | undefined) ?? null,
+            dailyWage: (body.dailyWage as number | undefined) ?? null,
+            memo: (body.memo as string | undefined) ?? null,
+            active: true,
+            createdBy: SEED_USER_ID,
+            createdAt: NOW,
+            updatedAt: NOW,
+          }
+          erpStaff.push(row)
+          return route.fulfill({ json: row })
+        }
+      }
+      const staffItemMatch = /^\/api\/staff\/([^/]+)$/.exec(pathname)
+      if (staffItemMatch !== null) {
+        const id = decodeURIComponent(staffItemMatch[1])
+        const row = erpStaff.find((s) => s.staffId === id)
+        if (method === 'PATCH') {
+          const body = route.request().postDataJSON() as Record<string, unknown>
+          if (row !== undefined) {
+            if (body.name !== undefined) row.name = String(body.name)
+            if (body.phone !== undefined) row.phone = body.phone as string | null
+            if (body.role !== undefined) row.role = body.role as string | null
+            if (body.dailyWage !== undefined) row.dailyWage = body.dailyWage as number | null
+            if (body.memo !== undefined) row.memo = body.memo as string | null
+            if (body.active !== undefined) row.active = Boolean(body.active)
+            row.updatedAt = NOW
+          }
+          return route.fulfill({ json: row ?? erpStaff[0] })
+        }
+        if (method === 'DELETE') {
+          if (row !== undefined) row.active = false // 소프트 비활성 (AC-4)
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
+      // 슬라이스 5a 영농 ERP 거래처 — 인력 동형(kind 보존)
+      if (pathname === '/api/contacts') {
+        const includeInactive = new URL(route.request().url()).searchParams.get('includeInactive')
+        if (method === 'GET') {
+          const rows =
+            includeInactive === 'true' ? erpContacts : erpContacts.filter((c) => c.active)
+          return route.fulfill({ json: rows })
+        }
+        if (method === 'POST') {
+          const body = route.request().postDataJSON() as Record<string, unknown>
+          const row = {
+            contactId: `contact-e2e-${String(++erpContactSeq)}`,
+            name: String(body.name ?? ''),
+            manager: (body.manager as string | undefined) ?? null,
+            phone: (body.phone as string | undefined) ?? null,
+            kind: (body.kind as 'buy' | 'sell' | 'both' | undefined) ?? 'buy',
+            memo: (body.memo as string | undefined) ?? null,
+            active: true,
+            createdBy: SEED_USER_ID,
+            createdAt: NOW,
+            updatedAt: NOW,
+          }
+          erpContacts.push(row)
+          return route.fulfill({ json: row })
+        }
+      }
+      const contactItemMatch = /^\/api\/contacts\/([^/]+)$/.exec(pathname)
+      if (contactItemMatch !== null) {
+        const id = decodeURIComponent(contactItemMatch[1])
+        const row = erpContacts.find((c) => c.contactId === id)
+        if (method === 'PATCH') {
+          const body = route.request().postDataJSON() as Record<string, unknown>
+          if (row !== undefined) {
+            if (body.name !== undefined) row.name = String(body.name)
+            if (body.manager !== undefined) row.manager = body.manager as string | null
+            if (body.phone !== undefined) row.phone = body.phone as string | null
+            if (body.kind !== undefined) row.kind = body.kind as 'buy' | 'sell' | 'both'
+            if (body.memo !== undefined) row.memo = body.memo as string | null
+            if (body.active !== undefined) row.active = Boolean(body.active)
+            row.updatedAt = NOW
+          }
+          return route.fulfill({ json: row ?? erpContacts[0] })
+        }
+        if (method === 'DELETE') {
+          if (row !== undefined) row.active = false
+          return route.fulfill({ json: { ok: true } })
+        }
       }
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })

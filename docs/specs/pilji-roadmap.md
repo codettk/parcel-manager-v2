@@ -46,11 +46,24 @@ region을 DB 권위로 승격(`regions` 테이블 + `GET /api/regions` 카탈로
 
 </details>
 
-## 슬라이스 5 — 영농 ERP 기능 (PRO 콘텐츠 구축)
+## 슬라이스 5 — 영농 ERP 기능 (PRO 콘텐츠 구축) — sub-슬라이스 분할 진행
+큰 덩어리이므로 sub-슬라이스로 분할 진행: **5a 인력·거래처 / 5b 업무일지·일당계산 / 5c 재고 / 5d 캘린더**.
+
+### ✅ 5a — 인력·거래처 마스터 (완료, `feat/erp-staff-contacts` 커밋·미push)
+영농 ERP 기반 엔티티(인력·거래처) 마스터 CRUD. **전역 공유 단일 테이블**(`tab_id`/`region_id`/`created_by` 격리 없음 — 로그인 멤버 전원이 같은 목록 공유, 행에 `created_by` 신원만 부착) + 소프트 비활성(`active` 플래그, 하드삭제 없음). NavDrawer "영농 PRO" 앰버 섹션 진입점 — **게이팅 강제 없음**(잠금은 슬라이스 6). 백엔드 `server/handlers/{staff,contacts}.ts`(컬렉션/아이템 핸들러, mutate requireUser·소프트삭제)·`server/routes.ts` 라우트 8개·`server/handlers/ids.ts`(genStaffId·genContactId). 프론트 `src/features/erp/`(StaffView·StaffSheet·ContactsView·ContactSheet)·`src/stores/erp.ts`(낙관 CRUD)·`src/lib/api.ts`(staff·contacts 메서드)·`src/stores/ui.ts`(뷰 열림)·`src/App.tsx` 배선·`src/styles/tokens.css`(`--color-pro`·`--color-pro-soft` 앰버 토큰). 계약 `src/types/api/{staff,contacts}.ts`. 마이그레이션 `0005_erp_staff_contacts.sql`(staff·contacts 신규·비파괴, contacts kind CHECK buy|sell|both, RLS 미도입 — 0003 auth.users FK 의존, 0004 region과 독립). **PRO 게이팅·5b~5d 외래참조는 비범위**(이번 슬라이스는 마스터 CRUD까지). 명세 `docs/specs/erp-staff-contacts.md`.
+
+### 5b — 업무일지·일당계산 (미착수)
+### 5c — 재고 (미착수)
+### 5d — 캘린더 (미착수)
+
+<details><summary>원 계획</summary>
+
 - **무엇**: 업무일지·인력·거래처·재고·캘린더 실제 구현(현재 디자인만). 큰 덩어리 → sub-슬라이스로 분할 권장(5a 인력·거래처 / 5b 업무일지·일당계산 / 5c 재고 / 5d 캘린더).
 - **왜 수익화보다 먼저**: 팔 PRO 콘텐츠가 있어야 게이팅·구독이 의미. 자동 계산기·V-World 토지정보는 기존 구현분 — PRO 귀속 여부는 슬라이스 6에서 확정.
 - **의존**: 계정(2, 멤버 협업). **영향**: 백엔드·DB·API 大 → frontend+backend 병렬, sub-슬라이스마다 /pipeline.
 - **디자인**: PC ③인력 ⑦거래처 ⑧재고 ⑩업무 ⑫캘린더 등 + 모바일 대응.
+
+</details>
 
 ## 슬라이스 6 — freemium 게이팅 + PRO 구독
 - **무엇**: 무료/PRO 권한 게이팅(PRO 탭 잠금·페이월) + 구독(요금제·결제·구독관리) + IAP/웹결제 채널.
