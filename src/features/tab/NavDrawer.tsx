@@ -1,4 +1,5 @@
 import {
+  Building2,
   Calculator,
   CircleUser,
   History,
@@ -8,9 +9,19 @@ import {
   RotateCcw,
   ScrollText,
   Share2,
+  Users,
 } from 'lucide-react'
 import { Drawer, DrawerItem, DrawerSection } from '../../components/ui'
 import { useUiStore } from '../../stores/ui'
+
+/** PRO 표식 배지 — 앰버 토큰(브랜드). 게이팅 강제는 없고 시각 구분만 (슬라이스 5a, AC-15) */
+function ProBadge() {
+  return (
+    <span className="rounded-full bg-pro-soft px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-pro">
+      PRO
+    </span>
+  )
+}
 
 export interface NavDrawerProps {
   /** 릴리즈 노트 열림은 App 로컬 상태라 콜백으로 주입 (releaseNotesOpen 선례) */
@@ -33,6 +44,8 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
   const openReset = useUiStore((s) => s.openReset)
   const openRegionManage = useUiStore((s) => s.openRegionManage)
   const openAccount = useUiStore((s) => s.openAccount)
+  const openStaffView = useUiStore((s) => s.openStaffView)
+  const openContactsView = useUiStore((s) => s.openContactsView)
 
   /** 항목 동작 실행 후 드로어를 닫는다 — 모든 항목 공통 */
   const run = (action: () => void) => () => {
@@ -57,6 +70,22 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
         <DrawerItem icon={Palette} label="색상 팔레트" onClick={run(openPalette)} />
         <DrawerItem icon={Share2} label="공유" onClick={run(openShare)} />
         <DrawerItem icon={RotateCcw} label="초기화" onClick={run(openReset)} />
+      </DrawerSection>
+
+      {/* PRO 영농 — 무료 코어와 시각적으로 구분된 별도 섹션(앰버 표식). 게이팅 강제 없음(슬라이스 6 자리, AC-15) */}
+      <DrawerSection title="영농 PRO">
+        <DrawerItem
+          icon={Users}
+          label="인력 관리"
+          onClick={run(openStaffView)}
+          trailing={<ProBadge />}
+        />
+        <DrawerItem
+          icon={Building2}
+          label="거래처 관리"
+          onClick={run(openContactsView)}
+          trailing={<ProBadge />}
+        />
       </DrawerSection>
 
       <DrawerSection title="정보">

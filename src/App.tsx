@@ -13,6 +13,8 @@ import { CalculatorResultSheet } from './features/calculator/CalculatorResultShe
 import { CalculatorSettingsSheet } from './features/calculator/CalculatorSettingsSheet'
 import { AddToGroupBanner } from './features/group/AddToGroupBanner'
 import { GroupSheet } from './features/group/GroupSheet'
+import { ContactsView } from './features/erp/ContactsView'
+import { StaffView } from './features/erp/StaffView'
 import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { JimokFilter } from './features/map/JimokFilter'
@@ -70,6 +72,8 @@ function App() {
   const shareOpen = useUiStore((s) => s.shareOpen)
   const resetSheetOpen = useUiStore((s) => s.resetSheetOpen)
   const jimokFilter = useUiStore((s) => s.jimokFilter)
+  const staffViewOpen = useUiStore((s) => s.staffViewOpen)
+  const contactsViewOpen = useUiStore((s) => s.contactsViewOpen)
   const activeRegionId = useUiStore((s) => s.activeRegionId)
   const regionSelectOpen = useUiStore((s) => s.regionSelectOpen)
   const regionManageOpen = useUiStore((s) => s.regionManageOpen)
@@ -234,6 +238,9 @@ function App() {
         {selection.addToGroupModeGroupId !== null && <AddToGroupBanner />}
         {/* 목록은 시트(z-40/50) 아래 레이어 — 행 탭으로 열린 시트가 목록 위에 뜬다 (명세 §행 탭) */}
         {listViewOpen && <ParcelListView />}
+        {/* 영농 PRO 풀스크린 뷰 (슬라이스 5a, z-30) — 자체 시트(생성·수정)는 뷰 내부 로컬 상태 */}
+        {staffViewOpen && <StaffView />}
+        {contactsViewOpen && <ContactsView />}
       </div>
 
       <NavDrawer

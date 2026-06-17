@@ -71,7 +71,10 @@ test.describe('리브랜딩', () => {
     await page.getByRole('button', { name: '메뉴' }).click()
     const body = await page.locator('body').innerText()
     expect(body).not.toContain('보구곶리')
-    expect(body).not.toContain('영농')
+    // 브랜드 정체성 가드: 앱이 "영농" 도구로 비치면 안 된다. 단 슬라이스 5a가 도입한
+    // 사후 승인 "영농 PRO" 섹션 라벨(PRO 콘텐츠 분류, 브랜드 정체성 아님)은 허용한다 —
+    // 그 라벨을 제거한 나머지 본문에 "영농"이 없으면 브랜드 정체성 가드는 유지된다.
+    expect(body.replaceAll('영농 PRO', '')).not.toContain('영농')
     // title(문서 브랜드)에 "필지" — 카피 브랜드 정체성 확인 (화면 텍스트가 필지 서비스임)
     expect(await page.title()).toContain('필지')
   })

@@ -18,6 +18,22 @@ import {
   type ReverseGeocodeResponse,
 } from '../types/api/geocode'
 import {
+  contactSchema,
+  contactListResponseSchema,
+  type Contact,
+  type ContactListResponse,
+  type CreateContactRequest,
+  type UpdateContactRequest,
+} from '../types/api/contacts'
+import {
+  staffSchema,
+  staffListResponseSchema,
+  type CreateStaffRequest,
+  type Staff,
+  type StaffListResponse,
+  type UpdateStaffRequest,
+} from '../types/api/staff'
+import {
   historyItemSchema,
   historyListResponseSchema,
   type HistoryItem,
@@ -265,6 +281,46 @@ export const api = {
      */
     reverse(coords: ReverseGeocodeRequest): Promise<ReverseGeocodeResponse> {
       return request('POST', '/api/geocode/reverse', reverseGeocodeResponseSchema, coords)
+    },
+  },
+
+  staff: {
+    /** GET /api/staff — 기본 활성만, includeInactive=true면 비활성 포함 (AC-2·12) */
+    list(includeInactive = false): Promise<StaffListResponse> {
+      const path = includeInactive ? '/api/staff?includeInactive=true' : '/api/staff'
+      return request('GET', path, staffListResponseSchema)
+    },
+    /** POST /api/staff — 생성 (requireUser·active=true·created_by 자동, AC-1) */
+    create(input: Input<CreateStaffRequest>): Promise<Staff> {
+      return mutate('POST', '/api/staff', staffSchema, input)
+    },
+    /** PATCH /api/staff/:id — 부분 수정 + 재활성화(active=true) (AC-3·9 동형) */
+    update(staffId: string, input: Input<UpdateStaffRequest>): Promise<Staff> {
+      return mutate('PATCH', `/api/staff/${encodeURIComponent(staffId)}`, staffSchema, input)
+    },
+    /** DELETE /api/staff/:id — 소프트 비활성(active=false) (AC-4) */
+    remove(staffId: string): Promise<OkResponse> {
+      return mutate('DELETE', `/api/staff/${encodeURIComponent(staffId)}`, okResponseSchema)
+    },
+  },
+
+  contacts: {
+    /** GET /api/contacts — 기본 활성만, includeInactive=true면 비활성 포함 (AC-8) */
+    list(includeInactive = false): Promise<ContactListResponse> {
+      const path = includeInactive ? '/api/contacts?includeInactive=true' : '/api/contacts'
+      return request('GET', path, contactListResponseSchema)
+    },
+    /** POST /api/contacts — 생성 (requireUser·active=true·created_by 자동, AC-6). 잘못된 kind는 400(AC-7) */
+    create(input: Input<CreateContactRequest>): Promise<Contact> {
+      return mutate('POST', '/api/contacts', contactSchema, input)
+    },
+    /** PATCH /api/contacts/:id — 부분 수정 + 재활성화(active=true) (AC-9) */
+    update(contactId: string, input: Input<UpdateContactRequest>): Promise<Contact> {
+      return mutate('PATCH', `/api/contacts/${encodeURIComponent(contactId)}`, contactSchema, input)
+    },
+    /** DELETE /api/contacts/:id — 소프트 비활성(active=false) */
+    remove(contactId: string): Promise<OkResponse> {
+      return mutate('DELETE', `/api/contacts/${encodeURIComponent(contactId)}`, okResponseSchema)
     },
   },
 

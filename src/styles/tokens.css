@@ -15,6 +15,8 @@
   --color-group-hint: rgb(59 130 246 / 0.6); /* 그룹 힌트 점선 */
   --color-kakao: #fee500; /* 카카오 OAuth 버튼 브랜드색 (제공자 고정값 — 디자인 ② 준수) */
   --color-kakao-ink: #3c1e1e; /* 카카오 버튼 라벨 */
+  --color-pro: #d69021; /* PRO 영농 강조색 — 동적 DB 색이 아닌 브랜드 토큰 (슬라이스 5a) */
+  --color-pro-soft: #fbf2e1; /* PRO 배지·섹션 배경 (앰버 연한 톤) */
 
   /* 폰트 */
   --font-sans: 'Pretendard', 'Pretendard Variable', system-ui, sans-serif;
