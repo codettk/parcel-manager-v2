@@ -9,6 +9,7 @@ import {
   type ColorsListResponse,
   type PutColorsRequest,
 } from '../types/api/colors'
+import { meResponseSchema, type MeResponse } from '../types/api/auth'
 import { errorResponseSchema, okResponseSchema, type OkResponse } from '../types/api/common'
 import { configResponseSchema, type ConfigResponse } from '../types/api/config'
 import {
@@ -64,6 +65,17 @@ export function getClientId(): string {
   return CLIENT_ID
 }
 
+/**
+ * 인증 토큰 제공자 — 모든 요청의 Authorization: Bearer 헤더에 쓰인다 (AC-9·12).
+ * 의존 역전: api.ts는 auth.ts를 import하지 않고(순환 회피) 부팅 시 registerAuthTokenProvider로 주입받는다.
+ * 토큰=신원, clientId=에코 가드 — 직교 보존 (§결정 3): 토큰을 헤더에, clientId는 본문에 그대로 둔다.
+ */
+let getAuthToken: () => Promise<string | null> = async () => null
+
+export function registerAuthTokenProvider(provider: () => Promise<string | null>): void {
+  getAuthToken = provider
+}
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 async function request<T>(
@@ -72,12 +84,14 @@ async function request<T>(
   schema: z.ZodType<T>,
   body?: Record<string, unknown>,
 ): Promise<T> {
+  const token = await getAuthToken()
+  const headers: Record<string, string> = {}
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (token !== null) headers.Authorization = `Bearer ${token}`
   const res = await fetch(path, {
     method,
-    ...(body !== undefined && {
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    }),
+    ...(Object.keys(headers).length > 0 && { headers }),
+    ...(body !== undefined && { body: JSON.stringify(body) }),
   })
 
   if (!res.ok) {
@@ -111,6 +125,13 @@ export const api = {
   config: {
     get(): Promise<ConfigResponse> {
       return request('GET', '/api/config', configResponseSchema)
+    },
+  },
+
+  auth: {
+    /** GET /api/me — 현재 세션 신원. 무/만료 토큰이면 ApiError(401) (errorResponseSchema) */
+    me(): Promise<MeResponse> {
+      return request('GET', '/api/me', meResponseSchema)
     },
   },
 

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
+import type { MeResponse } from '../../../src/types/api/auth'
 import type { CalcRecipe } from '../../../src/types/api/calcRecipes'
 import type { ColorLabel } from '../../../src/types/api/colors'
 import type { TabStateResponse } from '../../../src/types/api/tabState'
@@ -178,6 +179,13 @@ export interface MockApiOptions {
    * (region-entry.spec 전용). 정확한 키·id는 src/stores/ui.ts·regionCatalog.ts 권위.
    */
   seedRegion?: boolean
+  /**
+   * 인증 게이트(auth-accounts) — 기본 true면 부팅 전 authed 세션을 시드하고 /api/config가
+   * 가짜 supabase 구성을 내려 LoginView를 건너뛰고 region 게이트→지도로 진행한다
+   * (인증 게이트가 region보다 앞서므로 기존 e2e 전부 이 시드가 필요). false면 세션 없이
+   * 시작해 /api/config도 빈 {}를 반환 → authStatus='anon' → LoginView를 검증한다(auth spec 전용).
+   */
+  seedAuth?: boolean
 }
 
 /** src/stores/ui.ts ACTIVE_REGION_STORAGE_KEY · regionCatalog SEED_REGION.id 와 일치해야 한다 */
@@ -195,6 +203,62 @@ export async function seedActiveRegion(page: Page) {
       localStorage.setItem(key, id)
     },
     [ACTIVE_REGION_STORAGE_KEY, SEED_REGION_ID] as const,
+  )
+}
+
+// ── 인증 세션 시드 (auth-accounts 슬라이스) ──────────────────────────────────
+// 인증 게이트(App.tsx)가 region 게이트보다 앞선다 → 기존 e2e가 LoginView에 막히지 않도록
+// 부팅 전 authed 세션을 시드한다. seam은 코드 변경 없이:
+//   1) /api/config가 가짜 supabase url/anonKey를 내려 getSupabaseClient()가 실 클라이언트를 만들고
+//   2) supabase-js가 읽는 localStorage 세션 키(sb-<host첫토큰>-auth-token)에 만료 안 된 세션을 심으면
+//      client.auth.getSession()이 네트워크 없이 그 세션을 복원한다(_isValidSession: access_token·
+//      refresh_token·expires_at 보유 + 미만료).
+//   3) GET /api/me가 meResponseSchema 정형을 반환한다.
+// 가짜 supabase 도메인 요청(로그아웃 등)은 mockApi가 함께 가로채 무해 처리한다.
+
+/** 가짜 supabase URL — host 첫 토큰('e2e-test')이 세션 스토리지 키 접두사가 된다 */
+export const FAKE_SUPABASE_URL = 'https://e2e-test.supabase.co'
+const FAKE_SUPABASE_ANON_KEY = 'e2e-anon-key'
+/** supabase-js v2 세션 스토리지 키: sb-${new URL(url).hostname.split('.')[0]}-auth-token */
+export const SUPABASE_SESSION_STORAGE_KEY = 'sb-e2e-test-auth-token'
+/** 시드 세션의 user_id — /api/me userId와 일치(meResponseSchema.userId가 uuid) */
+export const SEED_USER_ID = '00000000-0000-4000-8000-000000000001'
+
+export const ME_FIXTURE: MeResponse = {
+  userId: SEED_USER_ID,
+  provider: 'kakao',
+  displayName: '테스트 사용자',
+  avatarUrl: null,
+  email: 'tester@example.com',
+}
+
+/**
+ * 부팅 전 authed supabase 세션을 localStorage에 주입한다(만료 1년 뒤 — getSession 오프라인 복원).
+ * seedAuth!==false인 mockApi/journey가 goto 전에 부른다. 신규 auth spec은 호출하지 않아 anon 게이트를 검증.
+ */
+export async function seedAuthedSession(page: Page) {
+  await page.addInitScript(
+    ([key, userId]) => {
+      const farFuture = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60
+      const session = {
+        access_token: 'e2e-access-token',
+        refresh_token: 'e2e-refresh-token',
+        expires_at: farFuture,
+        expires_in: 365 * 24 * 60 * 60,
+        token_type: 'bearer',
+        user: {
+          id: userId,
+          aud: 'authenticated',
+          role: 'authenticated',
+          email: 'tester@example.com',
+          app_metadata: { provider: 'kakao' },
+          user_metadata: {},
+          created_at: '2026-01-01T00:00:00.000Z',
+        },
+      }
+      localStorage.setItem(key, JSON.stringify(session))
+    },
+    [SUPABASE_SESSION_STORAGE_KEY, SEED_USER_ID] as const,
   )
 }
 
@@ -229,6 +293,10 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   // region 진입 게이트(신규 슬라이스): 기본은 활성 region을 부팅 전 주입해 지도로 직행한다.
   // addInitScript는 매 네비게이션의 페이지 스크립트보다 먼저 실행되어 loadActiveRegion()이 읽는다.
   if (opts.seedRegion !== false) await seedActiveRegion(page)
+  // 인증 게이트(auth-accounts): 기본은 authed 세션을 부팅 전 시드해 LoginView를 건너뛴다.
+  // (이 슬라이스 이후 인증 게이트가 최상단 — 시드 없으면 모든 spec이 LoginView에 막힌다.)
+  const seedAuth = opts.seedAuth !== false
+  if (seedAuth) await seedAuthedSession(page)
   // M-10 계산 레시피 — 서버 단일 소스 상태 모킹 (설정 시트가 열 때마다 GET으로 최신화)
   let calcRecipes: CalcRecipe[] | null = opts.calcRecipes ?? null
   // M-11 팔레트 — 상태 보존 모킹 (calc-recipes 선례): PUT 전체 upsert·DELETE 단건 제거가
@@ -364,8 +432,19 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
           return route.fulfill({ json: { ok: true } })
         }
       }
-      // supabase 키 없는 config — realtime(M-6)이 disabled로 무해 종료한다 (AC-11 사전 조건)
-      if (pathname === '/api/config') return route.fulfill({ json: {} })
+      // 인증 게이트 — seedAuth면 가짜 supabase 구성을 내려 실 클라이언트를 만들고 시드 세션을 복원한다.
+      // seedAuth=false면 키 없는 {} → getSupabaseClient()=null → authStatus='anon' → LoginView.
+      if (pathname === '/api/config')
+        return route.fulfill({
+          json: seedAuth
+            ? { supabaseUrl: FAKE_SUPABASE_URL, supabaseAnonKey: FAKE_SUPABASE_ANON_KEY }
+            : {},
+        })
+      // GET /api/me — 세션 신원 (meResponseSchema 동형). seedAuth면 시드 사용자, 아니면 401
+      if (pathname === '/api/me' && method === 'GET') {
+        if (!seedAuth) return route.fulfill({ status: 401, json: { error: '인증 필요 (e2e)' } })
+        return route.fulfill({ json: ME_FIXTURE })
+      }
       // M-11 색상 팔레트: GET 목록·PUT 전체 upsert(okResponseSchema 동형)·DELETE 단건 제거
       if (pathname === '/api/colors') {
         if (route.request().method() === 'GET') return route.fulfill({ json: colors })
@@ -525,6 +604,21 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })
     },
   )
+  // 가짜 supabase 도메인 — 시드 세션은 오프라인 복원이라 정상 부팅엔 안 불리지만,
+  // 로그아웃(POST /auth/v1/logout)·사용자 조회·토큰 갱신이 발생하면 무해 처리한다(웹소켓은 자연 실패).
+  if (seedAuth) {
+    await page.route(
+      (url) => url.hostname === 'e2e-test.supabase.co',
+      (route) => {
+        const { pathname } = new URL(route.request().url())
+        // 로그아웃 — supabase-js가 200/204면 로컬 세션을 비우고 SIGNED_OUT을 발화한다(AC-6)
+        if (pathname.endsWith('/logout')) return route.fulfill({ status: 204, body: '' })
+        if (pathname.endsWith('/user')) return route.fulfill({ json: { id: SEED_USER_ID } })
+        // 그 외(token refresh 등) — 빈 200. 시드 세션 미만료라 실제로는 거의 안 불린다
+        return route.fulfill({ json: {} })
+      },
+    )
+  }
 }
 
 /**

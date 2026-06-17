@@ -1,5 +1,6 @@
 import { deleteColorRequestSchema, putColorsRequestSchema } from '../../src/types/api/colors.js'
 import type { ColorLabel } from '../../src/types/api/colors.js'
+import { requireUser } from './auth.js'
 import { createDb } from './db.js'
 import { badRequest, methodNotAllowed, notFound, ok } from './http.js'
 import type { Handler } from './types.js'
@@ -36,6 +37,8 @@ export const colorsCollectionHandler: Handler = async (req, ctx) => {
   if (req.method === 'PUT') {
     const parsed = putColorsRequestSchema.safeParse(req.body)
     if (!parsed.success) return badRequest(parsed.error)
+    const auth = await requireUser(ctx)
+    if ('response' in auth) return auth.response
     const db = createDb(ctx.env)
     if (parsed.data.colors.length > 0) {
       const now = new Date().toISOString()
@@ -46,6 +49,7 @@ export const colorsCollectionHandler: Handler = async (req, ctx) => {
           hex: c.hex,
           sort_order: c.sortOrder,
           updated_by: parsed.data.clientId,
+          created_by: auth.user.id,
           updated_at: now,
         })),
         { onConflict: 'color_id' },
@@ -63,6 +67,8 @@ export const colorItemHandler: Handler = async (req, ctx) => {
   if (req.method !== 'DELETE') return methodNotAllowed()
   const parsed = deleteColorRequestSchema.safeParse(req.body)
   if (!parsed.success) return badRequest(parsed.error)
+  const auth = await requireUser(ctx)
+  if ('response' in auth) return auth.response
   const colorId = req.params.id
   const { clientId } = parsed.data
   const db = createDb(ctx.env)
@@ -91,12 +97,12 @@ export const colorItemHandler: Handler = async (req, ctx) => {
   // 색 없는 style은 의미가 없으므로 settings는 style도 함께 비운다 (v1 정규화 보존)
   const { error: settingsError } = await db
     .from('parcel_settings')
-    .update({ color: null, style: null, updated_by: clientId, updated_at: now })
+    .update({ color: null, style: null, updated_by: clientId, created_by: auth.user.id, updated_at: now })
     .eq('color', colorId)
   if (settingsError) throw new Error(settingsError.message)
   const { error: groupsError } = await db
     .from('parcel_groups')
-    .update({ color: null, updated_by: clientId, updated_at: now })
+    .update({ color: null, updated_by: clientId, created_by: auth.user.id, updated_at: now })
     .eq('color', colorId)
   if (groupsError) throw new Error(groupsError.message)
 

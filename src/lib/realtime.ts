@@ -1,13 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 import { useUiStore, type RealtimeStatus } from '../stores/ui'
 import { useWorkspaceStore } from '../stores/workspace'
 import type { ColorLabel } from '../types/api/colors'
-import type { ConfigResponse } from '../types/api/config'
 import type { Group, ParcelOverride } from '../types/api/tabState'
 import type { Tab } from '../types/api/tabs'
 import { isClearedOverride, normalizeOverride } from '../utils/override'
 import { api, getClientId as defaultGetClientId } from './api'
+import { getSupabaseClient } from './supabase'
 
 // ── supabase-js 사용 부분집합 인터페이스 — 실제 클라이언트가 구조적으로 만족하고,
 //    단위 테스트는 mock 채널로 payload를 흘릴 수 있다 (명세 §모듈 구조: 주입 가능 설계)
@@ -327,20 +326,14 @@ let activeInit: Promise<RealtimeSync | null> | null = null
 
 /**
  * 편의 진입점 — boot() 성공 후 App 이펙트에서 1회 호출 (명세 §부팅 시퀀스).
- * config에 supabase 키가 없으면 시작하지 않고 disabled 유지 — E2E mockApi 환경의 정상 경로.
+ * 인증 세션과 동일한 Supabase 클라이언트(lib/supabase.ts)를 공유한다 — 세션 토큰이 구독에도 적용된다.
+ * 키가 없으면(클라이언트 null) 시작하지 않고 disabled 유지 — E2E mockApi 환경의 정상 경로.
  */
 export function initRealtime(): Promise<RealtimeSync | null> {
   activeInit ??= (async () => {
-    let config: ConfigResponse
-    try {
-      config = await api.config.get()
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn('[realtime] config 조회 실패 — realtime 비활성:', err)
-      return null
-    }
-    const { supabaseUrl, supabaseAnonKey } = config
-    if (!supabaseUrl || !supabaseAnonKey) return null
-    const sync = createRealtimeSync({ client: createClient(supabaseUrl, supabaseAnonKey) })
+    const client = await getSupabaseClient()
+    if (client === null) return null
+    const sync = createRealtimeSync({ client })
     sync.start()
     return sync
   })()

@@ -11,11 +11,17 @@
 
 ---
 
-## 슬라이스 2 — 계정·인증 기반
+## ✅ 슬라이스 2 — 계정·인증 기반 (완료, `feat/auth-accounts` 커밋·미push)
+소셜 로그인(카카오 웹 OAuth) + 세션 + 작업공간 멤버십 컬럼. 로그인을 앱 진입 첫 강제 관문으로 승격(비로그인 시 LoginView만, 로그인 후 region 게이트 작동). `src/features/auth/`·`src/lib/{auth,supabase}.ts`·`src/stores/auth.ts`·`server/handlers/auth.ts`(requireUser 토큰검증 + GET /api/me, 전 mutate 핸들러 인증 게이트) + 마이그레이션 `0003_auth_membership.sql`(nullable created_by·profiles·workspace_members 비파괴, RLS 미도입). Apple·휴대폰·멤버십 UI·네이티브 핸드오프 발신부는 비범위(계약·수신 경로만). 명세 `docs/specs/auth-accounts.md`.
+
+<details><summary>원 계획</summary>
+
 - **무엇**: 소셜 로그인(카카오 등) + 계정 모델 + 세션. 웹뷰+네이티브 토큰 핸드오프는 **설계/계약까지**(네이티브 셸 실구현은 슬라이스 8).
 - **왜 먼저**: 대국민·다중 사용자·구독·지역 동기화가 전부 "계정"에 의존. 현재 앱은 공유 작업공간으로 부팅(계정 없음).
 - **의존**: 없음(독립 착수 가능). **영향**: 백엔드·DB(users/세션)·API 계약 신설 → frontend+backend 병렬.
 - **디자인**: ②로그인 ㊹핸드오프 에러.
+
+</details>
 
 ## 슬라이스 3 — 전국 지적도 데이터 파이프라인 (다중 region)
 - **무엇**: region을 DB 개념으로 승격(region 테이블) + region별 parcels 적재·API + 클라이언트 region별 로딩. region "받기/다운로드/제거" 실제 동작. region-entry의 "준비 중"이 실데이터로 해소.

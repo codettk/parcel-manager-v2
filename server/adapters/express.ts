@@ -1,4 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
+import { extractBearerToken } from '../routes.js'
 import type { Handler } from '../handlers/types.js'
 
 export function expressAdapter(handler: Handler): RequestHandler {
@@ -11,7 +12,7 @@ export function expressAdapter(handler: Handler): RequestHandler {
           query: req.query as Record<string, string | undefined>,
           body: req.body,
         },
-        { env: process.env },
+        { env: process.env, auth: { token: extractBearerToken(req.headers?.authorization) } },
       )
       res.status(result.status).json(result.body)
     } catch (e) {

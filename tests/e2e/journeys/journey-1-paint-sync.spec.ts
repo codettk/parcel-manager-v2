@@ -4,8 +4,11 @@ import {
   compositedFill,
   COMPOSITE_TOLERANCE,
   countNearPixels,
+  FAKE_SUPABASE_URL,
+  ME_FIXTURE,
   PARCEL_HEX,
   seedActiveRegion,
+  seedAuthedSession,
   TAB_ID,
 } from '../helpers/mockApi'
 import { findClickPoint } from '../helpers/pixels'
@@ -118,7 +121,12 @@ test('① 한 컨텍스트에서 색칠 → 서버 영속 → 다른 컨텍스�
             { colorId: 'c-blue', label: '파랑', hex: '#0000FF', sortOrder: 1 },
           ],
         })
-      if (pathname === '/api/config') return route.fulfill({ json: {} })
+      // 인증 게이트(auth-accounts) — 가짜 supabase 구성 + /api/me로 authed 직행(LoginView 우회)
+      if (pathname === '/api/config')
+        return route.fulfill({
+          json: { supabaseUrl: FAKE_SUPABASE_URL, supabaseAnonKey: 'e2e-anon-key' },
+        })
+      if (pathname === '/api/me' && method === 'GET') return route.fulfill({ json: ME_FIXTURE })
       const stateMatch = /^\/api\/tabs\/([^/]+)\/state$/.exec(pathname)
       if (stateMatch !== null && method === 'GET')
         return route.fulfill({
@@ -141,6 +149,7 @@ test('① 한 컨텍스트에서 색칠 → 서버 영속 → 다른 컨텍스�
     },
   )
   await seedActiveRegion(pageB) // region 진입 게이트 우회 — 지도로 직행
+  await seedAuthedSession(pageB) // 인증 게이트 우회 — authed 세션 시드
   await pageB.goto('/')
   await pageB.waitForFunction(() => {
     const cv = document.querySelector('canvas')

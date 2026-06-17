@@ -1,5 +1,6 @@
 import {
   Calculator,
+  CircleUser,
   History,
   List,
   MapPinned,
@@ -31,6 +32,7 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
   const openShare = useUiStore((s) => s.openShare)
   const openReset = useUiStore((s) => s.openReset)
   const openRegionManage = useUiStore((s) => s.openRegionManage)
+  const openAccount = useUiStore((s) => s.openAccount)
 
   /** 항목 동작 실행 후 드로어를 닫는다 — 모든 항목 공통 */
   const run = (action: () => void) => () => {
@@ -40,6 +42,10 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
 
   return (
     <Drawer open={open} onClose={close}>
+      <DrawerSection title="계정">
+        <DrawerItem icon={CircleUser} label="내 정보" onClick={run(openAccount)} />
+      </DrawerSection>
+
       <DrawerSection title="작업공간">
         <DrawerItem icon={MapPinned} label="지역 관리" onClick={run(openRegionManage)} />
         <DrawerItem icon={History} label="히스토리" onClick={run(openHistory)} />

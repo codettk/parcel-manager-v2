@@ -125,6 +125,13 @@ export interface UiState {
   openHistory: () => void
   closeHistory: () => void
   /**
+   * 내 정보 시트 열림 (인증 슬라이스) — 다른 시트 선례: 열림만 전역.
+   * 세션 user 표시·로그아웃은 AccountSheet 소관, 로그아웃 후 anon 전이는 auth 스토어가 처리.
+   */
+  accountOpen: boolean
+  openAccount: () => void
+  closeAccount: () => void
+  /**
    * 지목 필터 (M-14) — 초기 6종 전체. 세션 한정(영속 아님, v1 동일).
    * 적용은 지도 렌더+히트테스트 한정 (목록 뷰는 비적용 — v1 view!=='list' 보존).
    */
@@ -344,6 +351,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
   historyOpen: false,
   openHistory: () => set({ historyOpen: true }),
   closeHistory: () => set({ historyOpen: false }),
+
+  accountOpen: false,
+  openAccount: () => set({ accountOpen: true }),
+  closeAccount: () => set({ accountOpen: false }),
 
   jimokFilter: [...ALL_JIMOK],
   // 필터 변경은 현재 선택·시트만 해제한다 (v1 app.jsx:687 useEffect 보존).

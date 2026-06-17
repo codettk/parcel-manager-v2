@@ -1,6 +1,13 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
 import { IconButton, TabBar } from './components/ui'
+import { AccountSheet } from './features/auth/AccountSheet'
+import { HandoffErrorView } from './features/auth/HandoffErrorView'
+import { LoginView } from './features/auth/LoginView'
+import { readNativeHandoff } from './features/auth/authBridge'
+import { useSession } from './features/auth/useSession'
+import { completeOAuthFromUrl, setSessionFromHandoff, OAUTH_CALLBACK_PATH } from './lib/auth'
+import { useAuthStore } from './stores/auth'
 import { CalculatorModeBadge } from './features/calculator/CalculatorModeBadge'
 import { CalculatorResultSheet } from './features/calculator/CalculatorResultSheet'
 import { CalculatorSettingsSheet } from './features/calculator/CalculatorSettingsSheet'
@@ -27,10 +34,20 @@ import { useWorkspaceStore } from './stores/workspace'
 
 const UIDemo = lazy(() => import('./dev/UIDemo'))
 
+/** 핸드오프/콜백 에러 상태 — null이면 정상, code가 있으면 HandoffErrorView (AC-7·14) */
+type AuthError = { code: string } | null
+
 function App() {
   const [releaseNotesOpen, setReleaseNotesOpen] = useState(false)
   // 설정 시트 열림은 App 로컬 (releaseNotesOpen 선례) — 계산기 '모드'만 ui 스토어 소관
   const [calcSettingsOpen, setCalcSettingsOpen] = useState(false)
+  const { status: authStatus } = useSession()
+  const accountOpen = useUiStore((s) => s.accountOpen)
+  const [authError, setAuthError] = useState<AuthError>(null)
+  // OAuth 콜백/네이티브 핸드오프 처리 중 — authed 전이 전까지 게이트를 막는 1회성 비계
+  const [callbackBusy, setCallbackBusy] = useState(
+    () => window.location.pathname === OAUTH_CALLBACK_PATH,
+  )
   const overrides = useWorkspaceStore((s) => s.overrides)
   const groups = useWorkspaceStore((s) => s.groups)
   const colorById = useWorkspaceStore(selectColorById)
@@ -56,10 +73,46 @@ function App() {
   const regionSelectOpen = useUiStore((s) => s.regionSelectOpen)
   const regionManageOpen = useUiStore((s) => s.regionManageOpen)
 
-  // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
+  // ── 인증 게이트 부팅 (명세 §부팅 순서: 로그인 → region → 지도). 1회성 게이트(StrictMode 이중 가드)
+  const authRequested = useRef(false)
+  useEffect(() => {
+    if (authRequested.current) return
+    authRequested.current = true
+    void (async () => {
+      // 네이티브 핸드오프 수신 우선 (AC-13·14) — 토큰 있으면 세션 수립, 형식오류/만료면 에러 뷰
+      const handoff = readNativeHandoff()
+      if (handoff.kind === 'error') {
+        setAuthError({ code: handoff.code })
+        await useAuthStore.getState().init()
+        return
+      }
+      if (handoff.kind === 'token') {
+        try {
+          await setSessionFromHandoff(handoff.token)
+        } catch {
+          setAuthError({ code: 'AUTH_HANDOFF_SESSION_FAILED' })
+        }
+      }
+      // OAuth 콜백(?code=…)이면 세션 교환 후 게이트로 (AC-2). 실패는 핸드오프 에러(AC-7)
+      if (window.location.pathname === OAUTH_CALLBACK_PATH) {
+        try {
+          await completeOAuthFromUrl()
+          // 콜백 쿼리를 URL에서 제거해 새로고침 재처리·코드 노출을 막는다
+          window.history.replaceState({}, '', '/')
+        } catch {
+          setAuthError({ code: 'AUTH_OAUTH_CALLBACK_FAILED' })
+        } finally {
+          setCallbackBusy(false)
+        }
+      }
+      await useAuthStore.getState().init()
+    })()
+  }, [])
+
+  // ── 인증 후 작업공간 부팅 — authed 전이 시 1회만 (로그인이 region·지도보다 앞선다)
   const bootRequested = useRef(false)
   useEffect(() => {
-    if (bootRequested.current) return
+    if (authStatus !== 'authed' || bootRequested.current) return
     bootRequested.current = true
     void useWorkspaceStore
       .getState()
@@ -71,13 +124,34 @@ function App() {
       .catch((err: unknown) => {
         if (import.meta.env.DEV) console.warn('[realtime] 기동 실패 — 동기화 없이 계속:', err)
       })
-  }, [])
+  }, [authStatus])
 
   if (import.meta.env.DEV && window.location.pathname === '/__ui') {
     return (
       <Suspense fallback={null}>
         <UIDemo />
       </Suspense>
+    )
+  }
+
+  // ── 인증 게이트 (AC-1·2·6·7·14) — 최상단 우선순위. authed 전까지 region·지도·탭바 일체 미렌더.
+  // 핸드오프/콜백 에러는 LoginView보다 우선(재시도·웹 폴백 경로 제공).
+  if (authError !== null) {
+    return (
+      <main className="h-full">
+        <HandoffErrorView code={authError.code} onRetry={() => setAuthError(null)} />
+      </main>
+    )
+  }
+  // 세션 복원/콜백 처리 중 — 스플래시(본문 미노출). callbackBusy는 ?code 교환 진행 중 게이트 유지
+  if (authStatus === 'loading' || callbackBusy) {
+    return <main className="h-full bg-surface" aria-busy="true" />
+  }
+  if (authStatus === 'anon') {
+    return (
+      <main className="h-full">
+        <LoginView onAuthError={() => setAuthError({ code: 'AUTH_SIGNIN_FAILED' })} />
+      </main>
     )
   }
 
@@ -162,6 +236,7 @@ function App() {
         onOpenCalculator={() => setCalcSettingsOpen(true)}
       />
       {historyOpen && <HistorySheet />}
+      {accountOpen && <AccountSheet />}
       {releaseNotesOpen && <ReleaseNotesSheet onClose={() => setReleaseNotesOpen(false)} />}
       {paletteOpen && <PaletteSheet />}
       {shareOpen && <ShareSheet />}
