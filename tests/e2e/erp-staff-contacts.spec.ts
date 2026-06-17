@@ -193,10 +193,11 @@ test.describe('AC-15: NavDrawer PRO 섹션 진입점', () => {
     const drawer = page.getByRole('dialog')
     // 별도 "영농 PRO" 섹션 존재
     await expect(drawer.getByRole('heading', { name: '영농 PRO' })).toBeVisible()
-    // 두 항목 모두 PRO 표식 보유 (PRO 배지 2개)
-    await expect(drawer.getByText('PRO', { exact: true })).toHaveCount(2)
+    // PRO 항목 전부 표식 보유 (인력·거래처 + 슬라이스 5b 업무일지 = 배지 3개)
+    await expect(drawer.getByText('PRO', { exact: true })).toHaveCount(3)
     await expect(drawer.getByRole('button', { name: STAFF_LABEL })).toBeVisible()
     await expect(drawer.getByRole('button', { name: CONTACTS_LABEL })).toBeVisible()
+    await expect(drawer.getByRole('button', { name: '업무일지' })).toBeVisible()
 
     // PRO 배지 색이 앰버 토큰(#D69021)인지 — 토큰→픽셀 적용 교차 검증
     const badge = drawer.getByText('PRO', { exact: true }).first()

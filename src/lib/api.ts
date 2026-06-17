@@ -34,6 +34,14 @@ import {
   type UpdateStaffRequest,
 } from '../types/api/staff'
 import {
+  workLogSchema,
+  workLogListResponseSchema,
+  type CreateWorkLogRequest,
+  type UpdateWorkLogRequest,
+  type WorkLog,
+  type WorkLogListResponse,
+} from '../types/api/workLogs'
+import {
   historyItemSchema,
   historyListResponseSchema,
   type HistoryItem,
@@ -321,6 +329,36 @@ export const api = {
     /** DELETE /api/contacts/:id — 소프트 비활성(active=false) */
     remove(contactId: string): Promise<OkResponse> {
       return mutate('DELETE', `/api/contacts/${encodeURIComponent(contactId)}`, okResponseSchema)
+    },
+  },
+
+  workLogs: {
+    /**
+     * GET /api/work-logs — work_date 내림차순. `?from&to`(YYYY-MM-DD) 기간 필터 (AC-6·13).
+     * 둘 다 선택 — 미지정이면 전체 반환. requireUser지만 전역 공유라 누구나 같은 목록을 본다(AC-12).
+     */
+    list(range?: { from?: string; to?: string }): Promise<WorkLogListResponse> {
+      const params = new URLSearchParams()
+      if (range?.from !== undefined) params.set('from', range.from)
+      if (range?.to !== undefined) params.set('to', range.to)
+      const qs = params.toString()
+      return request(
+        'GET',
+        qs === '' ? '/api/work-logs' : `/api/work-logs?${qs}`,
+        workLogListResponseSchema,
+      )
+    },
+    /** POST /api/work-logs — 생성 (requireUser·created_by 자동, 라인 스냅샷·totalCost 서버 계산, AC-5) */
+    create(input: Input<CreateWorkLogRequest>): Promise<WorkLog> {
+      return mutate('POST', '/api/work-logs', workLogSchema, input)
+    },
+    /** PATCH /api/work-logs/:id — 헤더 갱신 + 라인 전체 치환(부분 patch 아님, AC-7) */
+    update(logId: string, input: Input<UpdateWorkLogRequest>): Promise<WorkLog> {
+      return mutate('PATCH', `/api/work-logs/${encodeURIComponent(logId)}`, workLogSchema, input)
+    },
+    /** DELETE /api/work-logs/:id — 하드 삭제(라인 CASCADE) (AC-8·15) */
+    remove(logId: string): Promise<OkResponse> {
+      return mutate('DELETE', `/api/work-logs/${encodeURIComponent(logId)}`, okResponseSchema)
     },
   },
 

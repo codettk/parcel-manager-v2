@@ -52,9 +52,11 @@ region을 DB 권위로 승격(`regions` 테이블 + `GET /api/regions` 카탈로
 ### ✅ 5a — 인력·거래처 마스터 (완료, `feat/erp-staff-contacts` 커밋·미push)
 영농 ERP 기반 엔티티(인력·거래처) 마스터 CRUD. **전역 공유 단일 테이블**(`tab_id`/`region_id`/`created_by` 격리 없음 — 로그인 멤버 전원이 같은 목록 공유, 행에 `created_by` 신원만 부착) + 소프트 비활성(`active` 플래그, 하드삭제 없음). NavDrawer "영농 PRO" 앰버 섹션 진입점 — **게이팅 강제 없음**(잠금은 슬라이스 6). 백엔드 `server/handlers/{staff,contacts}.ts`(컬렉션/아이템 핸들러, mutate requireUser·소프트삭제)·`server/routes.ts` 라우트 8개·`server/handlers/ids.ts`(genStaffId·genContactId). 프론트 `src/features/erp/`(StaffView·StaffSheet·ContactsView·ContactSheet)·`src/stores/erp.ts`(낙관 CRUD)·`src/lib/api.ts`(staff·contacts 메서드)·`src/stores/ui.ts`(뷰 열림)·`src/App.tsx` 배선·`src/styles/tokens.css`(`--color-pro`·`--color-pro-soft` 앰버 토큰). 계약 `src/types/api/{staff,contacts}.ts`. 마이그레이션 `0005_erp_staff_contacts.sql`(staff·contacts 신규·비파괴, contacts kind CHECK buy|sell|both, RLS 미도입 — 0003 auth.users FK 의존, 0004 region과 독립). **PRO 게이팅·5b~5d 외래참조는 비범위**(이번 슬라이스는 마스터 CRUD까지). 명세 `docs/specs/erp-staff-contacts.md`.
 
-### 5b — 업무일지·일당계산 (미착수)
-### 5c — 재고 (미착수)
-### 5d — 캘린더 (미착수)
+### ✅ 5b — 업무일지·일당계산 (완료, `feat/erp-worklog` 커밋·미push)
+날짜별 업무일지 + 투입 인력별 일당·근무율 인건비 자동 산정. 5a 결정값 승계(전역 공유·Realtime 비범위·PRO 게이팅 강제 없음). **2테이블**: `work_logs`(헤더 — 작업일·제목·메모) + `work_log_workers`(투입 인력 조인 — `staff_id` 참조 + `staff_name_snapshot`·`applied_wage`·`work_ratio` 스냅샷). 일당계산은 **공유 순수 모듈 `src/utils/workLogCost.ts`(computeWorkerCost·computeLogTotal)** 단일 권위 — 클라 미리보기와 서버 `totalCost`가 동일 함수 사용, 서버가 응답 `totalCost`를 권위 산정. 삭제는 **하드 삭제**(5a 소프트 비활성과 대비 — `work_log_workers`는 `log_id ON DELETE CASCADE`, `staff_id ON DELETE SET NULL`). 백엔드 `server/handlers/workLogs.ts`(컬렉션 GET/POST·아이템 PATCH/DELETE, mutate requireUser)·`server/routes.ts` 라우트 4개·`server/handlers/ids.ts`(genWorkLogId·genWorkLogEntryId). 프론트 `src/features/erp/worklog/`(WorkLogView·WorkLogSheet·WorkerLineRow·StaffPickerSheet·draft.ts)·`src/stores/worklog.ts`(낙관 CRUD)·`src/lib/api.ts`(workLogs 메서드)·`src/features/tab/NavDrawer.tsx`(PRO 업무일지 진입점)·`src/stores/ui.ts`·`src/App.tsx`(뷰 배선). 계약 `src/types/api/workLogs.ts`. 마이그레이션 `0006_erp_work_logs.sql`(work_logs·work_log_workers 신규·비파괴, 전역 공유·RLS OFF, work_date DESC 인덱스 — 0005 staff 참조·0003 auth.users 의존). **재고·캘린더 연결(5c·5d), M-10 자동 계산기와의 통합은 비범위**(독립 도메인). 운영 적용(`supabase db push 0006`·push·배포)은 사용자 몫. 명세 `docs/specs/erp-worklog.md`.
+
+### 5c — 재고 (미착수, 재고 모델 재검토 — 거래처 연결·정산 도메인 동반 설계)
+### 5d — 캘린더 (미착수 — 업무일지 작업일 집계 뷰 후보)
 
 <details><summary>원 계획</summary>
 
