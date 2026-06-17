@@ -453,6 +453,40 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
   }
   const erpWorkLogs: ErpWorkLogRow[] = []
   let erpWorkLogSeq = 0
+  // 슬라이스 5c 재고 — 품목·거래 상태 보존 모킹(전역 공유 단일 테이블, 절충 1).
+  // 빈 상태로 시작 → 생성·수정·소프트비활성/거래 생성·하드삭제가 GET 재조회에 반영된다.
+  // 거래 생성 시 itemId로 품목명·단위를, contactId로 거래처 상호를 스냅샷하고 amount=quantity×unitPrice 계산(서버 동형).
+  interface ErpInventoryItemRow {
+    itemId: string
+    name: string
+    unit: string
+    category: string | null
+    memo: string | null
+    active: boolean
+    createdBy: string | null
+    createdAt: string
+    updatedAt: string
+  }
+  interface ErpStockTxnRow {
+    txnId: string
+    itemId: string
+    itemNameSnapshot: string
+    unitSnapshot: string
+    type: 'in' | 'out'
+    quantity: number
+    txnDate: string
+    contactId: string | null
+    contactNameSnapshot: string | null
+    unitPrice: number | null
+    amount: number | null
+    memo: string | null
+    createdBy: string | null
+    createdAt: string
+  }
+  const erpItems: ErpInventoryItemRow[] = []
+  const erpTxns: ErpStockTxnRow[] = []
+  let erpItemSeq = 0
+  let erpTxnSeq = 0
   const workLogTotal = (workers: { appliedWage: number; workRatio: number }[]): number =>
     workers.reduce(
       (sum, w) =>
@@ -925,6 +959,111 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
           if (row !== undefined) row.active = false
           return route.fulfill({ json: { ok: true } })
         }
+      }
+      // 슬라이스 5c 재고 품목 — 인력 동형(소프트 비활성). GET ?includeInactive=true면 전량, 아니면 active만(AC-6).
+      if (pathname === '/api/inventory/items') {
+        const includeInactive = new URL(route.request().url()).searchParams.get('includeInactive')
+        if (method === 'GET') {
+          const rows = includeInactive === 'true' ? erpItems : erpItems.filter((i) => i.active)
+          return route.fulfill({ json: rows })
+        }
+        if (method === 'POST') {
+          const body = route.request().postDataJSON() as Record<string, unknown>
+          const row: ErpInventoryItemRow = {
+            itemId: `inv-e2e-${String(++erpItemSeq)}`,
+            name: String(body.name ?? ''),
+            unit: String(body.unit ?? ''),
+            category: (body.category as string | undefined) ?? null,
+            memo: (body.memo as string | undefined) ?? null,
+            active: true,
+            createdBy: SEED_USER_ID,
+            createdAt: NOW,
+            updatedAt: NOW,
+          }
+          erpItems.push(row)
+          return route.fulfill({ json: row })
+        }
+      }
+      const invItemMatch = /^\/api\/inventory\/items\/([^/]+)$/.exec(pathname)
+      if (invItemMatch !== null) {
+        const id = decodeURIComponent(invItemMatch[1])
+        const row = erpItems.find((i) => i.itemId === id)
+        if (method === 'PATCH') {
+          const body = route.request().postDataJSON() as Record<string, unknown>
+          if (row !== undefined) {
+            if (body.name !== undefined) row.name = String(body.name)
+            if (body.unit !== undefined) row.unit = String(body.unit)
+            if (body.category !== undefined) row.category = body.category as string | null
+            if (body.memo !== undefined) row.memo = body.memo as string | null
+            if (body.active !== undefined) row.active = Boolean(body.active)
+            row.updatedAt = NOW
+          }
+          return route.fulfill({ json: row ?? erpItems[0] })
+        }
+        if (method === 'DELETE') {
+          if (row !== undefined) row.active = false // 소프트 비활성 (AC-7)
+          return route.fulfill({ json: { ok: true } })
+        }
+      }
+      // 슬라이스 5c 재고 거래 — 거래일 내림차순 + ?itemId·?from·?to 필터(AC-10). 생성 시 스냅샷·amount 서버 계산(AC-8).
+      if (pathname === '/api/inventory/transactions') {
+        if (method === 'GET') {
+          const sp = new URL(route.request().url()).searchParams
+          const itemQ = sp.get('itemId')
+          const fromQ = sp.get('from')
+          const toQ = sp.get('to')
+          const rows = erpTxns
+            .filter(
+              (t) =>
+                (itemQ === null || t.itemId === itemQ) &&
+                (fromQ === null || t.txnDate >= fromQ) &&
+                (toQ === null || t.txnDate <= toQ),
+            )
+            .sort((a, b) => (a.txnDate < b.txnDate ? 1 : a.txnDate > b.txnDate ? -1 : 0))
+          return route.fulfill({ json: rows })
+        }
+        if (method === 'POST') {
+          const body = route.request().postDataJSON() as {
+            itemId: string
+            type: 'in' | 'out'
+            quantity: number
+            txnDate: string
+            contactId?: string
+            unitPrice?: number
+            memo?: string
+          }
+          const item = erpItems.find((i) => i.itemId === body.itemId)
+          const contact =
+            body.contactId !== undefined
+              ? erpContacts.find((c) => c.contactId === body.contactId)
+              : undefined
+          const unitPrice = body.unitPrice ?? null
+          const row: ErpStockTxnRow = {
+            txnId: `stx-e2e-${String(++erpTxnSeq)}`,
+            itemId: body.itemId,
+            itemNameSnapshot: item?.name ?? '', // 마스터 현재값 스냅샷(절충 3)
+            unitSnapshot: item?.unit ?? '',
+            type: body.type,
+            quantity: body.quantity,
+            txnDate: body.txnDate,
+            contactId: body.contactId ?? null,
+            contactNameSnapshot: contact?.name ?? null,
+            unitPrice,
+            amount: unitPrice !== null ? Math.round(body.quantity * unitPrice) : null,
+            memo: body.memo ?? null,
+            createdBy: SEED_USER_ID,
+            createdAt: NOW,
+          }
+          erpTxns.push(row)
+          return route.fulfill({ json: row })
+        }
+      }
+      const invTxnMatch = /^\/api\/inventory\/transactions\/([^/]+)$/.exec(pathname)
+      if (invTxnMatch !== null && method === 'DELETE') {
+        const id = decodeURIComponent(invTxnMatch[1])
+        const idx = erpTxns.findIndex((t) => t.txnId === id)
+        if (idx !== -1) erpTxns.splice(idx, 1) // 하드 삭제(AC-11)
+        return route.fulfill({ json: { ok: true } })
       }
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })

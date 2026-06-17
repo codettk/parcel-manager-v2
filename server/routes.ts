@@ -9,6 +9,14 @@ import {
   historyItemHandler,
   historyRestoreHandler,
 } from './handlers/history.js'
+import {
+  inventoryItemsCollectionHandler,
+  inventoryItemsItemHandler,
+} from './handlers/inventoryItems.js'
+import {
+  inventoryTransactionsCollectionHandler,
+  inventoryTransactionsItemHandler,
+} from './handlers/inventoryTransactions.js'
 import { fetchLandInfoHandler, parcelAreasHandler, parcelItemHandler } from './handlers/parcels.js'
 import {
   regionAcquireHandler,
@@ -96,6 +104,29 @@ export const routes: Route[] = [
   { method: 'POST', pattern: '/api/work-logs', handler: workLogsCollectionHandler },
   { method: 'PATCH', pattern: '/api/work-logs/:id', handler: workLogItemHandler },
   { method: 'DELETE', pattern: '/api/work-logs/:id', handler: workLogItemHandler },
+
+  // 영농 ERP 재고(전역 공유, mutate requireUser). 중첩 4세그 경로 — 컬렉션 3세그(/api/inventory/items) vs
+  // 아이템 4세그(/api/inventory/items/:id)로 matchRoute가 세그먼트 수로 구분(d1b3d6f 중첩 패턴, 충돌 없음).
+  { method: 'GET', pattern: '/api/inventory/items', handler: inventoryItemsCollectionHandler },
+  { method: 'POST', pattern: '/api/inventory/items', handler: inventoryItemsCollectionHandler },
+  { method: 'PATCH', pattern: '/api/inventory/items/:id', handler: inventoryItemsItemHandler },
+  { method: 'DELETE', pattern: '/api/inventory/items/:id', handler: inventoryItemsItemHandler },
+
+  {
+    method: 'GET',
+    pattern: '/api/inventory/transactions',
+    handler: inventoryTransactionsCollectionHandler,
+  },
+  {
+    method: 'POST',
+    pattern: '/api/inventory/transactions',
+    handler: inventoryTransactionsCollectionHandler,
+  },
+  {
+    method: 'DELETE',
+    pattern: '/api/inventory/transactions/:id',
+    handler: inventoryTransactionsItemHandler,
+  },
 ]
 
 /**
