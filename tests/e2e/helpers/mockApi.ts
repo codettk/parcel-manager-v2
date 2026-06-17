@@ -191,6 +191,53 @@ export interface MockApiOptions {
 /** src/stores/ui.ts ACTIVE_REGION_STORAGE_KEY · regionCatalog SEED_REGION.id 와 일치해야 한다 */
 export const ACTIVE_REGION_STORAGE_KEY = 'pilji_v2_active_region'
 export const SEED_REGION_ID = 'incheon-ganghwa-hwado'
+/** 슬라이스 3 샘플 적재 region (regionData = /data/regions/<id>.json). backend-dev 데이터셋과 동일 id */
+export const SAMPLE_REGION_ID = 'gyeonggi-gimpo-daegot'
+/** 준비 중(loaded=false) region — 받기 불가·지도 미전환(AC-17) */
+export const UPCOMING_REGION_ID = 'incheon-ganghwa-ganghwa'
+
+/**
+ * GET /api/regions 카탈로그 픽스처 (regionsResponseSchema 동형) — 적재 2 + 준비중 1.
+ * 클라이언트 SEED_CATALOG와 동형 분류라 서버 응답/폴백 어느 쪽이든 게이트가 같게 동작한다.
+ */
+export const REGIONS_CATALOG_FIXTURE = [
+  {
+    id: SEED_REGION_ID,
+    sido: '인천광역시',
+    sigungu: '강화군',
+    emd: '화도면',
+    displayName: '인천 강화군 화도면(보구곶)',
+    shortName: '화도면(보구곶)',
+    loaded: true,
+    parcelCount: 4409,
+    sizeLabel: '4.2MB',
+    sortOrder: 0,
+  },
+  {
+    id: SAMPLE_REGION_ID,
+    sido: '경기도',
+    sigungu: '김포시',
+    emd: '대곶면',
+    displayName: '경기 김포시 대곶면',
+    shortName: '대곶면',
+    loaded: true,
+    parcelCount: 2980,
+    sizeLabel: '9.1MB',
+    sortOrder: 1,
+  },
+  {
+    id: UPCOMING_REGION_ID,
+    sido: '인천광역시',
+    sigungu: '강화군',
+    emd: '강화읍',
+    displayName: '인천 강화군 강화읍',
+    shortName: '강화읍',
+    loaded: false,
+    parcelCount: 3180,
+    sizeLabel: '9.1MB',
+    sortOrder: 2,
+  },
+]
 
 /**
  * region 진입 게이트 우회 — 부팅 전 활성 region(SEED)을 localStorage에 주입한다.
@@ -338,6 +385,10 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
     ]
   }
   let createdTabSeq = 0
+  // 슬라이스 3 region — 받은 목록 상태 보존 모킹. acquire/remove가 mine 응답에 반영된다(AC-7·9·11).
+  // seedRegion!==false면 SEED를 받은 상태로 시작(지도 직행 + 관리 화면 일관).
+  const acquiredRegionIds = new Set<string>()
+  if (opts.seedRegion !== false) acquiredRegionIds.add(SEED_REGION_ID)
   // M-13 V-World 토지임야 조회 — 성공 후 PNU_PARCEL_ID의 단건 재조회가 조회 완료 상태를
   // 반영하도록 하는 상태 플래그 (서버 단일 소스 동형). spec 간 격리는 page.route가 per-page라 보장.
   let landFetched = false
@@ -431,6 +482,31 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
           historyItems = historyItems.filter((x) => x.tabId !== id)
           return route.fulfill({ json: { ok: true } })
         }
+      }
+      // 슬라이스 3 region 카탈로그(GET, 공개)·받은 목록(GET)·받기(POST)·제거(DELETE)
+      if (pathname === '/api/regions' && method === 'GET')
+        return route.fulfill({ json: REGIONS_CATALOG_FIXTURE })
+      if (pathname === '/api/regions/mine' && method === 'GET') {
+        if (!seedAuth) return route.fulfill({ status: 401, json: { error: '인증 필요 (e2e)' } })
+        return route.fulfill({
+          json: [...acquiredRegionIds].map((id) => ({ regionId: id, acquiredAt: NOW })),
+        })
+      }
+      const acquireMatch = /^\/api\/regions\/([^/]+)\/acquire$/.exec(pathname)
+      if (acquireMatch !== null && method === 'POST') {
+        if (!seedAuth) return route.fulfill({ status: 401, json: { error: '인증 필요 (e2e)' } })
+        const id = decodeURIComponent(acquireMatch[1])
+        const region = REGIONS_CATALOG_FIXTURE.find((r) => r.id === id)
+        if (region === undefined || !region.loaded)
+          return route.fulfill({ status: 409, json: { error: '준비 중 region (e2e)' } })
+        acquiredRegionIds.add(id)
+        return route.fulfill({ json: { regionId: id, acquiredAt: NOW } })
+      }
+      const regionItemMatch = /^\/api\/regions\/([^/]+)$/.exec(pathname)
+      if (regionItemMatch !== null && method === 'DELETE') {
+        if (!seedAuth) return route.fulfill({ status: 401, json: { error: '인증 필요 (e2e)' } })
+        acquiredRegionIds.delete(decodeURIComponent(regionItemMatch[1]))
+        return route.fulfill({ json: { ok: true } })
       }
       // 인증 게이트 — seedAuth면 가짜 supabase 구성을 내려 실 클라이언트를 만들고 시드 세션을 복원한다.
       // seedAuth=false면 키 없는 {} → getSupabaseClient()=null → authStatus='anon' → LoginView.

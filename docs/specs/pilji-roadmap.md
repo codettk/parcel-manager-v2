@@ -23,11 +23,17 @@
 
 </details>
 
-## 슬라이스 3 — 전국 지적도 데이터 파이프라인 (다중 region)
+## ✅ 슬라이스 3 — 전국 지적도 데이터 파이프라인 (완료, `feat/national-data` 커밋·미push)
+region을 DB 권위로 승격(`regions` 테이블 + `GET /api/regions` 카탈로그) + region별 parcels 적재·조회 + 클라이언트 region 스코프 지도 로딩 + region 받기/제거(`user_regions`). 슬라이스 1의 클라이언트 `regionCatalog.ts`는 폴백/부팅 시드로 격하. 보구곶 + 샘플 region 1개(`gyeonggi-gimpo-daegot`, 합성 데이터셋 `public/data/regions/`)로 메커니즘 시연 — 전국 실데이터 대량 취득은 별도 데이터 운영(범위 밖). `server/handlers/regions.ts`(카탈로그 공개 GET·mine/acquire/remove requireUser)·`scripts/import-parcels.ts`(region_id 백필·`--region/--source`)·`src/features/region/`·`src/stores/regions.ts` + 마이그레이션 `0004_regions.sql`(regions·parcels.region_id FK·user_regions 비파괴, RLS 미도입). 명세 `docs/specs/national-data-pipeline.md`.
+
+<details><summary>원 계획</summary>
+
 - **무엇**: region을 DB 개념으로 승격(region 테이블) + region별 parcels 적재·API + 클라이언트 region별 로딩. region "받기/다운로드/제거" 실제 동작. region-entry의 "준비 중"이 실데이터로 해소.
 - **왜**: "전국" 서비스의 핵심 가치. region-entry가 비파괴 확장 가능하게 설계됨(이 슬라이스가 그 확장).
 - **의존**: 슬라이스 1(region 추상화). 계정(2)과 독립이나 region 즐겨찾기/동기화는 2 이후 강화. **영향**: 백엔드·DB·API·데이터 적재 스크립트 大 → frontend+backend 병렬.
 - **디자인**: ④지역선택 ⑦PC지역선택 ⑪지역관리 ㊶지역검색결과.
+
+</details>
 
 ## 슬라이스 4 — GPS 역지오코딩
 - **무엇**: 좌표→행정구역 변환(V-World/카카오 등) → "현재 위치로 시작"이 실제 region 자동 선택. region-entry의 폴백 UI를 실동작으로.

@@ -1,8 +1,9 @@
 import { create } from 'zustand'
 import { EMPTY_SELECTION } from '../features/map/engine'
 import { ALL_JIMOK, type JimokKey } from '../features/map/jimok'
-import { getRegionById } from '../features/region/regionCatalog'
+import { lookupRegion } from '../features/region/regionCatalog'
 import { AREA_UNITS, type AreaUnitId } from '../utils/formatArea'
+import { useRegionsStore } from './regions'
 import { selectParcelToGroup } from './selectors'
 import { useWorkspaceStore } from './workspace'
 
@@ -21,14 +22,13 @@ function loadAreaUnit(): AreaUnitId {
 export const ACTIVE_REGION_STORAGE_KEY = 'pilji_v2_active_region'
 
 /**
- * 영속된 마지막 region 복원 — 카탈로그에 없거나(폐기된 id) 미적재 region이면 null(게이트 표시).
- * 미적재 region은 지도 데이터가 없어 진입 자체가 불가하므로 영속 값으로도 인정하지 않는다.
- * AC-10 새로고침 직행의 핵심 분기라 단위 테스트 대상으로 export 한다.
+ * 영속된 마지막 region 복원 — 새로고침 시 게이트를 건너뛰고 직행 (AC-16).
+ * region 값은 selectRegion(적재 검증 통과)으로만 기록되므로, 부팅 시점(서버 카탈로그 로드 전)에는
+ * 저장된 id를 신뢰한다 — 서버 카탈로그가 시드에 없는 region을 담을 수 있어 시드 화이트리스트로
+ * 막으면 정상 적재 region조차 게이트로 되돌아가 회귀가 된다. null만 게이트(AC-15).
  */
 export function loadActiveRegion(): string | null {
-  const stored = localStorage.getItem(ACTIVE_REGION_STORAGE_KEY)
-  if (stored === null) return null
-  return getRegionById(stored)?.loaded === true ? stored : null
+  return localStorage.getItem(ACTIVE_REGION_STORAGE_KEY)
 }
 
 /** Realtime 연결 상태 (M-6) — disabled는 supabase 키 미설정 환경(E2E mockApi 등)을 error와 구분한다 */
@@ -384,9 +384,16 @@ export const useUiStore = create<UiState>()((set, get) => ({
   regionSelectOpen: false,
 
   selectRegion: (regionId) => {
-    const region = getRegionById(regionId)
-    if (region === undefined || !region.loaded) return false // 미적재 — 지도 미전환 (AC-6)
+    // 서버 카탈로그(부팅 전/실패 시 시드 폴백)에서 적재 여부 검증 — 더는 시드 상수가 단일 진실 아님 (AC-2)
+    const regions = useRegionsStore.getState()
+    const region = lookupRegion(regions.catalog, regionId)
+    if (region === undefined || !region.loaded) return false // 미적재 — 지도 미전환 (AC-6·17)
     localStorage.setItem(ACTIVE_REGION_STORAGE_KEY, regionId)
+    // 활성 region은 받은 목록에 있어야 한다(관리 화면 일관·AC-16 새로고침 직행) — 낙관적 보강.
+    // 받기 mutate는 acquire가 별도 수행(AC-12); 여기선 로컬 표시만 보강(이미 있으면 무변경).
+    if (!regions.acquiredIds.includes(regionId)) {
+      useRegionsStore.setState({ acquiredIds: [...regions.acquiredIds, regionId] })
+    }
     set({ activeRegionId: regionId, regionSelectOpen: false, regionManageOpen: false })
     return true
   },

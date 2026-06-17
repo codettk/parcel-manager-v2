@@ -98,10 +98,12 @@ test.describe('지역 선택 진입 게이트', () => {
     await page.goto('/')
     await page.getByRole('textbox', { name: '지역 검색' }).fill('화도')
 
-    const row = page.getByRole('button', { name: SEED_DISPLAY })
+    // 슬라이스 3: 적재·미보유 region 행은 본문 버튼(displayName)과 "받기" 버튼(displayName+받기)이
+    // 접두를 공유 → 행 본문은 exact:true로 지정해 strict-mode 충돌을 피한다
+    const row = page.getByRole('button', { name: SEED_DISPLAY, exact: true })
     await expect(row).toBeVisible()
-    // 활성(데이터 적재) 표시 — "준비 중"이 아니어야 한다
-    await expect(row.getByText('준비 중')).toHaveCount(0)
+    // 활성(데이터 적재) 표시 — "준비 중"이 아니어야 한다 (받기 가능 = 적재됨)
+    await expect(page.getByRole('button', { name: `${SEED_DISPLAY} 받기` })).toBeVisible()
 
     await row.click()
 
@@ -159,9 +161,9 @@ test.describe('지역 선택 진입 게이트', () => {
     await expect(page.getByText(/위치 권한을 확인할 수 없어요/)).toBeVisible()
     await expect(page.getByRole('heading', { name: '지역 선택' })).toBeVisible()
 
-    // 검색 경로 계속 사용 가능 — 화도 검색 후 진입
+    // 검색 경로 계속 사용 가능 — 화도 검색 후 진입 (행 본문은 exact:true — 받기 버튼과 접두 공유)
     await page.getByRole('textbox', { name: '지역 검색' }).fill('화도')
-    const row = page.getByRole('button', { name: SEED_DISPLAY })
+    const row = page.getByRole('button', { name: SEED_DISPLAY, exact: true })
     await expect(row).toBeVisible()
     await row.click()
     await expect(page.locator('canvas').first()).toBeVisible()

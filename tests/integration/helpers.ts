@@ -64,6 +64,23 @@ export async function getTestToken(): Promise<string> {
   return cachedToken
 }
 
+/**
+ * 동일 테스트 사용자에게 새 세션(다른 기기/토큰)을 발급한다(AC-11 기기 독립 검증용).
+ * NO_REALTIME 가드를 재사용해 Node 20 WebSocket 부재 문제를 우회한다.
+ */
+export async function issueFreshToken(): Promise<string> {
+  await getTestToken() // 사용자 멱등 생성 보장
+  const url = process.env.SUPABASE_URL
+  const anonKey = process.env.SUPABASE_ANON_KEY
+  if (!url || !anonKey) throw new Error('SUPABASE_URL / SUPABASE_ANON_KEY 가 필요합니다')
+  const anon = createClient(url, anonKey, NO_REALTIME)
+  const signIn = await anon.auth.signInWithPassword({ email: TEST_EMAIL, password: TEST_PASSWORD })
+  if (signIn.error || !signIn.data.session) {
+    throw new Error(`2차 토큰 발급 실패: ${signIn.error?.message ?? '세션 없음'}`)
+  }
+  return signIn.data.session.access_token
+}
+
 export const ctx: HandlerContext = { env: process.env }
 
 /** 검증용 직접 DB 접근 (테스트 전제 데이터 구성·결과 확인 — 핸들러 경유가 원칙, 이건 보조) */

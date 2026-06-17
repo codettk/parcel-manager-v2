@@ -53,15 +53,14 @@ function rowToParcel(row: ParcelRow): Parcel {
   }
 }
 
-/** GET /api/parcels/:id */
+/** GET /api/parcels/:id — `?region=<id>` 지정 시 해당 region 소속 필지로 한정(미지정 시 전량). */
 export const parcelItemHandler: Handler = async (req, ctx) => {
   if (req.method !== 'GET') return methodNotAllowed()
   const db = createDb(ctx.env)
-  const { data, error } = await db
-    .from('parcels')
-    .select('*')
-    .eq('local_id', req.params.id)
-    .maybeSingle()
+  let query = db.from('parcels').select('*').eq('local_id', req.params.id)
+  const region = req.query.region
+  if (region) query = query.eq('region_id', region)
+  const { data, error } = await query.maybeSingle()
   if (error) throw new Error(error.message)
   if (!data) return notFound('필지를 찾을 수 없습니다')
   return { status: 200, body: rowToParcel(data as ParcelRow) }
@@ -71,19 +70,23 @@ export const parcelItemHandler: Handler = async (req, ctx) => {
 const AREAS_PAGE_SIZE = 1000
 
 /**
- * GET /api/parcel-areas — 전 필지 공부상 면적(lndpcl_ar) 일괄 조회 (M-9 목록 뷰).
- * supabase-js 기본 1,000행 제한을 .range() 페이징으로 우회해 전량(4,409행)을 한 응답에 모은다
+ * GET /api/parcel-areas — 공부상 면적(lndpcl_ar) 일괄 조회 (M-9 목록 뷰).
+ * supabase-js 기본 1,000행 제한을 .range() 페이징으로 우회해 전량(4,409행)을 한 응답에 모은다.
+ * `?region=<id>` 지정 시 해당 region 소속 필지만 — 미지정 시 현행대로 전량(비파괴 기본값).
  */
 export const parcelAreasHandler: Handler = async (req, ctx) => {
   if (req.method !== 'GET') return methodNotAllowed()
   const db = createDb(ctx.env)
+  const region = req.query.region
   const areas: ParcelAreasResponse = {}
   for (let from = 0; ; from += AREAS_PAGE_SIZE) {
-    const { data, error } = await db
+    let query = db
       .from('parcels')
       .select('local_id, lndpcl_ar')
       .order('local_id', { ascending: true })
       .range(from, from + AREAS_PAGE_SIZE - 1)
+    if (region) query = query.eq('region_id', region)
+    const { data, error } = await query
     if (error) throw new Error(error.message)
     const rows = (data ?? []) as Pick<ParcelRow, 'local_id' | 'lndpcl_ar'>[]
     for (const row of rows) areas[row.local_id] = row.lndpcl_ar

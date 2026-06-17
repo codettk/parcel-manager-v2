@@ -1,29 +1,17 @@
 // region 카탈로그 — 전국 지적도 진입 추상화의 클라이언트 메타.
-// 절충(명세 §배경): parcels.json은 단 하나(보구곶)만 적재된다. 그 외 region은 loaded:false("준비 중")로
-// 목록·검색에 노출만 하고 지도로 진입시키지 않는다. 백엔드/DB/API 무변경 — 향후 다중 region 데이터
-// 파이프라인이 도입되면 이 상수가 src/types/api/ region 스키마로 승격될 예정.
+// 슬라이스 3에서 서버 권위(`GET /api/regions`)로 승격됐다 — 이 모듈은 더 이상 단일 진실이 아니라
+// ① `Region` 타입(계약 `src/types/api/regions.ts`에서 추론) ② 순수 분류/검색 로직
+// ③ 서버 미응답 시 부팅 시드/폴백 상수(SEED_CATALOG)만 책임진다.
+// 카탈로그 조회·캐시는 useRegionCatalog, 지도 데이터 경로 해석은 regionData가 맡는다.
 
-/** 한 행정구역 region 메타. id는 영속 키(localStorage)·식별자 — 변경 금지 */
-export interface Region {
-  id: string
-  sido: string
-  sigungu: string
-  emd: string
-  /** 목록·칩 표시명 (예: "인천 강화군 화도면") */
-  displayName: string
-  /** 칩 등 좁은 폭의 축약 표시명 (예: "강화군 화도면") */
-  shortName: string
-  /** 데이터(parcels.json) 적재 여부. false면 "준비 중" — 선택해도 지도 미전환 (AC-6) */
-  loaded: boolean
-  /** 필지 수 (표시용. 미적재 region은 추정치) */
-  parcelCount: number
-  /** 저장 용량 표기 (지역 관리 화면 메타) */
-  sizeLabel: string
-}
+// 계약을 단일 진실로 — Region 타입은 zod 추론을 재노출한다 (현재 sortOrder 포함).
+export type { Region } from '../../types/api/regions'
+import type { Region } from '../../types/api/regions'
 
 /**
- * 유일하게 데이터가 적재된 region — 보구곶리(인천 강화군 화도면).
- * "보구곶"은 브랜드 문구가 아니라 이 region의 표시명 일부로만 유지한다 (명세 리브랜딩 단서).
+ * 유일하게 데이터가 적재된 기준 region — 보구곶리(인천 강화군 화도면).
+ * "보구곶"은 브랜드 문구가 아니라 이 region의 표시명 일부로만 유지한다 (리브랜딩 단서).
+ * id는 영속 키(localStorage)·parcels.region_id — 변경 금지.
  */
 export const SEED_REGION: Region = {
   id: 'incheon-ganghwa-hwado',
@@ -35,10 +23,28 @@ export const SEED_REGION: Region = {
   loaded: true,
   parcelCount: 4409,
   sizeLabel: '4.2MB',
+  sortOrder: 0,
 }
 
-/** "준비 중" region — 검색·관리 목록에 노출되되 지도로 진입하지 않는다 (AC-6) */
-const UPCOMING_REGIONS: readonly Region[] = [
+/**
+ * 부팅 시드/폴백 카탈로그 — `GET /api/regions` 실패 시 useRegionCatalog가 이걸로 폴백한다.
+ * 슬라이스 3 시연 데이터셋(gyeonggi-gimpo-daegot)을 loaded:true로 둔다 — 서버 카탈로그도 동형이라
+ * 서버 응답/폴백 어느 쪽이든 같은 적재 분류를 본다.
+ */
+export const SEED_CATALOG: readonly Region[] = [
+  SEED_REGION,
+  {
+    id: 'gyeonggi-gimpo-daegot',
+    sido: '경기도',
+    sigungu: '김포시',
+    emd: '대곶면',
+    displayName: '경기 김포시 대곶면',
+    shortName: '대곶면',
+    loaded: true,
+    parcelCount: 2980,
+    sizeLabel: '9.1MB',
+    sortOrder: 1,
+  },
   {
     id: 'incheon-ganghwa-ganghwa',
     sido: '인천광역시',
@@ -49,6 +55,7 @@ const UPCOMING_REGIONS: readonly Region[] = [
     loaded: false,
     parcelCount: 3180,
     sizeLabel: '9.1MB',
+    sortOrder: 2,
   },
   {
     id: 'incheon-ganghwa-gilsang',
@@ -60,17 +67,7 @@ const UPCOMING_REGIONS: readonly Region[] = [
     loaded: false,
     parcelCount: 2070,
     sizeLabel: '6.4MB',
-  },
-  {
-    id: 'gyeonggi-gimpo-daegot',
-    sido: '경기도',
-    sigungu: '김포시',
-    emd: '대곶면',
-    displayName: '경기 김포시 대곶면',
-    shortName: '대곶면',
-    loaded: false,
-    parcelCount: 2980,
-    sizeLabel: '9.1MB',
+    sortOrder: 3,
   },
   {
     id: 'jeonnam-haenam-sani',
@@ -82,30 +79,45 @@ const UPCOMING_REGIONS: readonly Region[] = [
     loaded: false,
     parcelCount: 4120,
     sizeLabel: '12.4MB',
+    sortOrder: 4,
   },
 ] as const
 
-/** 전체 카탈로그 — 적재 region을 앞에 둔다 (검색·관리 정렬 기준) */
-export const REGION_CATALOG: readonly Region[] = [SEED_REGION, ...UPCOMING_REGIONS]
+/**
+ * @deprecated SEED_CATALOG로 대체 — 서버 카탈로그가 단일 진실이다.
+ * getRegionById의 동기 폴백(스토어 selectRegion 검증)에서만 시드 조회로 남겨둔다.
+ */
+export const REGION_CATALOG = SEED_CATALOG
 
+/**
+ * 시드 카탈로그에서 id 조회 — 서버 카탈로그가 비었거나(부팅 전) 폴백일 때의 동기 조회.
+ * 런타임 카탈로그 조회는 lookupRegion(catalog, id)를 쓴다 (서버 응답 위에서 동작).
+ */
 export function getRegionById(id: string): Region | undefined {
-  return REGION_CATALOG.find((r) => r.id === id)
+  return SEED_CATALOG.find((r) => r.id === id)
+}
+
+/** 임의의 카탈로그 배열에서 id 조회 — 서버 응답/시드 모두에 동작 (순수) */
+export function lookupRegion(catalog: readonly Region[], id: string): Region | undefined {
+  return catalog.find((r) => r.id === id)
 }
 
 /**
  * 검색 — 시/군구/읍면동/표시명에 질의 문자열이 포함되면 매칭 (대소문자·공백 무시).
- * "화도" → 보구곶 region이 활성으로 매칭된다 (AC-5). 빈 질의는 전체 카탈로그 반환.
+ * 빈 질의는 sortOrder 정렬 전체를 반환. 서버 카탈로그 배열 위에서 동작하도록 인자화 (순수).
  */
-export function searchRegions(query: string): Region[] {
+export function searchRegions(catalog: readonly Region[], query: string): Region[] {
+  const sorted = [...catalog].sort((a, b) => a.sortOrder - b.sortOrder)
   const q = query.trim().replace(/\s+/g, '')
-  if (q === '') return [...REGION_CATALOG]
-  return REGION_CATALOG.filter((r) =>
-    [r.sido, r.sigungu, r.emd, r.displayName, r.shortName]
-      .some((field) => field.replace(/\s+/g, '').includes(q)),
+  if (q === '') return sorted
+  return sorted.filter((r) =>
+    [r.sido, r.sigungu, r.emd, r.displayName, r.shortName].some((field) =>
+      field.replace(/\s+/g, '').includes(q),
+    ),
   )
 }
 
-/** 데이터 적재(= "받은") region 목록 — 지역 관리 화면 소관 (AC-11) */
-export function loadedRegions(): Region[] {
-  return REGION_CATALOG.filter((r) => r.loaded)
+/** 데이터 적재된 region 목록 — sortOrder 순. "준비 중"(loaded=false)은 제외 (순수) */
+export function loadedRegions(catalog: readonly Region[]): Region[] {
+  return [...catalog].filter((r) => r.loaded).sort((a, b) => a.sortOrder - b.sortOrder)
 }

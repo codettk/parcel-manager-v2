@@ -29,6 +29,7 @@ import { ReleaseNotesSheet } from './features/release-notes/ReleaseNotesSheet'
 import { ShareSheet } from './features/share/ShareSheet'
 import { initRealtime } from './lib/realtime'
 import { selectColorById, selectSelection } from './stores/selectors'
+import { useRegionsStore } from './stores/regions'
 import { useUiStore } from './stores/ui'
 import { useWorkspaceStore } from './stores/workspace'
 
@@ -114,6 +115,9 @@ function App() {
   useEffect(() => {
     if (authStatus !== 'authed' || bootRequested.current) return
     bootRequested.current = true
+    // region 카탈로그·받은 목록 부팅 (전국 전환) — 실패해도 시드/로컬 폴백으로 진행 (명세 절충 4)
+    void useRegionsStore.getState().loadCatalog()
+    void useRegionsStore.getState().loadMine()
     void useWorkspaceStore
       .getState()
       .boot()
@@ -201,6 +205,7 @@ function App() {
       {/* 지도 영역 — 이 컨테이너 기준으로 모든 absolute 오버레이가 배치된다 (TabBar 행 아래) */}
       <div className="relative min-h-0 flex-1">
         <MapCanvas
+          regionId={activeRegionId ?? undefined}
           overrides={overrides}
           groups={groups}
           colorById={colorById}
