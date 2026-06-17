@@ -1,9 +1,11 @@
-// 얇은 React 호스트 — parcels.json 로드·캔버스/DPR 관리·제스처 연결만 하고 렌더는 엔진에 위임.
-// 씬 데이터(overrides/groups/selection)는 props 주입 — M-5 스토어 도입 전까지 App은 빈 값으로 구동.
+// 얇은 React 호스트 — region 데이터 로드·캔버스/DPR 관리·제스처 연결만 하고 렌더는 엔진에 위임.
+// 씬 데이터(overrides/groups/selection)는 props 주입. 지도 데이터 경로는 활성 region이 결정한다
+// (regionData.regionDataUrl — 보구곶=parcels.json, 그 외=/data/regions/<id>.json).
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Minus, Plus } from 'lucide-react'
 import { IconButton } from '../../components/ui'
 import { makeProjector, polyArea, polyCentroid, type Bbox } from '../../utils/geo'
+import { regionDataUrl } from '../region/regionData'
 import type { Group, ParcelOverride } from '../../types/api/tabState'
 import {
   EMPTY_SELECTION,
@@ -34,11 +36,18 @@ interface RawData {
 }
 
 interface MapData {
+  /** 이 데이터가 어느 region에서 로드됐는지 — 전환 중 stale 데이터가 새 aspect로 렌더되는 걸 막는다 */
+  regionId: string
   aspect: number
   parcels: EngineParcel[]
 }
 
 interface MapCanvasProps {
+  /**
+   * 활성 region id (전국 전환). 지도 데이터 자산 경로를 결정한다 — 변경 시 재로딩 + viewport fit 리셋
+   * (AC-6 region 단위 교체). 미지정 시 보구곶 기본 데이터(AC-5 회귀 보존).
+   */
+  regionId?: string
   overrides?: Record<string, ParcelOverride>
   groups?: Record<string, Group>
   colorById?: Record<string, string>
@@ -57,7 +66,10 @@ const EMPTY_GROUPS: Record<string, Group> = {}
 const EMPTY_COLOR_BY_ID: Record<string, string> = {}
 const DEFAULT_JIMOK_FILTER: JimokKey[] = [...ALL_JIMOK]
 
+const DEFAULT_REGION_ID = 'incheon-ganghwa-hwado'
+
 export function MapCanvas({
+  regionId = DEFAULT_REGION_ID,
   overrides = EMPTY_OVERRIDES,
   groups = EMPTY_GROUPS,
   colorById = EMPTY_COLOR_BY_ID,
@@ -72,10 +84,13 @@ export function MapCanvas({
   cacheRef.current ??= createOuterEdgesCache()
   const labelCachesRef = useRef<LabelCaches | null>(null)
   labelCachesRef.current ??= createLabelCaches()
-  const [data, setData] = useState<MapData | null>(null)
+  const [loaded, setLoaded] = useState<MapData | null>(null)
+  // 전환 중 stale 데이터 차단(AC-6): 로드된 데이터의 region이 현재 region과 다르면 null로 취급한다.
+  // 새 데이터가 도착하면(setLoaded, 비동기) data가 다시 채워지고 useGestures가 fit 리셋한다.
+  const data = loaded !== null && loaded.regionId === regionId ? loaded : null
 
   // 지목 필터 가시 집합 — 렌더·히트테스트·라벨 세 경로가 같은 배열을 입력해 일관성 보장 (M-14).
-  // parcels.json 재로드 없이 이미 구성된 data.parcels에서 가시성만 거른다.
+  // 재로드 없이 이미 구성된 data.parcels에서 가시성만 거른다.
   const visibleParcels = useMemo(() => {
     if (!data) return null
     const visibleIds = visibleParcelIds(jimokFilter, data.parcels)
@@ -102,7 +117,9 @@ export function MapCanvas({
 
   useEffect(() => {
     let cancelled = false
-    fetch('/data/parcels.json')
+    // region 전환 — 새 데이터를 비동기 로드한다. 도착 전까지 data 파생값이 null(stale 차단)이라
+    // useGestures.aspect=null → 새 데이터 도착 시 fit 리셋이 재진입한다 (AC-6).
+    fetch(regionDataUrl(regionId))
       .then((r) => r.json() as Promise<RawData>)
       .then((d) => {
         if (cancelled) return
@@ -134,12 +151,12 @@ export function MapCanvas({
         })
         // 면적 내림차순 — 작은 필지가 위에 그려지도록 (엔진·히트테스트 입력 계약)
         parcels.sort((a, b) => b.area - a.area)
-        setData({ aspect: proj.aspect, parcels })
+        setLoaded({ regionId, aspect: proj.aspect, parcels })
       })
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [regionId])
 
   // 리사이즈는 useGestures의 fit 리셋이 viewport를 갱신해 재진입한다
   useEffect(() => {

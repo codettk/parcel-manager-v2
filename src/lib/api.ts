@@ -28,6 +28,14 @@ import {
   type ParcelResponse,
 } from '../types/api/parcels'
 import {
+  regionAcquireResponseSchema,
+  regionsResponseSchema,
+  userRegionsResponseSchema,
+  type RegionAcquireResponse,
+  type RegionsResponse,
+  type UserRegionsResponse,
+} from '../types/api/regions'
+import {
   tabSchema,
   tabsListResponseSchema,
   type CreateTabRequest,
@@ -218,6 +226,29 @@ export const api = {
     },
     put(input: Input<PutCalcRecipesRequest>): Promise<OkResponse> {
       return mutate('PUT', '/api/calc-recipes', okResponseSchema, input)
+    },
+  },
+
+  regions: {
+    /** GET /api/regions — 전역 공개 카탈로그 (인증 불요, sortOrder 순, AC-1·2) */
+    list(): Promise<RegionsResponse> {
+      return request('GET', '/api/regions', regionsResponseSchema)
+    },
+    /** GET /api/regions/mine — 로그인 사용자의 받은 지역 목록 (requireUser, 기기 독립 영속, AC-11) */
+    mine(): Promise<UserRegionsResponse> {
+      return request('GET', '/api/regions/mine', userRegionsResponseSchema)
+    },
+    /** POST /api/regions/:id/acquire — 받기 (requireUser). loaded=false면 ApiError(409) (AC-7·8) */
+    acquire(regionId: string): Promise<RegionAcquireResponse> {
+      return mutate(
+        'POST',
+        `/api/regions/${encodeURIComponent(regionId)}/acquire`,
+        regionAcquireResponseSchema,
+      )
+    },
+    /** DELETE /api/regions/:id — 받은 목록에서 제거 (requireUser, user_regions 행만 삭제, AC-9) */
+    remove(regionId: string): Promise<OkResponse> {
+      return mutate('DELETE', `/api/regions/${encodeURIComponent(regionId)}`, okResponseSchema)
     },
   },
 

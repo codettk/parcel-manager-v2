@@ -9,6 +9,12 @@ import {
 } from './handlers/history.js'
 import { fetchLandInfoHandler, parcelAreasHandler, parcelItemHandler } from './handlers/parcels.js'
 import {
+  regionAcquireHandler,
+  regionRemoveHandler,
+  regionsCatalogHandler,
+  regionsMineHandler,
+} from './handlers/regions.js'
+import {
   tabGroupsHandler,
   tabImportHandler,
   tabParcelHandler,
@@ -56,6 +62,12 @@ export const routes: Route[] = [
 
   { method: 'GET', pattern: '/api/calc-recipes', handler: calcRecipesHandler },
   { method: 'PUT', pattern: '/api/calc-recipes', handler: calcRecipesHandler },
+
+  // region 카탈로그(공개) + 받기/제거(requireUser). 'mine'(리터럴 3세그)은 :id GET이 없어 충돌 없음.
+  { method: 'GET', pattern: '/api/regions', handler: regionsCatalogHandler },
+  { method: 'GET', pattern: '/api/regions/mine', handler: regionsMineHandler },
+  { method: 'POST', pattern: '/api/regions/:id/acquire', handler: regionAcquireHandler },
+  { method: 'DELETE', pattern: '/api/regions/:id', handler: regionRemoveHandler },
 
   { method: 'GET', pattern: '/api/parcel-areas', handler: parcelAreasHandler },
   { method: 'GET', pattern: '/api/parcels/:id', handler: parcelItemHandler },

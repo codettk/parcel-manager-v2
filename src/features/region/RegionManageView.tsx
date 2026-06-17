@@ -1,27 +1,53 @@
-import { ArrowLeft, Check, Info, MapPinned, Plus } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { ArrowLeft, Info, Plus, Trash2, Repeat } from 'lucide-react'
+import { ConfirmInline } from '../../components/ui'
+import { useRegionsStore } from '../../stores/regions'
 import { useUiStore } from '../../stores/ui'
-import { loadedRegions, type Region } from './regionCatalog'
+import { RegionRow } from './RegionRow'
+import { deriveRegionRowState } from './regionRowState'
+import { lookupRegion, type Region } from './regionCatalog'
+import { useRegionCatalog } from './useRegionCatalog'
 
 /**
- * 지역 관리 — 받은(데이터 적재) region 열람·전환 (AC-11). 메뉴 드로어 "지역 관리"에서 진입.
- * 비범위(명세): "지역 추가/받기/제거" 실제 동작 없음 — 추가 진입점은 지역 선택 화면으로 연결만 한다.
+ * 지역 관리 (AC-13·14) — 내가 받은 region만 열람·전환·제거. 메뉴 드로어에서 진입.
+ * 비활성 region은 ⋮로 제거 메뉴(전환/제거 ConfirmInline 2단계) 진입,
+ * 현재 활성(사용 중) region은 제거 가드 — 전환을 먼저 요구해 빈 지도 상태를 막는다.
  */
 export function RegionManageView() {
+  const { catalog } = useRegionCatalog()
   const activeRegionId = useUiStore((s) => s.activeRegionId)
   const selectRegion = useUiStore((s) => s.selectRegion)
   const closeRegionManage = useUiStore((s) => s.closeRegionManage)
   const openRegionSelect = useUiStore((s) => s.openRegionSelect)
+  const acquiredIds = useRegionsStore((s) => s.acquiredIds)
+  const removeRegion = useRegionsStore((s) => s.remove)
 
-  const regions = loadedRegions()
+  // 행 ⋮로 펼친 region — 전환/제거 메뉴를 그 행 아래 인라인으로 연다 (팝오버 동형)
+  const [menuRegionId, setMenuRegionId] = useState<string | null>(null)
+
+  const regions = useMemo(
+    () =>
+      acquiredIds
+        .map((id) => lookupRegion(catalog, id))
+        .filter((r): r is Region => r !== undefined)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [acquiredIds, catalog],
+  )
   const totalSize = regions.reduce((sum, r) => sum + parseFloat(r.sizeLabel), 0)
 
   function handleSwitch(region: Region) {
-    selectRegion(region.id) // 적재 region만 목록에 있으므로 항상 전환 성공 (AC-11)
+    setMenuRegionId(null)
+    selectRegion(region.id)
   }
 
   function handleAdd() {
     closeRegionManage()
     openRegionSelect()
+  }
+
+  function handleRemove(region: Region) {
+    setMenuRegionId(null)
+    removeRegion(region.id)
   }
 
   return (
@@ -63,43 +89,55 @@ export function RegionManageView() {
         <div className="flex flex-col gap-2">
           {regions.map((region) => {
             const active = region.id === activeRegionId
-            const cardClass = active
-              ? 'flex w-full items-center gap-3 rounded-lg border border-primary bg-primary/5 px-3.5 py-3.5 text-left'
-              : 'flex w-full items-center gap-3 rounded-lg border border-border bg-surface px-3.5 py-3.5 text-left active:bg-surface-alt'
+            const menuOpen = menuRegionId === region.id
             return (
-              <button
-                key={region.id}
-                type="button"
-                className={cardClass}
-                onClick={() => handleSwitch(region)}
-              >
-                <span
-                  className={
-                    active
-                      ? 'flex size-11 shrink-0 items-center justify-center rounded-md bg-primary'
-                      : 'flex size-11 shrink-0 items-center justify-center rounded-md bg-primary/10'
-                  }
-                  aria-hidden
-                >
-                  <MapPinned className={active ? 'size-5 text-surface' : 'size-5 text-primary'} />
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="flex items-center gap-2">
-                    <span className="truncate text-[15.5px] font-bold text-ink">
-                      {region.displayName}
-                    </span>
-                    {active && (
-                      <span className="shrink-0 rounded-sm bg-primary px-1.5 py-0.5 text-[11px] font-bold text-surface">
-                        사용 중
-                      </span>
+              <div key={region.id} className="flex flex-col gap-2">
+                <RegionRow
+                  region={region}
+                  state={deriveRegionRowState(region, {
+                    activeRegionId,
+                    acquired: true,
+                    acquiring: false,
+                  })}
+                  onActivate={handleSwitch}
+                  onMore={(r) => setMenuRegionId(menuOpen ? null : r.id)}
+                />
+                {menuOpen && (
+                  <div className="flex flex-col gap-2 rounded-md border border-border bg-surface p-3">
+                    {!active && (
+                      <button
+                        type="button"
+                        onClick={() => handleSwitch(region)}
+                        className="flex items-center gap-2 rounded-md px-2 py-2 text-left text-[14px] font-medium text-ink active:bg-surface-alt"
+                      >
+                        <Repeat className="size-4 shrink-0 text-primary" aria-hidden />이 지역으로
+                        전환
+                      </button>
                     )}
-                  </span>
-                  <span className="truncate font-mono text-[11.5px] text-ink-muted">
-                    필지 {region.parcelCount.toLocaleString('ko-KR')} · {region.sizeLabel}
-                  </span>
-                </span>
-                {active && <Check className="size-5 shrink-0 text-primary" aria-hidden />}
-              </button>
+                    {active ? (
+                      // 활성 region 제거 가드 (AC-14) — 제거 비활성 + 전환 우선 안내. 빈 지도 방지
+                      <div className="flex items-center gap-2 rounded-md bg-primary/5 px-3 py-2.5">
+                        <Info className="size-4 shrink-0 text-primary" aria-hidden />
+                        <span className="text-[12.5px] font-semibold text-primary">
+                          사용 중인 지역은 제거할 수 없어요. 다른 지역으로 먼저 전환하세요.
+                        </span>
+                      </div>
+                    ) : (
+                      // 비활성 region 제거 (AC-13) — ConfirmInline 2단계
+                      <ConfirmInline
+                        label={
+                          <span className="flex items-center gap-1.5">
+                            <Trash2 className="size-4" aria-hidden />
+                            지역 제거
+                          </span>
+                        }
+                        confirmLabel="제거"
+                        onConfirm={() => handleRemove(region)}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             )
           })}
         </div>
@@ -113,9 +151,11 @@ export function RegionManageView() {
           지역 추가
         </button>
 
-        <p className="text-center font-mono text-[11.5px] text-ink-muted">
-          사용 중 저장공간 {totalSize.toFixed(1)}MB
-        </p>
+        {regions.length > 0 && (
+          <p className="text-center font-mono text-[11.5px] text-ink-muted">
+            사용 중 저장공간 {totalSize.toFixed(1)}MB
+          </p>
+        )}
       </div>
     </section>
   )
