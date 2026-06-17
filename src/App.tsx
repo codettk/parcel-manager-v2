@@ -10,6 +10,9 @@ import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { JimokFilter } from './features/map/JimokFilter'
 import { MapCanvas } from './features/map/MapCanvas'
+import { RegionChip } from './features/region/RegionChip'
+import { RegionManageView } from './features/region/RegionManageView'
+import { RegionSelectView } from './features/region/RegionSelectView'
 import { PaletteSheet } from './features/palette/PaletteSheet'
 import { ParcelSheet } from './features/parcel/ParcelSheet'
 import { HistorySheet } from './features/tab/HistorySheet'
@@ -49,6 +52,9 @@ function App() {
   const shareOpen = useUiStore((s) => s.shareOpen)
   const resetSheetOpen = useUiStore((s) => s.resetSheetOpen)
   const jimokFilter = useUiStore((s) => s.jimokFilter)
+  const activeRegionId = useUiStore((s) => s.activeRegionId)
+  const regionSelectOpen = useUiStore((s) => s.regionSelectOpen)
+  const regionManageOpen = useUiStore((s) => s.regionManageOpen)
 
   // StrictMode 이중 이펙트에서도 부팅 시퀀스는 1회만 (상태 미러가 아닌 1회성 게이트)
   const bootRequested = useRef(false)
@@ -72,6 +78,23 @@ function App() {
       <Suspense fallback={null}>
         <UIDemo />
       </Suspense>
+    )
+  }
+
+  // region 진입 게이트 (AC-4·9) — 미선택이거나 칩/메뉴로 재진입 시 지도·탭바 대신 풀스크린 선택 화면.
+  // 지역 관리(AC-11)도 동일 레이어 — region 관련 풀스크린 뷰는 지도 위가 아니라 지도를 대체한다.
+  if (activeRegionId === null || regionSelectOpen) {
+    return (
+      <main className="h-full">
+        <RegionSelectView />
+      </main>
+    )
+  }
+  if (regionManageOpen) {
+    return (
+      <main className="h-full">
+        <RegionManageView />
+      </main>
     )
   }
 
@@ -111,6 +134,13 @@ function App() {
           jimokFilter={jimokFilter}
           onParcelTap={tapParcel}
         />
+        {/* 현재 region 칩 (AC-8) — 지도 좌상단. 모드 배지(top-3 중앙)·멀티선택 토글(top-16 right-3)·
+            지목 칩 바(top-28)와 좌표가 겹치지 않게 left-3 상단 모서리에 둔다 (M-14 가림 교훈 준수) */}
+        {!listViewOpen && (
+          <div className="absolute top-3 left-3 z-10">
+            <RegionChip />
+          </div>
+        )}
         {/* 지목 필터 칩 바 (M-14) — 지도 위 상단. 목록 뷰에선 미표시(v1 view!=='list' 보존).
             top-3 중앙엔 모드 배지(계산기/멀티선택/추가)·top-16 right-3엔 멀티선택 토글이 떠서
             그 두 행을 비켜 독립 행(top-28)에 전체 폭으로 둔다 (M-14 가림 교훈 — 칩 바가 IconButton에

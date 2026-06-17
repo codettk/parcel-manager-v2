@@ -3,7 +3,7 @@
  */
 @theme {
   /* 브랜드/시맨틱 */
-  --color-primary: #2f7d4f; /* 저장·선택 강조 (v1 초록) */
+  --color-primary: #2c5fd0; /* 브랜드 블루 — 저장·선택·CTA 강조 ("필지" 리브랜딩) */
   --color-danger: #c8392e; /* 삭제·해체·복원 경고 */
   --color-ink: #1a1814; /* 본문 텍스트 */
   --color-ink-muted: #5c5851;

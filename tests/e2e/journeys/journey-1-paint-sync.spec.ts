@@ -5,6 +5,7 @@ import {
   COMPOSITE_TOLERANCE,
   countNearPixels,
   PARCEL_HEX,
+  seedActiveRegion,
   TAB_ID,
 } from '../helpers/mockApi'
 import { findClickPoint } from '../helpers/pixels'
@@ -139,6 +140,7 @@ test('① 한 컨텍스트에서 색칠 → 서버 영속 → 다른 컨텍스�
       return route.fulfill({ status: 404, json: { error: `journey-1 모킹 누락: ${pathname}` } })
     },
   )
+  await seedActiveRegion(pageB) // region 진입 게이트 우회 — 지도로 직행
   await pageB.goto('/')
   await pageB.waitForFunction(() => {
     const cv = document.querySelector('canvas')

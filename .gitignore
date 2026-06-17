@@ -32,3 +32,11 @@ playwright-report/
 *.njsproj
 *.sln
 *.sw?
+
+# AI 툴링 (로컬 — Codex 설정·skills CLI 설치물. 프로젝트 pipeline 스킬·agents는 커밋 유지)
+.codex/
+.agents/
+AGENTS.md
+skills-lock.json
+.claude/skills/find-skills/
+.claude/skills/frontend-design/

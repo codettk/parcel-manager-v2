@@ -92,8 +92,8 @@ test('AC-7: 내보내기 → 상태 변경 → 같은 파일 불러오기 적용
   const downloadPromise = page.waitForEvent('download')
   await shareSheet.getByRole('button', { name: 'JSON 내보내기' }).click()
   const download = await downloadPromise
-  // 파일명: 보구곶리_{탭이름="기본"}_{YYYY-MM-DD}.json
-  expect(download.suggestedFilename()).toMatch(/^보구곶리_기본_\d{4}-\d{2}-\d{2}\.json$/)
+  // 파일명: 필지_{탭이름="기본"}_{YYYY-MM-DD}.json
+  expect(download.suggestedFilename()).toMatch(/^필지_기본_\d{4}-\d{2}-\d{2}\.json$/)
 
   const exportedPath = testInfo.outputPath(download.suggestedFilename())
   await download.saveAs(exportedPath)

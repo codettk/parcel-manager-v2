@@ -172,6 +172,30 @@ export interface MockApiOptions {
   tabs?: 1 | 2
   /** M-16 히스토리 — true면 GET /api/history가 닫힌 탭 2개(H1·H2)를 반환한다. 기본 false */
   history?: boolean
+  /**
+   * region 진입 게이트 — 기본 true면 부팅 전 localStorage에 활성 region(SEED)을 주입해
+   * 지도로 직행한다(기존 e2e 회귀 보존). false면 빈 상태로 시작해 게이트 화면을 검증한다
+   * (region-entry.spec 전용). 정확한 키·id는 src/stores/ui.ts·regionCatalog.ts 권위.
+   */
+  seedRegion?: boolean
+}
+
+/** src/stores/ui.ts ACTIVE_REGION_STORAGE_KEY · regionCatalog SEED_REGION.id 와 일치해야 한다 */
+export const ACTIVE_REGION_STORAGE_KEY = 'pilji_v2_active_region'
+export const SEED_REGION_ID = 'incheon-ganghwa-hwado'
+
+/**
+ * region 진입 게이트 우회 — 부팅 전 활성 region(SEED)을 localStorage에 주입한다.
+ * mockApi를 거치지 않고 자체 page.route를 까는 spec(여정 다중 페이지 등)이
+ * 지도로 직행하도록 goto 전에 호출한다.
+ */
+export async function seedActiveRegion(page: Page) {
+  await page.addInitScript(
+    ([key, id]) => {
+      localStorage.setItem(key, id)
+    },
+    [ACTIVE_REGION_STORAGE_KEY, SEED_REGION_ID] as const,
+  )
 }
 
 const TAB_STATE_FIXTURE: TabStateResponse = {
@@ -202,6 +226,9 @@ const TAB_STATE_FIXTURE: TabStateResponse = {
  * pathname 접두사 술어로 API 요청만 매칭한다.
  */
 export async function mockApi(page: Page, opts: MockApiOptions = {}) {
+  // region 진입 게이트(신규 슬라이스): 기본은 활성 region을 부팅 전 주입해 지도로 직행한다.
+  // addInitScript는 매 네비게이션의 페이지 스크립트보다 먼저 실행되어 loadActiveRegion()이 읽는다.
+  if (opts.seedRegion !== false) await seedActiveRegion(page)
   // M-10 계산 레시피 — 서버 단일 소스 상태 모킹 (설정 시트가 열 때마다 GET으로 최신화)
   let calcRecipes: CalcRecipe[] | null = opts.calcRecipes ?? null
   // M-11 팔레트 — 상태 보존 모킹 (calc-recipes 선례): PUT 전체 upsert·DELETE 단건 제거가
