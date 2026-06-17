@@ -186,6 +186,17 @@ export interface MockApiOptions {
    * 시작해 /api/config도 빈 {}를 반환 → authStatus='anon' → LoginView를 검증한다(auth spec 전용).
    */
   seedAuth?: boolean
+  /**
+   * 슬라이스 4 GPS 역지오코딩 — POST /api/geocode/reverse 응답 모킹.
+   * - 미지정(기본): 라우트 미등록 → 호출 시 404(모킹 누락). GPS를 안 쓰는 spec은 영향 없음
+   *   (geolocation을 안 쓰거나 권한 거부로 모킹하면 geocode 호출 자체가 일어나지 않는다).
+   * - { area }: 200 + reverseGeocodeResponseSchema 동형. area=null이면 무매칭 분기(AC-5·11).
+   * - { status }: 503(키 부재, AC-13)·502(외부 실패, AC-13) 에러를 반환.
+   * 좌표·clientId는 본문 그대로 받되 응답에 에코하지 않는다(절충 3 동형).
+   */
+  geocode?:
+    | { area: { sido: string; sigungu: string; emd: string } | null }
+    | { status: number }
 }
 
 /** src/stores/ui.ts ACTIVE_REGION_STORAGE_KEY · regionCatalog SEED_REGION.id 와 일치해야 한다 */
@@ -676,6 +687,18 @@ export async function mockApi(page: Page, opts: MockApiOptions = {}) {
       // 모킹은 ok만 반환한다. 본문(items·clientId) 검증은 spec이 waitForRequest로 수행
       const resetMatch = /^\/api\/tabs\/([^/]+)\/reset$/.exec(pathname)
       if (resetMatch !== null && method === 'POST') return route.fulfill({ json: { ok: true } })
+      // 슬라이스 4 GPS 역지오코딩 — opts.geocode 지정 시에만 등록(미지정이면 404로 누락 노출).
+      // 좌표 본문은 받되 응답에 에코하지 않는다(절충 3): area만 반환하거나 에러 status.
+      if (pathname === '/api/geocode/reverse' && method === 'POST') {
+        if (opts.geocode === undefined)
+          return route.fulfill({ status: 404, json: { error: 'geocode 모킹 미설정 (e2e)' } })
+        if ('status' in opts.geocode)
+          return route.fulfill({
+            status: opts.geocode.status,
+            json: { error: `geocode ${String(opts.geocode.status)} (e2e)` },
+          })
+        return route.fulfill({ json: { area: opts.geocode.area } })
+      }
       // 부팅 시퀀스 밖의 호출은 명시 실패 — 모킹 누락을 침묵시키지 않는다
       return route.fulfill({ status: 404, json: { error: `e2e 모킹 누락: ${pathname}` } })
     },

@@ -13,6 +13,11 @@ import { meResponseSchema, type MeResponse } from '../types/api/auth'
 import { errorResponseSchema, okResponseSchema, type OkResponse } from '../types/api/common'
 import { configResponseSchema, type ConfigResponse } from '../types/api/config'
 import {
+  reverseGeocodeResponseSchema,
+  type ReverseGeocodeRequest,
+  type ReverseGeocodeResponse,
+} from '../types/api/geocode'
+import {
   historyItemSchema,
   historyListResponseSchema,
   type HistoryItem,
@@ -249,6 +254,17 @@ export const api = {
     /** DELETE /api/regions/:id — 받은 목록에서 제거 (requireUser, user_regions 행만 삭제, AC-9) */
     remove(regionId: string): Promise<OkResponse> {
       return mutate('DELETE', `/api/regions/${encodeURIComponent(regionId)}`, okResponseSchema)
+    },
+  },
+
+  geocode: {
+    /**
+     * POST /api/geocode/reverse — 좌표 → 행정구역 (requireUser, Authorization 자동 주입).
+     * mutate(행 기록)가 아니므로 clientId는 보내지 않는다 — request 경로 사용.
+     * 키 부재 503·외부 실패 502·무세션 401은 ApiError로 던져 호출부(useGpsLocate)가 status로 분기한다.
+     */
+    reverse(coords: ReverseGeocodeRequest): Promise<ReverseGeocodeResponse> {
+      return request('POST', '/api/geocode/reverse', reverseGeocodeResponseSchema, coords)
     },
   },
 
