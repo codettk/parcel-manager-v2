@@ -2,6 +2,7 @@ import { meHandler } from './handlers/auth.js'
 import { calcRecipesHandler } from './handlers/calcRecipes.js'
 import { colorItemHandler, colorsCollectionHandler } from './handlers/colors.js'
 import { configHandler } from './handlers/config.js'
+import { reverseGeocodeHandler } from './handlers/geocode.js'
 import {
   historyCollectionHandler,
   historyItemHandler,
@@ -68,6 +69,9 @@ export const routes: Route[] = [
   { method: 'GET', pattern: '/api/regions/mine', handler: regionsMineHandler },
   { method: 'POST', pattern: '/api/regions/:id/acquire', handler: regionAcquireHandler },
   { method: 'DELETE', pattern: '/api/regions/:id', handler: regionRemoveHandler },
+
+  // 좌표 → 행정구역 역지오코딩 프록시(requireUser). 'geocode/reverse'(리터럴 2세그)는 충돌 없음.
+  { method: 'POST', pattern: '/api/geocode/reverse', handler: reverseGeocodeHandler },
 
   { method: 'GET', pattern: '/api/parcel-areas', handler: parcelAreasHandler },
   { method: 'GET', pattern: '/api/parcels/:id', handler: parcelItemHandler },

@@ -35,10 +35,16 @@ region을 DB 권위로 승격(`regions` 테이블 + `GET /api/regions` 카탈로
 
 </details>
 
-## 슬라이스 4 — GPS 역지오코딩
+## ✅ 슬라이스 4 — GPS 역지오코딩 (완료, `feat/gps-geocoding` 커밋·미push)
+좌표→행정구역 역지오코딩 프록시(V-World reverse geocode) + 결과→region 카탈로그 매칭으로 "현재 위치로 시작"을 실동작화. 슬라이스 1의 "항상 보구곶 추천" 폴백 폐기 — 매칭 region 자동 진입 / 준비 중 안내 / 무매칭 안내 3분기. 백엔드 `server/handlers/vworldGeocode.ts`(공용 fetch 모듈)·`server/handlers/geocode.ts`(`reverseGeocodeHandler` — requireUser 401·키부재 503·외부실패 502·미확정 200 area:null·성공 200 area, **좌표 비저장·비로깅**) + `server/routes.ts` `POST /api/geocode/reverse`. 프론트 `src/features/region/matchRegion.ts`(sido·sigungu·emd 정확일치 순수함수)·`useGpsLocate.ts`(geolocation→geocode→matchRegion 7상태 머신)·`RegionSelectView.tsx` GPS 카드 6상태·`src/lib/api.ts` `api.geocode.reverse`. 계약 `src/types/api/geocode.ts`. **DB·parcels.json·마이그레이션 무변경**. 신규 env `V_WORLD_GEOCODER`(reverse 전용 키 — `V_WORLD_LADFRLLIST`와 분리, 미설정 시 GPS 안내만·앱 정상), `V_WORLD_DOMAIN` 재사용. 시군구 폴백 매칭은 범위 밖. 명세 `docs/specs/gps-geocoding.md`.
+
+<details><summary>원 계획</summary>
+
 - **무엇**: 좌표→행정구역 변환(V-World/카카오 등) → "현재 위치로 시작"이 실제 region 자동 선택. region-entry의 폴백 UI를 실동작으로.
 - **의존**: 슬라이스 3(region 데이터가 있어야 "내 위치 region"으로 진입 의미). **영향**: 백엔드(외부 API 프록시)+frontend.
 - **디자인**: ③위치권한 ④지역선택 GPS 카드.
+
+</details>
 
 ## 슬라이스 5 — 영농 ERP 기능 (PRO 콘텐츠 구축)
 - **무엇**: 업무일지·인력·거래처·재고·캘린더 실제 구현(현재 디자인만). 큰 덩어리 → sub-슬라이스로 분할 권장(5a 인력·거래처 / 5b 업무일지·일당계산 / 5c 재고 / 5d 캘린더).
