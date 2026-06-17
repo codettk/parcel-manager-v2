@@ -43,10 +43,10 @@ export function buildShareFile(source: ShareSource): ShareFile {
 
 const INVALID_FILENAME_CHARS = /[\\/:*?"<>|]/g
 
-/** `보구곶리_{탭이름}_{YYYY-MM-DD}.json` — 날짜는 v1 exportJSON과 동일하게 toISOString 기준 */
+/** `필지_{탭이름}_{YYYY-MM-DD}.json` — 날짜는 v1 exportJSON과 동일하게 toISOString 기준 */
 export function buildShareFileName(tabName: string, now: Date = new Date()): string {
   const safeName = tabName.replace(INVALID_FILENAME_CHARS, '_')
-  return `보구곶리_${safeName}_${now.toISOString().slice(0, 10)}.json`
+  return `필지_${safeName}_${now.toISOString().slice(0, 10)}.json`
 }
 
 export const SHARE_PARSE_ERROR = 'JSON 파일을 읽을 수 없습니다. 파일 형식을 확인해 주세요.'

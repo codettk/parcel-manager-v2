@@ -97,10 +97,10 @@ describe('buildShareFileName — 파일명 불가 문자 치환', () => {
   it('탭 이름의 \\ / : * ? " < > | 를 _로 치환하고 날짜를 붙인다', () => {
     const now = new Date('2026-06-12T09:30:00.000Z')
     expect(buildShareFileName('1차: 매수/검토', now)).toBe(
-      '보구곶리_1차_ 매수_검토_2026-06-12.json',
+      '필지_1차_ 매수_검토_2026-06-12.json',
     )
     expect(buildShareFileName('a\\b*c?d"e<f>g|h', now)).toBe(
-      '보구곶리_a_b_c_d_e_f_g_h_2026-06-12.json',
+      '필지_a_b_c_d_e_f_g_h_2026-06-12.json',
     )
   })
 })

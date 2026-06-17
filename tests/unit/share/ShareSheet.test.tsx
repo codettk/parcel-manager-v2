@@ -157,7 +157,7 @@ describe('AC-4: 통계 표시 + 내보내기 다운로드', () => {
     await user.click(screen.getByRole('button', { name: 'JSON 내보내기' }))
 
     const today = new Date().toISOString().slice(0, 10)
-    expect(downloadName).toBe(`보구곶리_1차_ 매수_검토_${today}.json`)
+    expect(downloadName).toBe(`필지_1차_ 매수_검토_${today}.json`)
 
     expect(capturedBlob).not.toBeNull()
     const payload: unknown = JSON.parse(await capturedBlob!.text())

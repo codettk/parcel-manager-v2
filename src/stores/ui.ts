@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { EMPTY_SELECTION } from '../features/map/engine'
 import { ALL_JIMOK, type JimokKey } from '../features/map/jimok'
+import { getRegionById } from '../features/region/regionCatalog'
 import { AREA_UNITS, type AreaUnitId } from '../utils/formatArea'
 import { selectParcelToGroup } from './selectors'
 import { useWorkspaceStore } from './workspace'
@@ -14,6 +15,20 @@ export const AREA_UNIT_STORAGE_KEY = 'bogugot_v2_area_unit'
 function loadAreaUnit(): AreaUnitId {
   const stored = localStorage.getItem(AREA_UNIT_STORAGE_KEY)
   return AREA_UNITS.find((u) => u.id === stored)?.id ?? 'm2'
+}
+
+/** 마지막 선택 region 영속 키 — 새로고침 시 게이트를 건너뛰고 직행 (AC-10) */
+export const ACTIVE_REGION_STORAGE_KEY = 'pilji_v2_active_region'
+
+/**
+ * 영속된 마지막 region 복원 — 카탈로그에 없거나(폐기된 id) 미적재 region이면 null(게이트 표시).
+ * 미적재 region은 지도 데이터가 없어 진입 자체가 불가하므로 영속 값으로도 인정하지 않는다.
+ * AC-10 새로고침 직행의 핵심 분기라 단위 테스트 대상으로 export 한다.
+ */
+export function loadActiveRegion(): string | null {
+  const stored = localStorage.getItem(ACTIVE_REGION_STORAGE_KEY)
+  if (stored === null) return null
+  return getRegionById(stored)?.loaded === true ? stored : null
 }
 
 /** Realtime 연결 상태 (M-6) — disabled는 supabase 키 미설정 환경(E2E mockApi 등)을 error와 구분한다 */
@@ -125,6 +140,28 @@ export interface UiState {
   /** Realtime 연결 상태 — lib/realtime.ts가 쓰고, 소비자(M-7+ 시트, M-16 탭)는 읽기만 한다 */
   realtimeStatus: RealtimeStatus
   setRealtimeStatus: (status: RealtimeStatus) => void
+  /**
+   * 현재 진입한 region id (전국 지적도 진입 게이트). null이면 지역 선택 화면을 띄운다 (AC-4).
+   * 적재 region만 유효 — localStorage(ACTIVE_REGION_STORAGE_KEY) 영속으로 새로고침 직행 (AC-10).
+   */
+  activeRegionId: string | null
+  /** 지역 선택 화면 강제 표시 — region 진입 후에도 칩 탭으로 재진입 (AC-9) */
+  regionSelectOpen: boolean
+  /**
+   * region 선택 — 적재 region만 진입을 허용한다. 미적재면 무시(false 반환) — 호출부가
+   * "준비 중" 안내를 띄운다 (AC-6). 성공 시 localStorage 영속 + 선택 화면 닫기 (AC-5·10).
+   */
+  selectRegion: (regionId: string) => boolean
+  /** 칩/메뉴에서 지역 선택 화면 열기 (AC-8·9) */
+  openRegionSelect: () => void
+  closeRegionSelect: () => void
+  /**
+   * 지역 관리 화면 열림 (AC-11) — 받은(적재) region 열람·전환. 다른 시트 선례: 열림만 전역.
+   * 선택 화면(regionSelectOpen)과 독립 — 둘 다 region 풀스크린 뷰 레이어다.
+   */
+  regionManageOpen: boolean
+  openRegionManage: () => void
+  closeRegionManage: () => void
 }
 
 /**
@@ -331,4 +368,22 @@ export const useUiStore = create<UiState>()((set, get) => ({
 
   realtimeStatus: 'disabled',
   setRealtimeStatus: (status) => set({ realtimeStatus: status }),
+
+  activeRegionId: loadActiveRegion(),
+  regionSelectOpen: false,
+
+  selectRegion: (regionId) => {
+    const region = getRegionById(regionId)
+    if (region === undefined || !region.loaded) return false // 미적재 — 지도 미전환 (AC-6)
+    localStorage.setItem(ACTIVE_REGION_STORAGE_KEY, regionId)
+    set({ activeRegionId: regionId, regionSelectOpen: false, regionManageOpen: false })
+    return true
+  },
+
+  openRegionSelect: () => set({ regionSelectOpen: true }),
+  closeRegionSelect: () => set({ regionSelectOpen: false }),
+
+  regionManageOpen: false,
+  openRegionManage: () => set({ regionManageOpen: true }),
+  closeRegionManage: () => set({ regionManageOpen: false }),
 }))
