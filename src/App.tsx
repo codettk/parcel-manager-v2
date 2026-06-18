@@ -17,6 +17,7 @@ import { ContactsView } from './features/erp/ContactsView'
 import { StaffView } from './features/erp/StaffView'
 import { WorkLogView } from './features/erp/worklog/WorkLogView'
 import { InventoryView } from './features/erp/inventory/InventoryView'
+import { CalendarView } from './features/erp/calendar/CalendarView'
 import { ParcelListView } from './features/list/ParcelListView'
 import { MultiSelectOverlay } from './features/group/MultiSelectOverlay'
 import { JimokFilter } from './features/map/JimokFilter'
@@ -78,6 +79,7 @@ function App() {
   const contactsViewOpen = useUiStore((s) => s.contactsViewOpen)
   const workLogViewOpen = useUiStore((s) => s.workLogViewOpen)
   const inventoryViewOpen = useUiStore((s) => s.inventoryViewOpen)
+  const calendarViewOpen = useUiStore((s) => s.calendarViewOpen)
   const activeRegionId = useUiStore((s) => s.activeRegionId)
   const regionSelectOpen = useUiStore((s) => s.regionSelectOpen)
   const regionManageOpen = useUiStore((s) => s.regionManageOpen)
@@ -247,6 +249,7 @@ function App() {
         {contactsViewOpen && <ContactsView />}
         {workLogViewOpen && <WorkLogView />}
         {inventoryViewOpen && <InventoryView />}
+        {calendarViewOpen && <CalendarView />}
       </div>
 
       <NavDrawer

@@ -193,8 +193,8 @@ test.describe('AC-15: NavDrawer PRO 섹션 진입점', () => {
     const drawer = page.getByRole('dialog')
     // 별도 "영농 PRO" 섹션 존재
     await expect(drawer.getByRole('heading', { name: '영농 PRO' })).toBeVisible()
-    // PRO 항목 전부 표식 보유 (인력·거래처 + 5b 업무일지 + 5c 재고 = 배지 4개)
-    await expect(drawer.getByText('PRO', { exact: true })).toHaveCount(4)
+    // PRO 항목 전부 표식 보유 (인력·거래처 + 5b 업무일지 + 5c 재고 + 5d 캘린더 = 배지 5개)
+    await expect(drawer.getByText('PRO', { exact: true })).toHaveCount(5)
     await expect(drawer.getByRole('button', { name: STAFF_LABEL })).toBeVisible()
     await expect(drawer.getByRole('button', { name: CONTACTS_LABEL })).toBeVisible()
     await expect(drawer.getByRole('button', { name: '업무일지' })).toBeVisible()
