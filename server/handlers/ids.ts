@@ -36,6 +36,16 @@ export function genWorkLogEntryId(now: number = Date.now()): string {
   return `wle_${now.toString(36)}${randomBase36(6)}`
 }
 
+/** inv_<timestamp36><random6> — 재고 품목 마스터 PK, 서버에서만 생성 (ERP 슬라이스 5c) */
+export function genInventoryItemId(now: number = Date.now()): string {
+  return `inv_${now.toString(36)}${randomBase36(6)}`
+}
+
+/** stx_<timestamp36><random6> — 재고 입·출고 거래 PK, 서버에서만 생성 (ERP 슬라이스 5c) */
+export function genInventoryTxnId(now: number = Date.now()): string {
+  return `stx_${now.toString(36)}${randomBase36(6)}`
+}
+
 /** 동일 timestamp 배치 삽입에서도 충돌하지 않는 group_id 목록 생성 */
 export function genGroupIds(count: number): string[] {
   const ids = new Set<string>()

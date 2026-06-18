@@ -1,4 +1,5 @@
 import {
+  Boxes,
   Building2,
   Calculator,
   CircleUser,
@@ -48,6 +49,7 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
   const openStaffView = useUiStore((s) => s.openStaffView)
   const openContactsView = useUiStore((s) => s.openContactsView)
   const openWorkLogView = useUiStore((s) => s.openWorkLogView)
+  const openInventoryView = useUiStore((s) => s.openInventoryView)
 
   /** 항목 동작 실행 후 드로어를 닫는다 — 모든 항목 공통 */
   const run = (action: () => void) => () => {
@@ -92,6 +94,12 @@ export function NavDrawer({ onOpenReleaseNotes, onOpenCalculator }: NavDrawerPro
           icon={ClipboardList}
           label="업무일지"
           onClick={run(openWorkLogView)}
+          trailing={<ProBadge />}
+        />
+        <DrawerItem
+          icon={Boxes}
+          label="재고"
+          onClick={run(openInventoryView)}
           trailing={<ProBadge />}
         />
       </DrawerSection>

@@ -42,6 +42,21 @@ import {
   type WorkLogListResponse,
 } from '../types/api/workLogs'
 import {
+  inventoryItemSchema,
+  inventoryItemListResponseSchema,
+  type CreateInventoryItemRequest,
+  type InventoryItem,
+  type InventoryItemListResponse,
+  type UpdateInventoryItemRequest,
+} from '../types/api/inventoryItems'
+import {
+  inventoryTransactionSchema,
+  inventoryTransactionListResponseSchema,
+  type CreateInventoryTransactionRequest,
+  type InventoryTransaction,
+  type InventoryTransactionListResponse,
+} from '../types/api/inventoryTransactions'
+import {
   historyItemSchema,
   historyListResponseSchema,
   type HistoryItem,
@@ -359,6 +374,70 @@ export const api = {
     /** DELETE /api/work-logs/:id — 하드 삭제(라인 CASCADE) (AC-8·15) */
     remove(logId: string): Promise<OkResponse> {
       return mutate('DELETE', `/api/work-logs/${encodeURIComponent(logId)}`, okResponseSchema)
+    },
+  },
+
+  inventoryItems: {
+    /** GET /api/inventory/items — 기본 활성만, includeInactive=true면 비활성 포함 (AC-6·16·17) */
+    list(includeInactive = false): Promise<InventoryItemListResponse> {
+      const path = includeInactive ? '/api/inventory/items?includeInactive=true' : '/api/inventory/items'
+      return request('GET', path, inventoryItemListResponseSchema)
+    },
+    /** POST /api/inventory/items — 생성 (requireUser·active=true·created_by 자동, AC-5) */
+    create(input: Input<CreateInventoryItemRequest>): Promise<InventoryItem> {
+      return mutate('POST', '/api/inventory/items', inventoryItemSchema, input)
+    },
+    /** PATCH /api/inventory/items/:id — 부분 수정 + 재활성화(active=true) (AC-7) */
+    update(itemId: string, input: Input<UpdateInventoryItemRequest>): Promise<InventoryItem> {
+      return mutate(
+        'PATCH',
+        `/api/inventory/items/${encodeURIComponent(itemId)}`,
+        inventoryItemSchema,
+        input,
+      )
+    },
+    /** DELETE /api/inventory/items/:id — 소프트 비활성(active=false) (AC-7) */
+    remove(itemId: string): Promise<OkResponse> {
+      return mutate(
+        'DELETE',
+        `/api/inventory/items/${encodeURIComponent(itemId)}`,
+        okResponseSchema,
+      )
+    },
+  },
+
+  stockTransactions: {
+    /**
+     * GET /api/inventory/transactions — 거래일 내림차순. `?itemId`(품목별 이력)·`?from&to`(기간) 필터 (AC-10).
+     * 모두 선택 — 미지정이면 전체. requireUser지만 전역 공유라 누구나 같은 목록을 본다(AC-15).
+     */
+    list(filter?: {
+      itemId?: string
+      from?: string
+      to?: string
+    }): Promise<InventoryTransactionListResponse> {
+      const params = new URLSearchParams()
+      if (filter?.itemId !== undefined) params.set('itemId', filter.itemId)
+      if (filter?.from !== undefined) params.set('from', filter.from)
+      if (filter?.to !== undefined) params.set('to', filter.to)
+      const qs = params.toString()
+      return request(
+        'GET',
+        qs === '' ? '/api/inventory/transactions' : `/api/inventory/transactions?${qs}`,
+        inventoryTransactionListResponseSchema,
+      )
+    },
+    /** POST /api/inventory/transactions — 생성 (requireUser·스냅샷·amount 서버 계산, AC-8·9·18) */
+    create(input: Input<CreateInventoryTransactionRequest>): Promise<InventoryTransaction> {
+      return mutate('POST', '/api/inventory/transactions', inventoryTransactionSchema, input)
+    },
+    /** DELETE /api/inventory/transactions/:id — 하드 삭제(원장 append-only) (AC-11) */
+    remove(txnId: string): Promise<OkResponse> {
+      return mutate(
+        'DELETE',
+        `/api/inventory/transactions/${encodeURIComponent(txnId)}`,
+        okResponseSchema,
+      )
     },
   },
 

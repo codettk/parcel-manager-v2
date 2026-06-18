@@ -168,6 +168,14 @@ export interface UiState {
   openWorkLogView: () => void
   closeWorkLogView: () => void
   /**
+   * 영농 ERP 재고 관리 뷰 열림 (슬라이스 5c) — 업무일지 뷰(5b) 동형 풀스크린 레이어.
+   * 품목·거래 작성 시트, 거래처 picker, 품목별 이력은 뷰 내부 로컬 상태(draft 패턴)라 전역은 뷰 열림만.
+   * PRO 게이팅 강제 없음 — 진입점만 NavDrawer PRO 섹션에 둔다(슬라이스 6 자리, AC-16).
+   */
+  inventoryViewOpen: boolean
+  openInventoryView: () => void
+  closeInventoryView: () => void
+  /**
    * 현재 진입한 region id (전국 지적도 진입 게이트). null이면 지역 선택 화면을 띄운다 (AC-4).
    * 적재 region만 유효 — localStorage(ACTIVE_REGION_STORAGE_KEY) 영속으로 새로고침 직행 (AC-10).
    */
@@ -387,6 +395,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
   workLogViewOpen: false,
   openWorkLogView: () => set({ workLogViewOpen: true }),
   closeWorkLogView: () => set({ workLogViewOpen: false }),
+
+  inventoryViewOpen: false,
+  openInventoryView: () => set({ inventoryViewOpen: true }),
+  closeInventoryView: () => set({ inventoryViewOpen: false }),
 
   jimokFilter: [...ALL_JIMOK],
   // 필터 변경은 현재 선택·시트만 해제한다 (v1 app.jsx:687 useEffect 보존).
