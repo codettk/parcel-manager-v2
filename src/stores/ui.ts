@@ -176,6 +176,15 @@ export interface UiState {
   openInventoryView: () => void
   closeInventoryView: () => void
   /**
+   * 영농 ERP 캘린더 뷰 열림 (슬라이스 5d) — 재고 뷰(5c) 동형 풀스크린 레이어.
+   * 보이는 월·선택 날짜·일 상세는 뷰 내부 로컬 상태라 전역은 뷰 열림만 (CONVENTIONS §3).
+   * 5b·5c list를 읽기 전용 소비 — 신규 스토어·DB·계약 없음(frontend-only, A안).
+   * PRO 게이팅 강제 없음 — 진입점만 NavDrawer PRO 섹션에 둔다(슬라이스 6 자리, AC-5).
+   */
+  calendarViewOpen: boolean
+  openCalendarView: () => void
+  closeCalendarView: () => void
+  /**
    * 현재 진입한 region id (전국 지적도 진입 게이트). null이면 지역 선택 화면을 띄운다 (AC-4).
    * 적재 region만 유효 — localStorage(ACTIVE_REGION_STORAGE_KEY) 영속으로 새로고침 직행 (AC-10).
    */
@@ -399,6 +408,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
   inventoryViewOpen: false,
   openInventoryView: () => set({ inventoryViewOpen: true }),
   closeInventoryView: () => set({ inventoryViewOpen: false }),
+
+  calendarViewOpen: false,
+  openCalendarView: () => set({ calendarViewOpen: true }),
+  closeCalendarView: () => set({ calendarViewOpen: false }),
 
   jimokFilter: [...ALL_JIMOK],
   // 필터 변경은 현재 선택·시트만 해제한다 (v1 app.jsx:687 useEffect 보존).
